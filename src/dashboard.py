@@ -42,7 +42,9 @@ def carregar():
     return df, df_pnad
 
 
-df, df_pnad = carregar()
+with st.spinner("Carregando dados..."):
+
+    df, df_pnad = carregar()
 
 # ==========================================
 # MENU
