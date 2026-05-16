@@ -6,16 +6,16 @@ from carregar_dados import (
     limpar_dados
 )
 
-from pages.dashboard_home import mostrar_dashboard
-from pages.impacto_brasil import mostrar_impacto_brasil
-from pages.evolucao_temporal import mostrar_evolucao_temporal
-from pages.escolaridade import mostrar_escolaridade
-from pages.renda import mostrar_renda
-from pages.setores import mostrar_setores
-from pages.ranking import mostrar_ranking
-from pages.similaridade import mostrar_similaridade
-from pages.pesquisa import mostrar_pesquisa
-from pages.sobre import mostrar_sobre
+from views.dashboard_home import mostrar_dashboard
+from views.impacto_brasil import mostrar_impacto_brasil
+from views.evolucao_temporal import mostrar_evolucao_temporal
+from views.escolaridade import mostrar_escolaridade
+from views.renda import mostrar_renda
+from views.setores import mostrar_setores
+from views.ranking import mostrar_ranking
+from views.similaridade import mostrar_similaridade
+from views.pesquisa import mostrar_pesquisa
+from views.sobre import mostrar_sobre
 
 # ==========================================
 # CONFIG
