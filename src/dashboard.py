@@ -42,6 +42,7 @@ pagina = st.sidebar.radio(
     "Selecione:",
     [
         "📊 Dashboard",
+        "🔎 Pesquisar Ocupação",
         "🏆 Ranking",
         "🧠 Similaridade",
         "ℹ️ Sobre"
@@ -168,6 +169,98 @@ if pagina == "📊 Dashboard":
         top10,
         width='stretch'
     )
+
+# ==========================================
+# PESQUISA DE OCUPAÇÃO
+# ==========================================
+
+elif pagina == "🔎 Pesquisar Ocupação":
+
+    st.title(
+        "🔎 Pesquisa de Ocupações"
+    )
+
+    st.markdown("""
+    Consulte ocupações brasileiras
+    e visualize o nível de exposição
+    à Inteligência Artificial.
+    """)
+
+    # ======================================
+    # BUSCA
+    # ======================================
+
+    busca = st.text_input(
+        "Digite uma ocupação"
+    )
+
+    # ======================================
+    # FILTRO IMPACTO
+    # ======================================
+
+    filtro = st.selectbox(
+        "Filtrar impacto",
+        [
+            "Todos",
+            "🔴 Alto",
+            "🟡 Médio",
+            "🟢 Baixo"
+        ]
+    )
+
+    # ======================================
+    # BASE FILTRADA
+    # ======================================
+
+    resultado = df.copy()
+
+    if filtro != "Todos":
+
+        resultado = resultado[
+            resultado["NIVEL_IMPACTO"]
+            == filtro
+        ]
+
+    if busca:
+
+        resultado = resultado[
+            resultado["TITULO_LIMPO"]
+            .astype(str)
+            .str.contains(
+                busca,
+                case=False,
+                na=False
+            )
+        ]
+
+    st.divider()
+
+    st.write(
+        f"{len(resultado)} ocupações encontradas."
+    )
+
+    # ======================================
+    # RESULTADOS
+    # ======================================
+
+    for _, row in resultado.head(20).iterrows():
+
+        st.markdown(f"""
+        ---
+        ### {row['TITULO_LIMPO']}
+
+        **CBO:** {row['CBO_EXTRAIDO']}
+
+        **Impacto IA:** {row['NIVEL_IMPACTO']}
+
+        **AIOE Score:** {round(row['AIOE_SCORE'], 2)}
+
+        **Confiança:** {round(row['CONFIDENCE_SCORE'], 2)}
+
+        **Match AIOE:** {row['AIOE_MATCH_TITLE']}
+
+        **Grande Grupo:** {row['Grande Grupo']}
+        """)
 
 # ==========================================
 # RANKING
