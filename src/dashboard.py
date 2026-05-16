@@ -43,6 +43,7 @@ pagina = st.sidebar.radio(
     [
         "📊 Dashboard",
         "🔎 Pesquisar Ocupação",
+        "🇧🇷 Impacto no Brasil",
         "🏆 Ranking",
         "🧠 Similaridade",
         "ℹ️ Sobre"
@@ -261,6 +262,159 @@ elif pagina == "🔎 Pesquisar Ocupação":
 
         **Grande Grupo:** {row['Grande Grupo']}
         """)
+
+# ==========================================
+# IMPACTO NO BRASIL
+# ==========================================
+
+elif pagina == "🇧🇷 Impacto no Brasil":
+
+    st.title(
+        "🇧🇷 Impacto da IA no Brasil"
+    )
+
+    st.markdown("""
+    Análise das ocupações brasileiras
+    com base nos scores de exposição
+    à Inteligência Artificial (AIOE).
+    """)
+
+    st.divider()
+
+    # ======================================
+    # MÉTRICAS
+    # ======================================
+
+    total = len(df)
+
+    media_aioe = round(
+        df["AIOE_SCORE"].mean(),
+        2
+    )
+
+    media_conf = round(
+        df["CONFIDENCE_SCORE"].mean(),
+        2
+    )
+
+    alto = len(
+        df[df["NIVEL_IMPACTO"] == "🔴 Alto"]
+    )
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric(
+        "Total de Ocupações",
+        total
+    )
+
+    col2.metric(
+        "Média AIOE",
+        media_aioe
+    )
+
+    col3.metric(
+        "Confiança Média",
+        media_conf
+    )
+
+    col4.metric(
+        "Alto Impacto",
+        alto
+    )
+
+    st.divider()
+
+    # ======================================
+    # DISTRIBUIÇÃO IMPACTO
+    # ======================================
+
+    impacto = (
+        df["NIVEL_IMPACTO"]
+        .value_counts()
+        .reset_index()
+    )
+
+    impacto.columns = [
+        "Impacto",
+        "Quantidade"
+    ]
+
+    fig = px.pie(
+        impacto,
+        names="Impacto",
+        values="Quantidade",
+        title="Distribuição de Impacto IA"
+    )
+
+    st.plotly_chart(
+        fig,
+        width='stretch'
+    )
+
+    # ======================================
+    # TOP OCUPAÇÕES
+    # ======================================
+
+    st.subheader(
+        "🚨 Ocupações Mais Expostas"
+    )
+
+    top = (
+        df.sort_values(
+            by="AIOE_SCORE",
+            ascending=False
+        )
+        [
+            [
+                "TITULO_LIMPO",
+                "AIOE_SCORE",
+                "CONFIDENCE_SCORE",
+                "NIVEL_IMPACTO"
+            ]
+        ]
+        .head(15)
+    )
+
+    st.dataframe(
+        top,
+        width='stretch'
+    )
+
+    st.divider()
+
+    # ======================================
+    # GRANDES GRUPOS
+    # ======================================
+
+    st.subheader(
+        "📊 Média AIOE por Grande Grupo"
+    )
+
+    grupo = (
+        df.groupby("Grande Grupo")
+        ["AIOE_SCORE"]
+        .mean()
+        .reset_index()
+    )
+
+    grupo = grupo.sort_values(
+        by="AIOE_SCORE",
+        ascending=False
+    )
+
+    fig2 = px.bar(
+        grupo,
+        x="Grande Grupo",
+        y="AIOE_SCORE",
+        color="AIOE_SCORE",
+        title="Exposição Média por Grande Grupo"
+    )
+
+    st.plotly_chart(
+        fig2,
+        width='stretch'
+    )
 
 # ==========================================
 # RANKING
