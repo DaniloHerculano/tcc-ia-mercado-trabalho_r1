@@ -1,10 +1,14 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import os
+
+from carregar_dados import (
+    carregar_cbo,
+    limpar_dados
+)
 
 # ==========================================
-# CONFIGURAÇÃO
+# CONFIG
 # ==========================================
 
 st.set_page_config(
@@ -13,75 +17,23 @@ st.set_page_config(
 )
 
 # ==========================================
-# CAMINHO DO ARQUIVO
-# ==========================================
-
-ARQUIVO_DADOS = "data/tabela_cbo_e5_large_final.xlsx"
-
-# ==========================================
 # CARREGAR DADOS
 # ==========================================
 
 @st.cache_data
-def carregar_dados():
+def carregar():
 
-    if not os.path.exists(ARQUIVO_DADOS):
+    df = carregar_cbo()
 
-        st.error(
-            f"Arquivo não encontrado: {ARQUIVO_DADOS}"
-        )
-
-        st.stop()
-
-    df = pd.read_excel(
-        ARQUIVO_DADOS
-    )
+    df = limpar_dados(df)
 
     return df
 
-df = carregar_dados()
+
+df = carregar()
 
 # ==========================================
-# TRATAMENTOS
-# ==========================================
-
-df.columns = (
-    df.columns
-    .str.strip()
-)
-
-df["AIOE_SCORE"] = pd.to_numeric(
-    df["AIOE_SCORE"],
-    errors="coerce"
-)
-
-df["CONFIDENCE_SCORE"] = pd.to_numeric(
-    df["CONFIDENCE_SCORE"],
-    errors="coerce"
-)
-
-# ==========================================
-# CRIAR NÍVEL DE IMPACTO
-# ==========================================
-
-def classificar_impacto(score):
-
-    if score >= 0.70:
-        return "🔴 Alto"
-
-    elif score >= 0.40:
-        return "🟡 Médio"
-
-    else:
-        return "🟢 Baixo"
-
-df["NIVEL_IMPACTO"] = (
-    df["AIOE_SCORE"]
-    .apply(classificar_impacto)
-)
-
-# ==========================================
-# SIDEBAR
+# MENU
 # ==========================================
 
 st.sidebar.title("📌 Navegação")
@@ -90,9 +42,8 @@ pagina = st.sidebar.radio(
     "Selecione:",
     [
         "📊 Dashboard",
-        "📋 Dados",
-        "📈 Análises",
         "🏆 Ranking",
+        "🧠 Similaridade",
         "ℹ️ Sobre"
     ]
 )
@@ -108,9 +59,10 @@ if pagina == "📊 Dashboard":
     )
 
     st.markdown("""
-    Plataforma de análise do impacto da Inteligência Artificial
-    nas ocupações brasileiras utilizando NLP,
-    Embeddings e Similaridade Semântica.
+    Plataforma de análise do impacto da
+    Inteligência Artificial nas ocupações
+    brasileiras utilizando NLP, embeddings
+    semânticos e similaridade de cosseno.
     """)
 
     # ======================================
@@ -134,19 +86,7 @@ if pagina == "📊 Dashboard":
         2
     )
 
-    alto = len(
-        df[df["NIVEL_IMPACTO"] == "🔴 Alto"]
-    )
-
-    medio = len(
-        df[df["NIVEL_IMPACTO"] == "🟡 Médio"]
-    )
-
-    baixo = len(
-        df[df["NIVEL_IMPACTO"] == "🟢 Baixo"]
-    )
-
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     col1.metric(
         "Total de Ocupações",
@@ -163,26 +103,7 @@ if pagina == "📊 Dashboard":
         max_aioe
     )
 
-    st.divider()
-
-    col4, col5, col6, col7 = st.columns(4)
-
     col4.metric(
-        "🔴 Alto Impacto",
-        alto
-    )
-
-    col5.metric(
-        "🟡 Médio Impacto",
-        medio
-    )
-
-    col6.metric(
-        "🟢 Baixo Impacto",
-        baixo
-    )
-
-    col7.metric(
         "Confiança Média",
         media_conf
     )
@@ -190,101 +111,31 @@ if pagina == "📊 Dashboard":
     st.divider()
 
     # ======================================
-    # FILTROS
+    # IMPACTO
     # ======================================
 
-    colf1, colf2 = st.columns(2)
-
-    with colf1:
-
-        grupo = st.selectbox(
-            "Grande Grupo",
-            ["Todos"] +
-            sorted(
-                df["Grande Grupo"]
-                .dropna()
-                .astype(str)
-                .unique()
-                .tolist()
-            )
-        )
-
-    with colf2:
-
-        impacto = st.selectbox(
-            "Nível de Impacto",
-            [
-                "Todos",
-                "🔴 Alto",
-                "🟡 Médio",
-                "🟢 Baixo"
-            ]
-        )
-
-    busca = st.text_input(
-        "🔎 Buscar ocupação"
-    )
-
-    # ======================================
-    # FILTRO DF
-    # ======================================
-
-    df_filtrado = df.copy()
-
-    if grupo != "Todos":
-
-        df_filtrado = df_filtrado[
-            df_filtrado["Grande Grupo"]
-            == grupo
-        ]
-
-    if impacto != "Todos":
-
-        df_filtrado = df_filtrado[
-            df_filtrado["NIVEL_IMPACTO"]
-            == impacto
-        ]
-
-    if busca:
-
-        df_filtrado = df_filtrado[
-            df_filtrado["TITULO_LIMPO"]
-            .astype(str)
-            .str.contains(
-                busca,
-                case=False,
-                na=False
-            )
-        ]
-
-    st.divider()
-
-    # ======================================
-    # GRÁFICO
-    # ======================================
-
-    grafico = (
-        df_filtrado["NIVEL_IMPACTO"]
+    impacto = (
+        df["NIVEL_IMPACTO"]
         .value_counts()
         .reset_index()
     )
 
-    grafico.columns = [
+    impacto.columns = [
         "Impacto",
         "Quantidade"
     ]
 
     fig = px.bar(
-        grafico,
+        impacto,
         x="Impacto",
         y="Quantidade",
         color="Impacto",
-        title="Distribuição dos Níveis de Impacto"
+        title="Distribuição de Impacto"
     )
 
     st.plotly_chart(
         fig,
-        use_container_width=True
+        width='stretch'
     )
 
     st.divider()
@@ -294,22 +145,20 @@ if pagina == "📊 Dashboard":
     # ======================================
 
     st.subheader(
-        "🏆 Top 10 Ocupações com Maior Exposição à IA"
+        "🔥 Ocupações Mais Expostas"
     )
 
     top10 = (
-        df_filtrado
-        .sort_values(
+        df.sort_values(
             by="AIOE_SCORE",
             ascending=False
         )
         [
             [
+                "CBO_EXTRAIDO",
                 "TITULO_LIMPO",
-                "Grande Grupo",
                 "AIOE_SCORE",
-                "CONFIDENCE_SCORE",
-                "NIVEL_IMPACTO"
+                "CONFIDENCE_SCORE"
             ]
         ]
         .head(10)
@@ -317,60 +166,7 @@ if pagina == "📊 Dashboard":
 
     st.dataframe(
         top10,
-        use_container_width=True
-    )
-
-# ==========================================
-# DADOS
-# ==========================================
-
-elif pagina == "📋 Dados":
-
-    st.title("📋 Base de Dados")
-
-    st.dataframe(
-        df,
-        use_container_width=True
-    )
-
-# ==========================================
-# ANÁLISES
-# ==========================================
-
-elif pagina == "📈 Análises":
-
-    st.title("📈 Análises")
-
-    # ======================================
-    # HISTOGRAMA
-    # ======================================
-
-    fig1 = px.histogram(
-        df,
-        x="AIOE_SCORE",
-        nbins=30,
-        title="Distribuição do Score AIOE"
-    )
-
-    st.plotly_chart(
-        fig1,
-        use_container_width=True
-    )
-
-    # ======================================
-    # CONFIANÇA
-    # ======================================
-
-    fig2 = px.histogram(
-        df,
-        x="CONFIDENCE_SCORE",
-        nbins=30,
-        title="Distribuição da Confiança"
-    )
-
-    st.plotly_chart(
-        fig2,
-        use_container_width=True
+        width='stretch'
     )
 
 # ==========================================
@@ -388,21 +184,51 @@ elif pagina == "🏆 Ranking":
             by="AIOE_SCORE",
             ascending=False
         )
-        [
-            [
-                "TITULO_LIMPO",
-                "Grande Grupo",
-                "AIOE_SCORE",
-                "AIOE_MATCH_TITLE",
-                "CONFIDENCE_SCORE",
-                "NIVEL_IMPACTO"
-            ]
-        ]
     )
 
     st.dataframe(
-        ranking,
-        use_container_width=True
+        ranking[
+            [
+                "CBO_EXTRAIDO",
+                "TITULO_LIMPO",
+                "Grande Grupo",
+                "AIOE_SCORE",
+                "CONFIDENCE_SCORE",
+                "NIVEL_IMPACTO"
+            ]
+        ],
+        width='stretch'
+    )
+
+# ==========================================
+# SIMILARIDADE
+# ==========================================
+
+elif pagina == "🧠 Similaridade":
+
+    st.title(
+        "🧠 Similaridade Semântica"
+    )
+
+    st.markdown("""
+    Correspondência semântica entre
+    ocupações brasileiras (CBO)
+    e ocupações americanas
+    do dataset AIOE/Felten.
+    """)
+
+    tabela = df[
+        [
+            "TITULO_LIMPO",
+            "AIOE_MATCH_TITLE",
+            "CONFIDENCE_SCORE",
+            "AIOE_SCORE"
+        ]
+    ]
+
+    st.dataframe(
+        tabela,
+        width='stretch'
     )
 
 # ==========================================
@@ -411,29 +237,31 @@ elif pagina == "🏆 Ranking":
 
 elif pagina == "ℹ️ Sobre":
 
-    st.title("ℹ️ Sobre o Projeto")
+    st.title("ℹ️ Sobre")
 
     st.markdown("""
-    ## TCC - Ciência de Dados
+    ### TCC - Ciência de Dados
 
-    Projeto desenvolvido para análise do impacto
-    da Inteligência Artificial nas ocupações brasileiras.
+    Projeto voltado para análise
+    do impacto da Inteligência Artificial
+    no mercado de trabalho brasileiro.
 
-    ## Tecnologias Utilizadas
+    ### Metodologia
+
+    - NLP
+    - Embeddings Semânticos
+    - Similaridade de Cosseno
+    - Sentence Transformers
+    - Dataset AIOE (Felten et al.)
+    - CBO Brasileira
+    - PNAD Contínua
+
+    ### Tecnologias
 
     - Python
-    - Pandas
-    - NLP
-    - Sentence Transformers
-    - Embeddings
-    - Similaridade de Cosseno
     - Streamlit
+    - Pandas
     - Plotly
-
-    ## Objetivo
-
-    Identificar profissões com maior potencial
-    de impacto/exposição à Inteligência Artificial
-    utilizando análise semântica entre
-    ocupações brasileiras e americanas.
+    - PyTorch
+    - Sentence Transformers
     """)

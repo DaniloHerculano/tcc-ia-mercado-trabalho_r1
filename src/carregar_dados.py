@@ -1,69 +1,43 @@
-# ==========================================
-# src/carregar_dados.py
-# ==========================================
-
 import pandas as pd
 
 
 # ==========================================
-# CLASSIFICAÇÃO DE IMPACTO
+# CARREGAR BASE PRINCIPAL
 # ==========================================
 
-def classificar_impacto(score):
-
-    if score >= 0.70:
-        return "🔴 Alto"
-
-    elif score >= 0.40:
-        return "🟡 Médio"
-
-    else:
-        return "🟢 Baixo"
-
-
-# ==========================================
-# CARREGAR DADOS
-# ==========================================
-
-def carregar_dados():
+def carregar_cbo():
 
     caminho = (
-        "data/tabela_cbo_e5_large_final.xlsx"
+        "data/"
+        "tabela_cbo_e5_large_final.xlsx"
     )
 
     df = pd.read_excel(caminho)
 
+    return df
+
+
+# ==========================================
+# LIMPEZA
+# ==========================================
+
+def limpar_dados(df):
+
+    df = df.copy()
+
     # ======================================
-    # LIMPEZA
+    # REMOVER NULOS
     # ======================================
 
-    df.columns = (
-        df.columns
-        .str.strip()
+    df = df.dropna(
+        subset=[
+            "AIOE_SCORE",
+            "CONFIDENCE_SCORE"
+        ]
     )
 
     # ======================================
-    # TEXTO
-    # ======================================
-
-    colunas_texto = [
-        "TITULO_LIMPO",
-        "Grande Grupo",
-        "AIOE_MATCH_TITLE"
-    ]
-
-    for coluna in colunas_texto:
-
-        if coluna in df.columns:
-
-            df[coluna] = (
-                df[coluna]
-                .astype(str)
-                .str.strip()
-            )
-
-    # ======================================
-    # NUMÉRICOS
+    # CONVERTER SCORES
     # ======================================
 
     df["AIOE_SCORE"] = pd.to_numeric(
@@ -77,24 +51,23 @@ def carregar_dados():
     )
 
     # ======================================
-    # REMOVER NULOS
+    # CRIAR NÍVEL DE IMPACTO
     # ======================================
 
-    df = df.dropna(
-        subset=[
-            "TITULO_LIMPO",
-            "AIOE_SCORE",
-            "CONFIDENCE_SCORE"
-        ]
-    )
+    def classificar(score):
 
-    # ======================================
-    # CLASSIFICAÇÃO
-    # ======================================
+        if score >= 0.75:
+            return "🔴 Alto"
+
+        elif score >= 0.45:
+            return "🟡 Médio"
+
+        else:
+            return "🟢 Baixo"
 
     df["NIVEL_IMPACTO"] = (
         df["AIOE_SCORE"]
-        .apply(classificar_impacto)
+        .apply(classificar)
     )
 
     return df
