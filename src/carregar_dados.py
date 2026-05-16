@@ -2,14 +2,13 @@ import pandas as pd
 
 
 # ==========================================
-# CARREGAR BASE PRINCIPAL
+# CARREGAR BASE CBO
 # ==========================================
 
 def carregar_cbo():
 
     caminho = (
-        "data/"
-        "tabela_cbo_e5_large_final.xlsx"
+        "Data/tabela_cbo_e5_large_final.xlsx"
     )
 
     df = pd.read_excel(caminho)
@@ -18,26 +17,39 @@ def carregar_cbo():
 
 
 # ==========================================
-# LIMPEZA
+# CARREGAR PNAD
+# ==========================================
+
+def carregar_pnad():
+
+    caminho = (
+        "Data/pnad_processada.parquet"
+    )
+
+    df = pd.read_parquet(caminho)
+
+    return df
+
+
+# ==========================================
+# LIMPEZA BASE CBO
 # ==========================================
 
 def limpar_dados(df):
 
-    df = df.copy()
-
     # ======================================
-    # REMOVER NULOS
+    # REMOVER NULOS IMPORTANTES
     # ======================================
 
     df = df.dropna(
         subset=[
-            "AIOE_SCORE",
-            "CONFIDENCE_SCORE"
+            "TITULO_LIMPO",
+            "AIOE_SCORE"
         ]
     )
 
     # ======================================
-    # CONVERTER SCORES
+    # NUMÉRICOS
     # ======================================
 
     df["AIOE_SCORE"] = pd.to_numeric(
@@ -51,7 +63,18 @@ def limpar_dados(df):
     )
 
     # ======================================
-    # CRIAR NÍVEL DE IMPACTO
+    # REMOVER NULOS
+    # ======================================
+
+    df = df.dropna(
+        subset=[
+            "AIOE_SCORE",
+            "CONFIDENCE_SCORE"
+        ]
+    )
+
+    # ======================================
+    # NÍVEL IMPACTO
     # ======================================
 
     def classificar(score):
@@ -68,6 +91,53 @@ def limpar_dados(df):
     df["NIVEL_IMPACTO"] = (
         df["AIOE_SCORE"]
         .apply(classificar)
+    )
+
+    return df
+
+
+# ==========================================
+# LIMPEZA PNAD
+# ==========================================
+
+def limpar_pnad(df):
+
+    # ======================================
+    # CONVERTER TIPOS
+    # ======================================
+
+    df["Ano"] = (
+        pd.to_numeric(
+            df["Ano"],
+            errors="coerce"
+        )
+    )
+
+    df["Idade"] = (
+        pd.to_numeric(
+            df["Idade"],
+            errors="coerce"
+        )
+    )
+
+    df["Rendimento_Mensal"] = (
+        pd.to_numeric(
+            df["Rendimento_Mensal"],
+            errors="coerce"
+        )
+    )
+
+    # ======================================
+    # REMOVER NULOS
+    # ======================================
+
+    df = df.dropna(
+        subset=[
+            "Ano",
+            "UF",
+            "Sexo",
+            "Idade"
+        ]
     )
 
     return df
