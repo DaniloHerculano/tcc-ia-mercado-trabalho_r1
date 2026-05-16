@@ -44,6 +44,7 @@ pagina = st.sidebar.radio(
         "📊 Dashboard",
         "🔎 Pesquisar Ocupação",
         "🇧🇷 Impacto no Brasil",
+        "🎓 Escolaridade x IA",
         "🏆 Ranking",
         "🧠 Similaridade",
         "ℹ️ Sobre"
@@ -415,6 +416,128 @@ elif pagina == "🇧🇷 Impacto no Brasil":
         fig2,
         width='stretch'
     )
+
+# ==========================================
+# ESCOLARIDADE X IA
+# ==========================================
+
+elif pagina == "🎓 Escolaridade x IA":
+
+    st.title(
+        "🎓 Escolaridade x Impacto IA"
+    )
+
+    st.markdown("""
+    Relação entre escolaridade
+    e exposição à Inteligência Artificial.
+    """)
+
+    st.divider()
+
+    # ======================================
+    # AGRUPAMENTO
+    # ======================================
+
+    escolaridade = (
+        df.groupby("FORMAÇÃO E EXPERIÊNCIA")
+        ["AIOE_SCORE"]
+        .mean()
+        .reset_index()
+    )
+
+    escolaridade = escolaridade.sort_values(
+        by="AIOE_SCORE",
+        ascending=False
+    )
+
+    # ======================================
+    # GRÁFICO
+    # ======================================
+
+    fig = px.bar(
+        escolaridade,
+        x="FORMAÇÃO E EXPERIÊNCIA",
+        y="AIOE_SCORE",
+        color="AIOE_SCORE",
+        title="Média de Exposição IA por Formação"
+    )
+
+    st.plotly_chart(
+        fig,
+        width='stretch'
+    )
+
+    st.divider()
+
+    # ======================================
+    # IMPACTO
+    # ======================================
+
+    impacto = (
+        df.groupby(
+            [
+                "FORMAÇÃO E EXPERIÊNCIA",
+                "NIVEL_IMPACTO"
+            ]
+        )
+        .size()
+        .reset_index(name="Quantidade")
+    )
+
+    fig2 = px.bar(
+        impacto,
+        x="FORMAÇÃO E EXPERIÊNCIA",
+        y="Quantidade",
+        color="NIVEL_IMPACTO",
+        barmode="group",
+        title="Distribuição de Impacto por Formação"
+    )
+
+    st.plotly_chart(
+        fig2,
+        width='stretch'
+    )
+
+    st.divider()
+
+    # ======================================
+    # TABELA
+    # ======================================
+
+    st.subheader(
+        "📋 Dados Agrupados"
+    )
+
+    st.dataframe(
+        escolaridade,
+        width='stretch'
+    )
+
+    st.divider()
+
+    # ======================================
+    # INSIGHTS
+    # ======================================
+
+    maior = escolaridade.iloc[0]
+
+    menor = escolaridade.iloc[-1]
+
+    st.info(f"""
+    🎓 Formação mais exposta:
+    {maior['FORMAÇÃO E EXPERIÊNCIA']}
+
+    Média AIOE:
+    {round(maior['AIOE_SCORE'], 2)}
+    """)
+
+    st.success(f"""
+    📘 Formação menos exposta:
+    {menor['FORMAÇÃO E EXPERIÊNCIA']}
+
+    Média AIOE:
+    {round(menor['AIOE_SCORE'], 2)}
+    """)
 
 # ==========================================
 # RANKING
