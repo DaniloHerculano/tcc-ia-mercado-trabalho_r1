@@ -44,10 +44,10 @@ pagina = st.sidebar.radio(
         "📊 Dashboard",
         "🇧🇷 Impacto no Brasil",
         "🎓 Escolaridade x IA",
-        "💰 Renda x IA",
-        "🏭 Setores x IA",
+        #"💰 Renda x IA",
+        #"🏭 Setores x IA",
         "🔎 Pesquisar Ocupação",
-        "🏆 Ranking",
+        #"🏆 Ranking",
         "🧠 Similaridade",
         "ℹ️ Sobre"
     ]
