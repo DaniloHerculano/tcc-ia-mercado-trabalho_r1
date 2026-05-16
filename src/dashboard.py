@@ -45,6 +45,7 @@ pagina = st.sidebar.radio(
         "🔎 Pesquisar Ocupação",
         "🇧🇷 Impacto no Brasil",
         "🎓 Escolaridade x IA",
+        "💰 Renda x IA",
         "🏆 Ranking",
         "🧠 Similaridade",
         "ℹ️ Sobre"
@@ -538,6 +539,153 @@ elif pagina == "🎓 Escolaridade x IA":
     Média AIOE:
     {round(menor['AIOE_SCORE'], 2)}
     """)
+
+# ==========================================
+# RENDA X IA
+# ==========================================
+
+elif pagina == "💰 Renda x IA":
+
+    st.title(
+        "💰 Renda x Impacto IA"
+    )
+
+    st.markdown("""
+    Relação entre exposição à IA
+    e níveis salariais.
+    """)
+
+    st.divider()
+
+    # ======================================
+    # FAIXAS SALARIAIS
+    # ======================================
+
+    if "RENDA_MEDIA" in df.columns:
+
+        df_renda = df.copy()
+
+        df_renda["FAIXA_RENDA"] = pd.cut(
+            df_renda["RENDA_MEDIA"],
+            bins=[0, 2000, 5000, 10000, 20000, 50000],
+            labels=[
+                "Até 2k",
+                "2k-5k",
+                "5k-10k",
+                "10k-20k",
+                "20k+"
+            ]
+        )
+
+        # ==================================
+        # MÉDIA AIOE
+        # ==================================
+
+        renda_media = (
+            df_renda.groupby("FAIXA_RENDA")
+            ["AIOE_SCORE"]
+            .mean()
+            .reset_index()
+        )
+
+        fig = px.bar(
+            renda_media,
+            x="FAIXA_RENDA",
+            y="AIOE_SCORE",
+            color="AIOE_SCORE",
+            title="Média de Exposição IA por Faixa Salarial"
+        )
+
+        st.plotly_chart(
+            fig,
+            width='stretch'
+        )
+
+        st.divider()
+
+        # ==================================
+        # DISTRIBUIÇÃO
+        # ==================================
+
+        impacto = (
+            df_renda.groupby(
+                [
+                    "FAIXA_RENDA",
+                    "NIVEL_IMPACTO"
+                ]
+            )
+            .size()
+            .reset_index(name="Quantidade")
+        )
+
+        fig2 = px.bar(
+            impacto,
+            x="FAIXA_RENDA",
+            y="Quantidade",
+            color="NIVEL_IMPACTO",
+            barmode="group",
+            title="Impacto IA por Faixa Salarial"
+        )
+
+        st.plotly_chart(
+            fig2,
+            width='stretch'
+        )
+
+        st.divider()
+
+        # ==================================
+        # TABELA
+        # ==================================
+
+        st.subheader(
+            "📋 Média de Exposição"
+        )
+
+        st.dataframe(
+            renda_media,
+            width='stretch'
+        )
+
+        st.divider()
+
+        # ==================================
+        # INSIGHTS
+        # ==================================
+
+        maior = renda_media.sort_values(
+            by="AIOE_SCORE",
+            ascending=False
+        ).iloc[0]
+
+        menor = renda_media.sort_values(
+            by="AIOE_SCORE",
+            ascending=True
+        ).iloc[0]
+
+        st.warning(f"""
+        💰 Faixa salarial mais exposta:
+
+        {maior['FAIXA_RENDA']}
+
+        Média AIOE:
+        {round(maior['AIOE_SCORE'], 2)}
+        """)
+
+        st.success(f"""
+        📉 Faixa salarial menos exposta:
+
+        {menor['FAIXA_RENDA']}
+
+        Média AIOE:
+        {round(menor['AIOE_SCORE'], 2)}
+        """)
+
+    else:
+
+        st.error(
+            "Coluna RENDA_MEDIA não encontrada."
+        )
 
 # ==========================================
 # RANKING
