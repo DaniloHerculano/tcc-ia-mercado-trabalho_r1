@@ -7,3 +7,6 @@ seaborn
 sentence-transformers
 torch
 scikit-learn
+pyarrow
+fastparquet
+numpy
