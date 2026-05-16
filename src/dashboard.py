@@ -1,53 +1,52 @@
 import streamlit as st
 
-from carregar_dados import (
+from src.carregar_dados import (
     carregar_cbo,
     carregar_pnad,
-    limpar_dados,
-    limpar_pnad
+    limpar_dados
 )
 
 # ==========================================
 # IMPORTAR PÁGINAS
 # ==========================================
 
-from pages.dashboard_home import (
+from src.pages.dashboard_home import (
     mostrar_dashboard
 )
 
-from pages.impacto_brasil import (
+from src.pages.impacto_brasil import (
     mostrar_impacto_brasil
 )
 
-from pages.evolucao_temporal import (
+from src.pages.evolucao_temporal import (
     mostrar_evolucao_temporal
 )
 
-from pages.escolaridade import (
+from src.pages.escolaridade import (
     mostrar_escolaridade
 )
 
-from pages.renda import (
+from src.pages.renda import (
     mostrar_renda
 )
 
-from pages.setores import (
+from src.pages.setores import (
     mostrar_setores
 )
 
-from pages.ranking import (
+from src.pages.ranking import (
     mostrar_ranking
 )
 
-from pages.similaridade import (
+from src.pages.similaridade import (
     mostrar_similaridade
 )
 
-from pages.pesquisa import (
+from src.pages.pesquisa import (
     mostrar_pesquisa
 )
 
-from pages.sobre import (
+from src.pages.sobre import (
     mostrar_sobre
 )
 

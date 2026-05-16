@@ -8,7 +8,7 @@ import pandas as pd
 def carregar_cbo():
 
     caminho = (
-        "Data/tabela_cbo_e5_large_final.xlsx"
+        "data/tabela_cbo_e5_large_final.xlsx"
     )
 
     df = pd.read_excel(caminho)
@@ -23,7 +23,7 @@ def carregar_cbo():
 def carregar_pnad():
 
     caminho = (
-        "Data/pnad_processada.parquet"
+        "data/pnad_processada.parquet"
     )
 
     df = pd.read_parquet(caminho)
