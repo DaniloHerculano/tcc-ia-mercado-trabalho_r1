@@ -31,14 +31,30 @@ st.set_page_config(
 # ==========================================
 
 @st.cache_data
-def carregar():
+def carregar_pnad():
 
-    df = carregar_cbo()
-    df = limpar_dados(df)
+    colunas = [
+        "Ano",
+        "UF",
+        "Sexo",
+        "Idade",
+        "CBO",
+        "Anos_Estudo",
+        "Rendimento_Mensal"
+    ]
 
-    df_pnad = carregar_pnad()
+    df = pd.read_parquet(
+        "data/pnad_processada.parquet",
+        columns=colunas
+    )
 
-    return df, df_pnad
+    # REDUZIR AMOSTRA
+    df = df.sample(
+        n=min(100000, len(df)),
+        random_state=42
+    )
+
+    return df
 
 # ==========================================
 # LOADING
@@ -47,6 +63,9 @@ def carregar():
 with st.spinner("Carregando dados..."):
 
     df, df_pnad = carregar()
+
+    st.write(df.shape)
+    st.write(df_pnad.shape)
 
 # ==========================================
 # MENU
