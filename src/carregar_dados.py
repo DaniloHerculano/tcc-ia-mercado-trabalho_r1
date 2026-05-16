@@ -20,13 +20,17 @@ def carregar_cbo():
 # CARREGAR PNAD
 # ==========================================
 
-def carregar_pnad():
-
-    df = pd.read_parquet(
-        "data/pnad_processada.parquet"
-    )
-
-    return df
+df = pd.read_parquet(
+    "data/pnad_processada.parquet",
+    columns=[
+        "Ano",
+        "Sexo",
+        "UF",
+        "CBO",
+        "Anos_Estudo",
+        "Rendimento_Mensal"
+    ]
+)
 
 # ==========================================
 # LIMPEZA BASE CBO
