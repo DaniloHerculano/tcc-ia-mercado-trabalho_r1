@@ -6,49 +6,16 @@ from carregar_dados import (
     limpar_dados
 )
 
-# ==========================================
-# IMPORTAR PÁGINAS
-# ==========================================
-
-from pages.dashboard_home import (
-    mostrar_dashboard
-)
-
-from pages.impacto_brasil import (
-    mostrar_impacto_brasil
-)
-
-from pages.evolucao_temporal import (
-    mostrar_evolucao_temporal
-)
-
-from pages.escolaridade import (
-    mostrar_escolaridade
-)
-
-from pages.renda import (
-    mostrar_renda
-)
-
-from pages.setores import (
-    mostrar_setores
-)
-
-from pages.ranking import (
-    mostrar_ranking
-)
-
-from pages.similaridade import (
-    mostrar_similaridade
-)
-
-from pages.pesquisa import (
-    mostrar_pesquisa
-)
-
-from pages.sobre import (
-    mostrar_sobre
-)
+from pages.dashboard_home import mostrar_dashboard
+from pages.impacto_brasil import mostrar_impacto_brasil
+from pages.evolucao_temporal import mostrar_evolucao_temporal
+from pages.escolaridade import mostrar_escolaridade
+from pages.renda import mostrar_renda
+from pages.setores import mostrar_setores
+from pages.ranking import mostrar_ranking
+from pages.similaridade import mostrar_similaridade
+from pages.pesquisa import mostrar_pesquisa
+from pages.sobre import mostrar_sobre
 
 # ==========================================
 # CONFIG
@@ -64,55 +31,43 @@ st.set_page_config(
 # ==========================================
 
 @st.cache_data
-def carregar_bases():
+def carregar():
 
-    # ======================================
-    # CBO
-    # ======================================
+    df = carregar_cbo()
 
-    df_cbo = carregar_cbo()
-
-    df_cbo = limpar_dados(df_cbo)
-
-    # ======================================
-    # PNAD
-    # ======================================
+    df = limpar_dados(df)
 
     df_pnad = carregar_pnad()
 
-    df_pnad = limpar_pnad(df_pnad)
-
-    return df_cbo, df_pnad
+    return df, df_pnad
 
 
-df, df_pnad = carregar_bases()
+df, df_pnad = carregar()
 
 # ==========================================
-# SIDEBAR
+# MENU
 # ==========================================
 
-st.sidebar.title(
-    "📌 Navegação"
-)
+st.sidebar.title("📌 Navegação")
 
 pagina = st.sidebar.radio(
     "Selecione:",
     [
         "📊 Dashboard",
         "🇧🇷 Impacto no Brasil",
-        "📅 Evolução Temporal",
+        "📈 Evolução Temporal",
         "🎓 Escolaridade x IA",
         "💰 Renda x IA",
         "🏭 Setores x IA",
-        "🔎 Pesquisar Ocupação",
         "🏆 Ranking",
         "🧠 Similaridade",
+        "🔎 Pesquisar Ocupação",
         "ℹ️ Sobre"
     ]
 )
 
 # ==========================================
-# ROTAS
+# ROTEAMENTO DAS PÁGINAS
 # ==========================================
 
 if pagina == "📊 Dashboard":
@@ -126,7 +81,7 @@ elif pagina == "🇧🇷 Impacto no Brasil":
         df_pnad
     )
 
-elif pagina == "📅 Evolução Temporal":
+elif pagina == "📈 Evolução Temporal":
 
     mostrar_evolucao_temporal(
         df_pnad
@@ -134,19 +89,20 @@ elif pagina == "📅 Evolução Temporal":
 
 elif pagina == "🎓 Escolaridade x IA":
 
-    mostrar_escolaridade(df)
+    mostrar_escolaridade(
+        df,
+        df_pnad
+    )
 
 elif pagina == "💰 Renda x IA":
 
-    mostrar_renda(df_pnad)
+    mostrar_renda(
+        df_pnad
+    )
 
 elif pagina == "🏭 Setores x IA":
 
     mostrar_setores(df)
-
-elif pagina == "🔎 Pesquisar Ocupação":
-
-    mostrar_pesquisa(df)
 
 elif pagina == "🏆 Ranking":
 
@@ -155,6 +111,10 @@ elif pagina == "🏆 Ranking":
 elif pagina == "🧠 Similaridade":
 
     mostrar_similaridade(df)
+
+elif pagina == "🔎 Pesquisar Ocupação":
+
+    mostrar_pesquisa(df)
 
 elif pagina == "ℹ️ Sobre":
 
