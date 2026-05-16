@@ -22,14 +22,11 @@ def carregar_cbo():
 
 def carregar_pnad():
 
-    caminho = (
+    df = pd.read_parquet(
         "data/pnad_processada.parquet"
     )
 
-    df = pd.read_parquet(caminho)
-
     return df
-
 
 # ==========================================
 # LIMPEZA BASE CBO

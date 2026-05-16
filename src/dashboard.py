@@ -27,20 +27,22 @@ st.set_page_config(
 )
 
 # ==========================================
-# CARREGAR DADOS
+# CACHE
 # ==========================================
 
 @st.cache_data
 def carregar():
 
     df = carregar_cbo()
-
     df = limpar_dados(df)
 
     df_pnad = carregar_pnad()
 
     return df, df_pnad
 
+# ==========================================
+# LOADING
+# ==========================================
 
 with st.spinner("Carregando dados..."):
 
@@ -69,55 +71,35 @@ pagina = st.sidebar.radio(
 )
 
 # ==========================================
-# ROTEAMENTO DAS PÁGINAS
+# ROTAS
 # ==========================================
 
 if pagina == "📊 Dashboard":
-
     mostrar_dashboard(df)
 
 elif pagina == "🇧🇷 Impacto no Brasil":
-
-    mostrar_impacto_brasil(
-        df,
-        df_pnad
-    )
+    mostrar_impacto_brasil(df, df_pnad)
 
 elif pagina == "📈 Evolução Temporal":
-
-    mostrar_evolucao_temporal(
-        df_pnad
-    )
+    mostrar_evolucao_temporal(df, df_pnad)
 
 elif pagina == "🎓 Escolaridade x IA":
-
-    mostrar_escolaridade(
-        df,
-        df_pnad
-    )
+    mostrar_escolaridade(df, df_pnad)
 
 elif pagina == "💰 Renda x IA":
-
-    mostrar_renda(
-        df_pnad
-    )
+    mostrar_renda(df, df_pnad)
 
 elif pagina == "🏭 Setores x IA":
-
     mostrar_setores(df)
 
 elif pagina == "🏆 Ranking":
-
     mostrar_ranking(df)
 
 elif pagina == "🧠 Similaridade":
-
     mostrar_similaridade(df)
 
 elif pagina == "🔎 Pesquisar Ocupação":
-
     mostrar_pesquisa(df)
 
 elif pagina == "ℹ️ Sobre":
-
     mostrar_sobre()
