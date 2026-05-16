@@ -1,28 +1,29 @@
 import streamlit as st
+import pandas as pd
 import plotly.express as px
 
 
-# ==========================================
-# EVOLUÇÃO TEMPORAL
-# ==========================================
+def mostrar_evolucao_temporal(df, df_pnad):
 
-def mostrar_evolucao_temporal(
-    df_pnad
-):
-
-    st.title(
-        "📅 Evolução Temporal"
-    )
+    st.title("📈 Evolução Temporal")
 
     st.markdown("""
-    Evolução da força de trabalho
-    brasileira ao longo do tempo.
+    Evolução temporal da força de trabalho
+    brasileira ao longo dos anos.
     """)
 
-    st.divider()
+    # ======================================
+    # VALIDAR
+    # ======================================
+
+    if "Ano" not in df_pnad.columns:
+
+        st.error("Coluna Ano não encontrada.")
+
+        return
 
     # ======================================
-    # EVOLUÇÃO BASE
+    # AGRUPAMENTO
     # ======================================
 
     evolucao = (
@@ -30,6 +31,14 @@ def mostrar_evolucao_temporal(
         .size()
         .reset_index(name="Quantidade")
     )
+
+    evolucao = evolucao.sort_values(
+        by="Ano"
+    )
+
+    # ======================================
+    # GRÁFICO
+    # ======================================
 
     fig = px.line(
         evolucao,
@@ -46,52 +55,7 @@ def mostrar_evolucao_temporal(
 
     st.divider()
 
-    # ======================================
-    # RENDA
-    # ======================================
-
-    renda = (
-        df_pnad.groupby("Ano")
-        ["Rendimento_Mensal"]
-        .mean()
-        .reset_index()
-    )
-
-    fig2 = px.line(
-        renda,
-        x="Ano",
-        y="Rendimento_Mensal",
-        markers=True,
-        title="Renda Média ao Longo do Tempo"
-    )
-
-    st.plotly_chart(
-        fig2,
-        width='stretch'
-    )
-
-    st.divider()
-
-    # ======================================
-    # IDADE
-    # ======================================
-
-    idade = (
-        df_pnad.groupby("Ano")
-        ["Idade"]
-        .mean()
-        .reset_index()
-    )
-
-    fig3 = px.line(
-        idade,
-        x="Ano",
-        y="Idade",
-        markers=True,
-        title="Idade Média ao Longo do Tempo"
-    )
-
-    st.plotly_chart(
-        fig3,
+    st.dataframe(
+        evolucao,
         width='stretch'
     )

@@ -1,37 +1,39 @@
 import streamlit as st
+import pandas as pd
 import plotly.express as px
 
 
-# ==========================================
-# ESCOLARIDADE
-# ==========================================
+def mostrar_escolaridade(df, df_pnad):
 
-def mostrar_escolaridade(df):
-
-    st.title(
-        "🎓 Escolaridade x IA"
-    )
+    st.title("🎓 Escolaridade x IA")
 
     st.markdown("""
-    Relação entre formação profissional
-    e exposição à Inteligência Artificial.
+    Relação entre escolaridade
+    e exposição à IA.
     """)
 
-    st.divider()
+    # ======================================
+    # VALIDAR
+    # ======================================
+
+    if "Anos_Estudo" not in df_pnad.columns:
+
+        st.error("Coluna Anos_Estudo não encontrada.")
+
+        return
 
     # ======================================
-    # MÉDIA
+    # AGRUPAR
     # ======================================
 
     escolaridade = (
-        df.groupby("FORMAÇÃO E EXPERIÊNCIA")
-        ["AIOE_SCORE"]
-        .mean()
-        .reset_index()
+        df_pnad.groupby("Anos_Estudo")
+        .size()
+        .reset_index(name="Quantidade")
     )
 
     escolaridade = escolaridade.sort_values(
-        by="AIOE_SCORE",
+        by="Quantidade",
         ascending=False
     )
 
@@ -41,10 +43,10 @@ def mostrar_escolaridade(df):
 
     fig = px.bar(
         escolaridade,
-        x="FORMAÇÃO E EXPERIÊNCIA",
-        y="AIOE_SCORE",
-        color="AIOE_SCORE",
-        title="Média de Exposição IA"
+        x="Anos_Estudo",
+        y="Quantidade",
+        color="Quantidade",
+        title="Distribuição por Escolaridade"
     )
 
     st.plotly_chart(
@@ -54,59 +56,7 @@ def mostrar_escolaridade(df):
 
     st.divider()
 
-    # ======================================
-    # DISTRIBUIÇÃO
-    # ======================================
-
-    impacto = (
-        df.groupby(
-            [
-                "FORMAÇÃO E EXPERIÊNCIA",
-                "NIVEL_IMPACTO"
-            ]
-        )
-        .size()
-        .reset_index(name="Quantidade")
-    )
-
-    fig2 = px.bar(
-        impacto,
-        x="FORMAÇÃO E EXPERIÊNCIA",
-        y="Quantidade",
-        color="NIVEL_IMPACTO",
-        barmode="group",
-        title="Distribuição de Impacto"
-    )
-
-    st.plotly_chart(
-        fig2,
+    st.dataframe(
+        escolaridade,
         width='stretch'
     )
-
-    st.divider()
-
-    # ======================================
-    # INSIGHTS
-    # ======================================
-
-    maior = escolaridade.iloc[0]
-
-    menor = escolaridade.iloc[-1]
-
-    st.warning(f"""
-    🎓 Formação mais exposta:
-
-    {maior['FORMAÇÃO E EXPERIÊNCIA']}
-
-    Média:
-    {round(maior['AIOE_SCORE'], 2)}
-    """)
-
-    st.success(f"""
-    📘 Formação menos exposta:
-
-    {menor['FORMAÇÃO E EXPERIÊNCIA']}
-
-    Média:
-    {round(menor['AIOE_SCORE'], 2)}
-    """)
