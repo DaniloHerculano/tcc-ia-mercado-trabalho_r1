@@ -1,3 +1,4 @@
+import streamlit as st
 import pandas as pd
 
 
@@ -5,6 +6,7 @@ import pandas as pd
 # CARREGAR BASE CBO
 # ==========================================
 
+@st.cache_data
 def carregar_cbo():
 
     caminho = (
@@ -20,17 +22,37 @@ def carregar_cbo():
 # CARREGAR PNAD
 # ==========================================
 
-df = pd.read_parquet(
-    "data/pnad_processada.parquet",
-    columns=[
+@st.cache_data
+def carregar_pnad():
+
+    colunas = [
         "Ano",
         "Sexo",
         "UF",
         "CBO",
         "Anos_Estudo",
-        "Rendimento_Mensal"
+        "Rendimento_Mensal",
+        "Idade"
     ]
-)
+
+    df = pd.read_parquet(
+        "data/pnad_processada.parquet",
+        columns=colunas
+    )
+
+    # ======================================
+    # REDUZIR MEMÓRIA
+    # ======================================
+
+    if len(df) > 100000:
+
+        df = df.sample(
+            n=100000,
+            random_state=42
+        )
+
+    return df
+
 
 # ==========================================
 # LIMPEZA BASE CBO
@@ -107,25 +129,19 @@ def limpar_pnad(df):
     # CONVERTER TIPOS
     # ======================================
 
-    df["Ano"] = (
-        pd.to_numeric(
-            df["Ano"],
-            errors="coerce"
-        )
+    df["Ano"] = pd.to_numeric(
+        df["Ano"],
+        errors="coerce"
     )
 
-    df["Idade"] = (
-        pd.to_numeric(
-            df["Idade"],
-            errors="coerce"
-        )
+    df["Idade"] = pd.to_numeric(
+        df["Idade"],
+        errors="coerce"
     )
 
-    df["Rendimento_Mensal"] = (
-        pd.to_numeric(
-            df["Rendimento_Mensal"],
-            errors="coerce"
-        )
+    df["Rendimento_Mensal"] = pd.to_numeric(
+        df["Rendimento_Mensal"],
+        errors="coerce"
     )
 
     # ======================================

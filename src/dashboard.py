@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 from carregar_dados import (
     carregar_cbo,
@@ -27,34 +28,19 @@ st.set_page_config(
 )
 
 # ==========================================
-# CACHE
+# CARREGAR DADOS
 # ==========================================
 
 @st.cache_data
-def carregar_pnad():
+def carregar():
 
-    colunas = [
-        "Ano",
-        "UF",
-        "Sexo",
-        "Idade",
-        "CBO",
-        "Anos_Estudo",
-        "Rendimento_Mensal"
-    ]
+    df_cbo = carregar_cbo()
 
-    df = pd.read_parquet(
-        "data/pnad_processada.parquet",
-        columns=colunas
-    )
+    df_cbo = limpar_dados(df_cbo)
 
-    # REDUZIR AMOSTRA
-    df = df.sample(
-        n=min(100000, len(df)),
-        random_state=42
-    )
+    df_pnad = carregar_pnad()
 
-    return df
+    return df_cbo, df_pnad
 
 # ==========================================
 # LOADING
@@ -63,9 +49,6 @@ def carregar_pnad():
 with st.spinner("Carregando dados..."):
 
     df, df_pnad = carregar()
-
-    st.write(df.shape)
-    st.write(df_pnad.shape)
 
 # ==========================================
 # MENU
