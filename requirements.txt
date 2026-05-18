@@ -7,7 +7,7 @@ seaborn
 sentence-transformers
 torch
 scikit-learn
-pyarrow`
+pyarrow
 fastparquet
 numpy
 gdown
