@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-import requests
+import gdown
 
 # ==========================================
 # CAMINHOS
@@ -21,7 +21,7 @@ ARQUIVO_DICIONARIO = (
 FILE_ID = "1erioFOdMI3xm83hHCRBLRv0RBk2olgjW"
 
 URL_PNAD = (
-    f"https://drive.google.com/uc?id={FILE_ID}"
+    f"https://drive.google.com/uc?/export=download&id={FILE_ID}"
 )
 
 ARQUIVO_PNAD_LOCAL = (
@@ -35,30 +35,27 @@ ARQUIVO_PNAD_LOCAL = (
 def baixar_pnad():
 
     # ======================================
-    # SE JÁ EXISTE, NÃO BAIXA
+    # SE JÁ EXISTE
     # ======================================
 
     if os.path.exists(ARQUIVO_PNAD_LOCAL):
         return
 
     # ======================================
-    # CRIAR PASTA DATA
+    # CRIAR PASTA
     # ======================================
 
     os.makedirs("data", exist_ok=True)
 
     # ======================================
-    # DOWNLOAD
+    # DOWNLOAD GOOGLE DRIVE
     # ======================================
 
-    resposta = requests.get(URL_PNAD)
-
-    with open(
+    gdown.download(
+        URL_PNAD,
         ARQUIVO_PNAD_LOCAL,
-        "wb"
-    ) as arquivo:
-
-        arquivo.write(resposta.content)
+        quiet=False
+    )
 
 # ==========================================
 # CARREGAR CBO / AIOE
