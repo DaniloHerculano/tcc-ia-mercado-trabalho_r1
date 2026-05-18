@@ -1,4 +1,6 @@
+import os
 import pandas as pd
+import requests
 
 # ==========================================
 # CAMINHOS
@@ -8,13 +10,55 @@ ARQUIVO_CBO = (
     "data/tabela_cbo_aioe_filtrada_tcc.xlsx"
 )
 
-ARQUIVO_PNAD = (
-    "data/pnad_completa_HISTORICO_LIMPA.parquet"
-)
-
 ARQUIVO_DICIONARIO = (
     "data/dicionario_PNADC_microdados_trimestral.xlsx"
 )
+
+# ==========================================
+# GOOGLE DRIVE
+# ==========================================
+
+FILE_ID = "1erioFOdMI3xm83hHCRBLRv0RBk2olgjW"
+
+URL_PNAD = (
+    f"https://drive.google.com/uc?id={FILE_ID}"
+)
+
+ARQUIVO_PNAD_LOCAL = (
+    "data/pnad_completa_HISTORICO_LIMPA.parquet"
+)
+
+# ==========================================
+# DOWNLOAD PNAD
+# ==========================================
+
+def baixar_pnad():
+
+    # ======================================
+    # SE JÁ EXISTE, NÃO BAIXA
+    # ======================================
+
+    if os.path.exists(ARQUIVO_PNAD_LOCAL):
+        return
+
+    # ======================================
+    # CRIAR PASTA DATA
+    # ======================================
+
+    os.makedirs("data", exist_ok=True)
+
+    # ======================================
+    # DOWNLOAD
+    # ======================================
+
+    resposta = requests.get(URL_PNAD)
+
+    with open(
+        ARQUIVO_PNAD_LOCAL,
+        "wb"
+    ) as arquivo:
+
+        arquivo.write(resposta.content)
 
 # ==========================================
 # CARREGAR CBO / AIOE
@@ -28,12 +72,17 @@ def carregar_cbo():
 
     return df
 
-
 # ==========================================
 # CARREGAR PNAD
 # ==========================================
 
 def carregar_pnad():
+
+    # ======================================
+    # GARANTIR DOWNLOAD
+    # ======================================
+
+    baixar_pnad()
 
     colunas = [
         "Ano",
@@ -48,7 +97,7 @@ def carregar_pnad():
     ]
 
     df = pd.read_parquet(
-        ARQUIVO_PNAD,
+        ARQUIVO_PNAD_LOCAL,
         columns=colunas
     )
 
@@ -64,7 +113,6 @@ def carregar_pnad():
         )
 
     return df
-
 
 # ==========================================
 # LIMPAR CBO
@@ -139,7 +187,6 @@ def limpar_dados(df):
 
     return df
 
-
 # ==========================================
 # LIMPAR PNAD
 # ==========================================
@@ -210,7 +257,6 @@ def limpar_pnad(df):
     )
 
     return df
-
 
 # ==========================================
 # MERGE PNAD + AIOE
