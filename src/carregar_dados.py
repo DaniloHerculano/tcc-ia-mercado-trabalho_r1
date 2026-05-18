@@ -78,12 +78,6 @@ def carregar_cbo():
 
 def carregar_pnad():
 
-    # ======================================
-    # GARANTIR DOWNLOAD
-    # ======================================
-
-    baixar_pnad()
-
     colunas = [
         "Ano",
         "Trimestre",
@@ -96,14 +90,26 @@ def carregar_pnad():
         "Rendimento_Mensal"
     ]
 
-    df = pd.read_parquet(
-        ARQUIVO_PNAD_LOCAL,
-        columns=colunas
-    )
+    # ======================================
+    # DOWNLOAD GOOGLE DRIVE
+    # ======================================
+
+    if not os.path.exists(ARQUIVO_PNAD):
+
+        gdown.download(
+            URL,
+            ARQUIVO_PNAD,
+            quiet=False
+        )
 
     # ======================================
-    # REDUZIR AMOSTRA
+    # LEITURA PARQUET
     # ======================================
+
+    df = pd.read_parquet(
+        ARQUIVO_PNAD,
+        columns=colunas
+    )
 
     if len(df) > 300000:
 
