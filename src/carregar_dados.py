@@ -347,4 +347,6 @@ def criar_base_final():
         df_pnad
     )
 
+    print(df_final.columns.tolist())
+
     return df_final
