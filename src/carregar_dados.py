@@ -281,16 +281,16 @@ def cruzar_bases(df_cbo, df_pnad):
 
     colunas_merge = [
 
-        colunas_merge = [
-
-            "CBO_JOIN",
-            "TITULO_LIMPO",
-            "AIOE_SCORE",
-            "NIVEL_IMPACTO",
-            "FORMAÇÃO E EXPERIÊNCIA",
-            "DESCRIÇÃO SUMÁRIA",
-            "AIOE_MATCH_TITLE"
-        ]
+        "CBO_JOIN",
+        "TITULO_LIMPO",
+        "AIOE_SCORE",
+        "NIVEL_IMPACTO",
+        "FORMAÇÃO E EXPERIÊNCIA",
+        "DESCRIÇÃO SUMÁRIA",
+        "AIOE_MATCH_TITLE",
+        "CONFIDENCE_SCORE",
+        "Grande Grupo"
+    ]
 
     # ======================================
     # VALIDAR COLUNAS
