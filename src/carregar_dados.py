@@ -91,25 +91,23 @@ def carregar_pnad():
     ]
 
     # ======================================
-    # DOWNLOAD GOOGLE DRIVE
+    # BAIXAR SE NÃO EXISTIR
     # ======================================
 
-    if not os.path.exists(ARQUIVO_PNAD):
-
-        gdown.download(
-            URL,
-            ARQUIVO_PNAD,
-            quiet=False
-        )
+    baixar_pnad()
 
     # ======================================
-    # LEITURA PARQUET
+    # LER PARQUET
     # ======================================
 
     df = pd.read_parquet(
-        ARQUIVO_PNAD,
+        ARQUIVO_PNAD_LOCAL,
         columns=colunas
     )
+
+    # ======================================
+    # REDUZIR AMOSTRA
+    # ======================================
 
     if len(df) > 300000:
 
