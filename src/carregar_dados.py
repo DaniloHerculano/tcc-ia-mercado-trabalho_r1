@@ -1,19 +1,30 @@
-import streamlit as st
 import pandas as pd
 
+# ==========================================
+# CAMINHOS
+# ==========================================
+
+ARQUIVO_CBO = (
+    "data/tabela_cbo_aioe_filtrada_tcc.xlsx"
+)
+
+ARQUIVO_PNAD = (
+    "data/pnad_completa_HISTORICO_LIMPA.parquet"
+)
+
+ARQUIVO_DICIONARIO = (
+    "data/dicionario_PNADC_microdados_trimestral.xlsx"
+)
 
 # ==========================================
-# CARREGAR BASE CBO
+# CARREGAR CBO / AIOE
 # ==========================================
 
-@st.cache_data
 def carregar_cbo():
 
-    caminho = (
-        "data/tabela_cbo_e5_large_final.xlsx"
+    df = pd.read_excel(
+        ARQUIVO_CBO
     )
-
-    df = pd.read_excel(caminho)
 
     return df
 
@@ -22,32 +33,33 @@ def carregar_cbo():
 # CARREGAR PNAD
 # ==========================================
 
-@st.cache_data
 def carregar_pnad():
 
     colunas = [
         "Ano",
-        "Sexo",
+        "Trimestre",
         "UF",
+        "Situacao_Domicilio",
+        "Sexo",
+        "Idade",
         "CBO",
         "Anos_Estudo",
-        "Rendimento_Mensal",
-        "Idade"
+        "Rendimento_Mensal"
     ]
 
     df = pd.read_parquet(
-        "data/pnad_processada.parquet",
+        ARQUIVO_PNAD,
         columns=colunas
     )
 
     # ======================================
-    # REDUZIR MEMÓRIA
+    # REDUZIR AMOSTRA
     # ======================================
 
-    if len(df) > 100000:
+    if len(df) > 300000:
 
         df = df.sample(
-            n=100000,
+            n=300000,
             random_state=42
         )
 
@@ -55,21 +67,23 @@ def carregar_pnad():
 
 
 # ==========================================
-# LIMPEZA BASE CBO
+# LIMPAR CBO
 # ==========================================
 
 def limpar_dados(df):
 
     # ======================================
-    # REMOVER NULOS IMPORTANTES
+    # RENOMEAR
     # ======================================
 
-    df = df.dropna(
-        subset=[
-            "TITULO_LIMPO",
-            "AIOE_SCORE"
-        ]
-    )
+    df = df.rename(columns={
+
+        "AIOE_score": "AIOE_SCORE",
+
+        "Occupation_Title_AIOE":
+        "AIOE_MATCH_TITLE"
+
+    })
 
     # ======================================
     # NUMÉRICOS
@@ -80,20 +94,27 @@ def limpar_dados(df):
         errors="coerce"
     )
 
-    df["CONFIDENCE_SCORE"] = pd.to_numeric(
-        df["CONFIDENCE_SCORE"],
-        errors="coerce"
-    )
-
     # ======================================
     # REMOVER NULOS
     # ======================================
 
     df = df.dropna(
         subset=[
-            "AIOE_SCORE",
-            "CONFIDENCE_SCORE"
+            "TITULO_LIMPO",
+            "AIOE_SCORE"
         ]
+    )
+
+    # ======================================
+    # CBO JOIN
+    # ======================================
+
+    df["CBO_JOIN"] = (
+        df["CBO_EXTRAIDO"]
+        .astype(str)
+        .str.replace("-", "")
+        .str.strip()
+        .str.zfill(6)
     )
 
     # ======================================
@@ -120,13 +141,13 @@ def limpar_dados(df):
 
 
 # ==========================================
-# LIMPEZA PNAD
+# LIMPAR PNAD
 # ==========================================
 
 def limpar_pnad(df):
 
     # ======================================
-    # CONVERTER TIPOS
+    # NUMÉRICOS
     # ======================================
 
     df["Ano"] = pd.to_numeric(
@@ -139,22 +160,82 @@ def limpar_pnad(df):
         errors="coerce"
     )
 
-    df["Rendimento_Mensal"] = pd.to_numeric(
-        df["Rendimento_Mensal"],
-        errors="coerce"
+    df["Rendimento_Mensal"] = (
+        pd.to_numeric(
+            df["Rendimento_Mensal"],
+            errors="coerce"
+        )
     )
 
     # ======================================
-    # REMOVER NULOS
+    # CBO JOIN
     # ======================================
 
-    df = df.dropna(
-        subset=[
-            "Ano",
-            "UF",
-            "Sexo",
-            "Idade"
-        ]
+    df["CBO_JOIN"] = (
+        df["CBO"]
+        .astype(str)
+        .str.replace("-", "")
+        .str.strip()
+        .str.zfill(6)
+    )
+
+    # ======================================
+    # SEXO
+    # ======================================
+
+    mapa_sexo = {
+        "1": "Masculino",
+        "2": "Feminino"
+    }
+
+    df["Sexo"] = (
+        df["Sexo"]
+        .astype(str)
+        .map(mapa_sexo)
+    )
+
+    # ======================================
+    # SITUAÇÃO DOMICÍLIO
+    # ======================================
+
+    mapa_dom = {
+        "1": "Urbana",
+        "2": "Rural"
+    }
+
+    df["Situacao_Domicilio"] = (
+        df["Situacao_Domicilio"]
+        .astype(str)
+        .map(mapa_dom)
     )
 
     return df
+
+
+# ==========================================
+# MERGE PNAD + AIOE
+# ==========================================
+
+def cruzar_bases(df_cbo, df_pnad):
+
+    colunas_merge = [
+
+        "CBO_JOIN",
+        "TITULO_LIMPO",
+        "AIOE_SCORE",
+        "NIVEL_IMPACTO",
+        "FORMAÇÃO E EXPERIÊNCIA",
+        "DESCRIÇÃO SUMÁRIA",
+        "AIOE_MATCH_TITLE"
+    ]
+
+    df_final = pd.merge(
+
+        df_pnad,
+        df_cbo[colunas_merge],
+
+        on="CBO_JOIN",
+        how="left"
+    )
+
+    return df_final

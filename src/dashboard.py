@@ -1,10 +1,7 @@
 import streamlit as st
-import pandas as pd
 
 from carregar_dados import (
-    carregar_cbo,
-    carregar_pnad,
-    limpar_dados
+    criar_base_final
 )
 
 from views.dashboard_home import mostrar_dashboard
@@ -28,19 +25,15 @@ st.set_page_config(
 )
 
 # ==========================================
-# CARREGAR DADOS
+# CACHE
 # ==========================================
 
 @st.cache_data
 def carregar():
 
-    df_cbo = carregar_cbo()
+    df = criar_base_final()
 
-    df_cbo = limpar_dados(df_cbo)
-
-    df_pnad = carregar_pnad()
-
-    return df_cbo, df_pnad
+    return df
 
 # ==========================================
 # LOADING
@@ -48,7 +41,7 @@ def carregar():
 
 with st.spinner("Carregando dados..."):
 
-    df, df_pnad = carregar()
+    df = carregar()
 
 # ==========================================
 # MENU
@@ -80,16 +73,16 @@ if pagina == "📊 Dashboard":
     mostrar_dashboard(df)
 
 elif pagina == "🇧🇷 Impacto no Brasil":
-    mostrar_impacto_brasil(df, df_pnad)
+    mostrar_impacto_brasil(df)
 
 elif pagina == "📈 Evolução Temporal":
-    mostrar_evolucao_temporal(df, df_pnad)
+    mostrar_evolucao_temporal(df)
 
 elif pagina == "🎓 Escolaridade x IA":
-    mostrar_escolaridade(df, df_pnad)
+    mostrar_escolaridade(df)
 
 elif pagina == "💰 Renda x IA":
-    mostrar_renda(df, df_pnad)
+    mostrar_renda(df)
 
 elif pagina == "🏭 Setores x IA":
     mostrar_setores(df)
