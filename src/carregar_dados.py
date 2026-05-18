@@ -285,3 +285,28 @@ def cruzar_bases(df_cbo, df_pnad):
     )
 
     return df_final
+
+
+# ==========================================
+# CRIAR BASE FINAL
+# ==========================================
+
+def criar_base_final():
+
+    # CARREGAR
+    df_cbo = carregar_cbo()
+
+    df_pnad = carregar_pnad()
+
+    # LIMPAR
+    df_cbo = limpar_dados(df_cbo)
+
+    df_pnad = limpar_pnad(df_pnad)
+
+    # CRUZAR
+    df_final = cruzar_bases(
+        df_cbo,
+        df_pnad
+    )
+
+    return df_final
