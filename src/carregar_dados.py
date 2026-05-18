@@ -67,6 +67,8 @@ def carregar_cbo():
         ARQUIVO_CBO
     )
 
+    print(df.columns.tolist())
+
     return df
 
 # ==========================================
@@ -186,6 +188,18 @@ def limpar_dados(df):
         .apply(classificar)
     )
 
+    # ======================================
+    # COLUNAS AUXILIARES
+    # ======================================
+
+    if "CONFIDENCE_SCORE" not in df.columns:
+
+        df["CONFIDENCE_SCORE"] = 0.0
+
+    if "Grande Grupo" not in df.columns:
+
+        df["Grande Grupo"] = "Não informado"
+
     return df
 
 # ==========================================
@@ -278,17 +292,38 @@ def cruzar_bases(df_cbo, df_pnad):
         "Grande Grupo"
     ]
 
+    # ======================================
+    # VALIDAR COLUNAS
+    # ======================================
+
+    colunas_existentes = [
+        c for c in colunas_merge
+        if c in df_cbo.columns
+    ]
+
+    print("COLUNAS EXISTENTES:")
+    print(colunas_existentes)
+
+    print("COLUNAS AUSENTES:")
+    print(
+        set(colunas_merge)
+        - set(colunas_existentes)
+    )
+
+    # ======================================
+    # MERGE
+    # ======================================
+
     df_final = pd.merge(
 
         df_pnad,
-        df_cbo[colunas_merge],
+        df_cbo[colunas_existentes],
 
         on="CBO_JOIN",
         how="left"
     )
 
     return df_final
-
 
 # ==========================================
 # CRIAR BASE FINAL
@@ -298,8 +333,6 @@ def criar_base_final():
 
     # CARREGAR
     df_cbo = carregar_cbo()
-
-    print(df_cbo.columns.tolist())
 
     df_pnad = carregar_pnad()
 
