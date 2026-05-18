@@ -273,7 +273,9 @@ def cruzar_bases(df_cbo, df_pnad):
         "NIVEL_IMPACTO",
         "FORMAÇÃO E EXPERIÊNCIA",
         "DESCRIÇÃO SUMÁRIA",
-        "AIOE_MATCH_TITLE"
+        "AIOE_MATCH_TITLE",
+        "CONFIDENCE_SCORE",
+        "Grande Grupo"
     ]
 
     df_final = pd.merge(
@@ -296,6 +298,8 @@ def criar_base_final():
 
     # CARREGAR
     df_cbo = carregar_cbo()
+
+    print(df_cbo.columns.tolist())
 
     df_pnad = carregar_pnad()
 
