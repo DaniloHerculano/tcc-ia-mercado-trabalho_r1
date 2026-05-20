@@ -324,6 +324,10 @@ def cruzar_bases(df_cbo, df_pnad):
 # CRIAR BASE FINAL
 # ==========================================
 
+# ==========================================
+# CRIAR BASE FINAL
+# ==========================================
+
 def criar_base_final():
 
     # CARREGAR
@@ -353,3 +357,5 @@ def criar_base_final():
             "AIOE_SCORE"
         ]
     ].head(20))
+
+    return df_final
