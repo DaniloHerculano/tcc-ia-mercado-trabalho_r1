@@ -162,19 +162,15 @@ def limpar_dados(df):
 
     df["CBO_JOIN"] = (
 
-        df["CBO_EXTRAIDO"]
+        df["CBO"]
 
         .astype(str)
 
-        # remove tudo que não for número
         .str.replace(r"\D", "", regex=True)
 
-        # pega somente 6 primeiros
-        .str[:6]
+        .str.strip()
 
-        # completa zeros
         .str.zfill(6)
-
     )
 
     # ======================================
@@ -206,6 +202,22 @@ def limpar_dados(df):
     df["Grande Grupo"] = (
         df["CBO_JOIN"]
         .str[0]
+    )
+
+    # ======================================
+    # DEBUG
+    # ======================================
+
+    print("\nCBO LIMPO:")
+    print(
+        df[
+            [
+                "CBO_EXTRAIDO",
+                "CBO_JOIN",
+                "TITULO_LIMPO",
+                "AIOE_SCORE"
+            ]
+        ].head(20)
     )
 
     return df
@@ -248,8 +260,6 @@ def limpar_pnad(df):
         .astype(str)
 
         .str.replace(r"\D", "", regex=True)
-
-        .str[:6]
 
         .str.zfill(6)
 
@@ -316,6 +326,19 @@ def cruzar_bases(df_cbo, df_pnad):
         on="CBO_JOIN",
 
         how="left"
+    )
+
+    print("\nMERGE RESULTADO:")
+    print(
+        df_final[
+            [
+                "CBO",
+                "CBO_JOIN",
+                "CBO_EXTRAIDO",
+                "TITULO_LIMPO",
+                "AIOE_SCORE"
+            ]
+        ].head(30)
     )
 
     return df_final
