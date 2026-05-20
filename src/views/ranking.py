@@ -87,11 +87,9 @@ def mostrar_ranking(df):
     st.dataframe(
         ranking[
             [
-                "CBO_EXTRAIDO",
                 "TITULO_LIMPO",
-                "Grande Grupo",
+                "UF",
                 "AIOE_SCORE",
-                "CONFIDENCE_SCORE",
                 "NIVEL_IMPACTO"
             ]
         ],

@@ -27,9 +27,9 @@ def mostrar_similaridade(df):
 
     fig = px.histogram(
         df,
-        x="CONFIDENCE_SCORE",
+        x="AIOE_SCORE",
         nbins=30,
-        title="Distribuição da Similaridade"
+        title="Distribuição AIOE"
     )
 
     st.plotly_chart(
@@ -44,19 +44,18 @@ def mostrar_similaridade(df):
     # ======================================
 
     st.subheader(
-        "🔥 Matches Mais Confiáveis"
+        "🔥 Ocupações Mais Expostas"
     )
 
     top = (
         df.sort_values(
-            by="CONFIDENCE_SCORE",
+            by="AIOE_SCORE",
             ascending=False
         )
         [
             [
                 "TITULO_LIMPO",
                 "AIOE_MATCH_TITLE",
-                "CONFIDENCE_SCORE",
                 "AIOE_SCORE"
             ]
         ]
@@ -71,23 +70,22 @@ def mostrar_similaridade(df):
     st.divider()
 
     # ======================================
-    # BAIXA CONFIANÇA
+    # BAIXA EXPOSIÇÃO
     # ======================================
 
     st.subheader(
-        "⚠️ Matches com Baixa Similaridade"
+        "⚠️ Ocupações Menos Expostas"
     )
 
     baixo = (
         df.sort_values(
-            by="CONFIDENCE_SCORE",
+            by="AIOE_SCORE",
             ascending=True
         )
         [
             [
                 "TITULO_LIMPO",
                 "AIOE_MATCH_TITLE",
-                "CONFIDENCE_SCORE",
                 "AIOE_SCORE"
             ]
         ]
@@ -106,19 +104,19 @@ def mostrar_similaridade(df):
     # ======================================
 
     media = round(
-        df["CONFIDENCE_SCORE"]
+        df["AIOE_SCORE"]
         .mean(),
         3
     )
 
     maior = round(
-        df["CONFIDENCE_SCORE"]
+        df["AIOE_SCORE"]
         .max(),
         3
     )
 
     menor = round(
-        df["CONFIDENCE_SCORE"]
+        df["AIOE_SCORE"]
         .min(),
         3
     )
@@ -126,16 +124,16 @@ def mostrar_similaridade(df):
     col1, col2, col3 = st.columns(3)
 
     col1.metric(
-        "Confiança Média",
+        "Média",
         media
     )
 
     col2.metric(
-        "Maior Similaridade",
+        "Maior Score",
         maior
     )
 
     col3.metric(
-        "Menor Similaridade",
+        "Menor Score",
         menor
     )

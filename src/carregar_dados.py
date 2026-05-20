@@ -18,7 +18,7 @@ ARQUIVO_DICIONARIO = (
 # GOOGLE DRIVE
 # ==========================================
 
-FILE_ID = "1erioFOdMI3xm83hHCRBLRv0RBk2olgjW"
+FILE_ID = "1lYFw5ruJAhvHnVpQWgJVYTHePtONS32V"
 
 URL_PNAD = (
     f"https://drive.google.com/uc?/export=download&id={FILE_ID}"
@@ -118,7 +118,7 @@ def carregar_pnad():
     return df
 
 # ==========================================
-# LIMPAR CBO
+# LIMPAR DADOS CBO / AIOE
 # ==========================================
 
 def limpar_dados(df):
@@ -141,8 +141,10 @@ def limpar_dados(df):
     # ======================================
 
     df["AIOE_SCORE"] = pd.to_numeric(
+
         df["AIOE_SCORE"],
         errors="coerce"
+
     )
 
     # ======================================
@@ -150,10 +152,12 @@ def limpar_dados(df):
     # ======================================
 
     df = df.dropna(
+
         subset=[
             "TITULO_LIMPO",
             "AIOE_SCORE"
         ]
+
     )
 
     # ======================================
@@ -161,11 +165,13 @@ def limpar_dados(df):
     # ======================================
 
     df["CBO_JOIN"] = (
+
         df["CBO_EXTRAIDO"]
         .astype(str)
         .str.replace("-", "")
         .str.strip()
         .str.zfill(6)
+
     )
 
     # ======================================
@@ -187,18 +193,6 @@ def limpar_dados(df):
         df["AIOE_SCORE"]
         .apply(classificar)
     )
-
-    # ======================================
-    # COLUNAS AUXILIARES
-    # ======================================
-
-    if "CONFIDENCE_SCORE" not in df.columns:
-
-        df["CONFIDENCE_SCORE"] = 0.0
-
-    if "Grande Grupo" not in df.columns:
-
-        df["Grande Grupo"] = "Não informado"
 
     return df
 
@@ -283,13 +277,12 @@ def cruzar_bases(df_cbo, df_pnad):
 
         "CBO_JOIN",
         "TITULO_LIMPO",
+        "DESCRIÇÃO SUMÁRIA",
+        "FORMAÇÃO E EXPERIÊNCIA",
         "AIOE_SCORE",
         "NIVEL_IMPACTO",
-        "FORMAÇÃO E EXPERIÊNCIA",
-        "DESCRIÇÃO SUMÁRIA",
-        "AIOE_MATCH_TITLE",
-        "CONFIDENCE_SCORE",
-        "Grande Grupo"
+        "AIOE_MATCH_TITLE"
+
     ]
 
     # ======================================
@@ -297,18 +290,11 @@ def cruzar_bases(df_cbo, df_pnad):
     # ======================================
 
     colunas_existentes = [
+
         c for c in colunas_merge
         if c in df_cbo.columns
+
     ]
-
-    print("COLUNAS EXISTENTES:")
-    print(colunas_existentes)
-
-    print("COLUNAS AUSENTES:")
-    print(
-        set(colunas_merge)
-        - set(colunas_existentes)
-    )
 
     # ======================================
     # MERGE
@@ -321,6 +307,7 @@ def cruzar_bases(df_cbo, df_pnad):
 
         on="CBO_JOIN",
         how="left"
+
     )
 
     return df_final

@@ -16,7 +16,7 @@ def mostrar_dashboard(df):
     Plataforma de análise do impacto da
     Inteligência Artificial nas ocupações
     brasileiras utilizando NLP, embeddings
-    semânticos e similaridade de cosseno.
+    semânticos e similaridade semântica.
     """)
 
     st.divider()
@@ -37,8 +37,8 @@ def mostrar_dashboard(df):
         2
     )
 
-    media_conf = round(
-        df["CONFIDENCE_SCORE"].mean(),
+    menor_score = round(
+        df["AIOE_SCORE"].min(),
         2
     )
 
@@ -60,8 +60,8 @@ def mostrar_dashboard(df):
     )
 
     col4.metric(
-        "Confiança Média",
-        media_conf
+        "Menor Score",
+        menor_score
     )
 
     st.divider()
@@ -111,10 +111,8 @@ def mostrar_dashboard(df):
         )
         [
             [
-                "CBO_EXTRAIDO",
                 "TITULO_LIMPO",
                 "AIOE_SCORE",
-                "CONFIDENCE_SCORE",
                 "NIVEL_IMPACTO"
             ]
         ]

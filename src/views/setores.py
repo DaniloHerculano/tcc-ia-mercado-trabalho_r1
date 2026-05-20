@@ -14,17 +14,17 @@ def mostrar_setores(df):
 
     st.markdown("""
     Análise da exposição à Inteligência Artificial
-    nos diferentes grupos ocupacionais.
+    nos estados brasileiros.
     """)
 
     st.divider()
 
     # ======================================
-    # MÉDIA POR GRUPO
+    # MÉDIA POR UF
     # ======================================
 
     grupo = (
-        df.groupby("Grande Grupo")
+        df.groupby("UF")
         ["AIOE_SCORE"]
         .mean()
         .reset_index()
@@ -36,15 +36,15 @@ def mostrar_setores(df):
     )
 
     # ======================================
-    # TOP SETORES
+    # GRÁFICO
     # ======================================
 
     fig = px.bar(
         grupo,
-        x="Grande Grupo",
+        x="UF",
         y="AIOE_SCORE",
         color="AIOE_SCORE",
-        title="Média de Exposição IA por Grande Grupo"
+        title="Média de Exposição IA por UF"
     )
 
     st.plotly_chart(
@@ -61,7 +61,7 @@ def mostrar_setores(df):
     impacto = (
         df.groupby(
             [
-                "Grande Grupo",
+                "UF",
                 "NIVEL_IMPACTO"
             ]
         )
@@ -71,7 +71,7 @@ def mostrar_setores(df):
 
     fig2 = px.bar(
         impacto,
-        x="Grande Grupo",
+        x="UF",
         y="Quantidade",
         color="NIVEL_IMPACTO",
         barmode="group",
@@ -101,9 +101,8 @@ def mostrar_setores(df):
         [
             [
                 "TITULO_LIMPO",
-                "Grande Grupo",
+                "UF",
                 "AIOE_SCORE",
-                "CONFIDENCE_SCORE",
                 "NIVEL_IMPACTO"
             ]
         ]
@@ -121,24 +120,26 @@ def mostrar_setores(df):
     # INSIGHTS
     # ======================================
 
-    maior = grupo.iloc[0]
+    if len(grupo) > 0:
 
-    menor = grupo.iloc[-1]
+        maior = grupo.iloc[0]
 
-    st.warning(f"""
-    🏭 Grupo mais exposto:
+        menor = grupo.iloc[-1]
 
-    {maior['Grande Grupo']}
+        st.warning(f"""
+        🏭 UF mais exposta:
 
-    Média AIOE:
-    {round(maior['AIOE_SCORE'], 2)}
-    """)
+        {maior['UF']}
 
-    st.success(f"""
-    📉 Grupo menos exposto:
+        Média AIOE:
+        {round(maior['AIOE_SCORE'], 2)}
+        """)
 
-    {menor['Grande Grupo']}
+        st.success(f"""
+        📉 UF menos exposta:
 
-    Média AIOE:
-    {round(menor['AIOE_SCORE'], 2)}
-    """)
+        {menor['UF']}
+
+        Média AIOE:
+        {round(menor['AIOE_SCORE'], 2)}
+        """)
