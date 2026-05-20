@@ -102,7 +102,7 @@ def carregar_pnad():
 def limpar_dados(df):
 
     # ======================================
-    # RENOMEAR
+    # RENOMEAR COLUNAS
     # ======================================
 
     df = df.rename(columns={
@@ -115,7 +115,7 @@ def limpar_dados(df):
     })
 
     # ======================================
-    # NUMÉRICO
+    # AIOE NUMÉRICO
     # ======================================
 
     df["AIOE_SCORE"] = pd.to_numeric(
@@ -146,7 +146,7 @@ def limpar_dados(df):
 
         .str.replace(r"\D", "", regex=True)
 
-        .str.strip()
+        .str[:6]
 
         .str.zfill(6)
 
