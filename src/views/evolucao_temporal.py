@@ -1,33 +1,41 @@
 import streamlit as st
-import pandas as pd
 import plotly.express as px
 
 
-def mostrar_evolucao_temporal(df, df_pnad):
+# ==========================================
+# EVOLUÇÃO TEMPORAL
+# ==========================================
 
-    st.title("📈 Evolução Temporal")
+def mostrar_evolucao_temporal(df):
+
+    st.title(
+        "📈 Evolução Temporal"
+    )
 
     st.markdown("""
-    Evolução temporal da força de trabalho
-    brasileira ao longo dos anos.
+    Evolução temporal da base PNAD.
     """)
+
+    st.divider()
 
     # ======================================
     # VALIDAR
     # ======================================
 
-    if "Ano" not in df_pnad.columns:
+    if "Ano" not in df.columns:
 
-        st.error("Coluna Ano não encontrada.")
+        st.error(
+            "Coluna Ano não encontrada."
+        )
 
         return
 
     # ======================================
-    # AGRUPAMENTO
+    # AGRUPAR
     # ======================================
 
     evolucao = (
-        df_pnad.groupby("Ano")
+        df.groupby("Ano")
         .size()
         .reset_index(name="Quantidade")
     )
@@ -45,7 +53,7 @@ def mostrar_evolucao_temporal(df, df_pnad):
         x="Ano",
         y="Quantidade",
         markers=True,
-        title="Evolução da Base PNAD"
+        title="Evolução Temporal"
     )
 
     st.plotly_chart(

@@ -6,10 +6,7 @@ import plotly.express as px
 # IMPACTO BRASIL
 # ==========================================
 
-def mostrar_impacto_brasil(
-    df,
-    df_pnad
-):
+def mostrar_impacto_brasil(df):
 
     st.title(
         "🇧🇷 Impacto da IA no Brasil"
@@ -17,8 +14,7 @@ def mostrar_impacto_brasil(
 
     st.markdown("""
     Análise da força de trabalho brasileira
-    utilizando dados da PNAD Contínua
-    e scores de exposição à IA.
+    utilizando dados da PNAD Contínua.
     """)
 
     st.divider()
@@ -27,20 +23,20 @@ def mostrar_impacto_brasil(
     # MÉTRICAS
     # ======================================
 
-    total = len(df_pnad)
+    total = len(df)
 
     media_idade = round(
-        df_pnad["Idade"].mean(),
+        df["Idade"].mean(),
         1
     )
 
     media_renda = round(
-        df_pnad["Rendimento_Mensal"].mean(),
+        df["Rendimento_Mensal"].mean(),
         2
     )
 
     total_ufs = (
-        df_pnad["UF"]
+        df["UF"]
         .nunique()
     )
 
@@ -72,12 +68,8 @@ def mostrar_impacto_brasil(
     # UF
     # ======================================
 
-    st.subheader(
-        "📍 Trabalhadores por Estado"
-    )
-
     uf = (
-        df_pnad["UF"]
+        df["UF"]
         .value_counts()
         .reset_index()
     )
@@ -106,12 +98,8 @@ def mostrar_impacto_brasil(
     # SEXO
     # ======================================
 
-    st.subheader(
-        "👥 Distribuição por Sexo"
-    )
-
     sexo = (
-        df_pnad["Sexo"]
+        df["Sexo"]
         .value_counts()
         .reset_index()
     )
@@ -130,27 +118,5 @@ def mostrar_impacto_brasil(
 
     st.plotly_chart(
         fig2,
-        width='stretch'
-    )
-
-    st.divider()
-
-    # ======================================
-    # IDADE
-    # ======================================
-
-    st.subheader(
-        "📈 Distribuição de Idade"
-    )
-
-    fig3 = px.histogram(
-        df_pnad,
-        x="Idade",
-        nbins=30,
-        title="Distribuição Etária"
-    )
-
-    st.plotly_chart(
-        fig3,
         width='stretch'
     )

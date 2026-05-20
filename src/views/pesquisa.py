@@ -42,22 +42,6 @@ def mostrar_pesquisa(df):
     )
 
     # ======================================
-    # FILTRO GRUPO
-    # ======================================
-
-    grupos = sorted(
-        df["Grande Grupo"]
-        .dropna()
-        .unique()
-        .tolist()
-    )
-
-    grupo = st.selectbox(
-        "Grande Grupo",
-        ["Todos"] + grupos
-    )
-
-    # ======================================
     # FILTROS
     # ======================================
 
@@ -68,13 +52,6 @@ def mostrar_pesquisa(df):
         resultado = resultado[
             resultado["NIVEL_IMPACTO"]
             == filtro
-        ]
-
-    if grupo != "Todos":
-
-        resultado = resultado[
-            resultado["Grande Grupo"]
-            == grupo
         ]
 
     if busca:
@@ -111,13 +88,7 @@ def mostrar_pesquisa(df):
 
         **AIOE Score:** {round(row['AIOE_SCORE'], 3)}
 
-        **Confiança:** {round(row['CONFIDENCE_SCORE'], 3)}
-
         **Match AIOE:** {row['AIOE_MATCH_TITLE']}
-
-        **Grande Grupo:** {row['Grande Grupo']}
-
-        **Subgrupo:** {row['Subgrupo']}
         """)
 
         with st.expander(

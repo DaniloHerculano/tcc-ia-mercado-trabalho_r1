@@ -165,13 +165,13 @@ def limpar_dados(df):
     # ======================================
 
     df["CBO_JOIN"] = (
-
         df["CBO_EXTRAIDO"]
         .astype(str)
-        .str.replace("-", "")
+        .str.replace(".0", "", regex=False)
+        .str.replace("-", "", regex=False)
+        .str.replace(" ", "", regex=False)
         .str.strip()
         .str.zfill(6)
-
     )
 
     # ======================================
@@ -230,7 +230,9 @@ def limpar_pnad(df):
     df["CBO_JOIN"] = (
         df["CBO"]
         .astype(str)
-        .str.replace("-", "")
+        .str.replace(".0", "", regex=False)
+        .str.replace("-", "", regex=False)
+        .str.replace(" ", "", regex=False)
         .str.strip()
         .str.zfill(6)
     )
@@ -295,6 +297,9 @@ def cruzar_bases(df_cbo, df_pnad):
         if c in df_cbo.columns
 
     ]
+
+    print(df_cbo["CBO_JOIN"].head(10))
+    print(df_pnad["CBO_JOIN"].head(10))
 
     # ======================================
     # MERGE
