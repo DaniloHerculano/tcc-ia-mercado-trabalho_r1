@@ -1,4 +1,3 @@
-```python
 import os
 import pandas as pd
 import gdown
@@ -11,18 +10,10 @@ ARQUIVO_CBO = (
     "data/tabela_cbo_aioe_filtrada_tcc.xlsx"
 )
 
-ARQUIVO_DICIONARIO = (
-    "data/dicionario_PNADC_microdados_trimestral.xlsx"
-)
-
-# ==========================================
-# GOOGLE DRIVE
-# ==========================================
-
 FILE_ID = "1lYFw5ruJAhvHnVpQWgJVYTHePtONS32V"
 
 URL_PNAD = (
-    f"https://drive.google.com/uc?/export=download&id={FILE_ID}"
+    f"https://drive.google.com/uc?export=download&id={FILE_ID}"
 )
 
 ARQUIVO_PNAD_LOCAL = (
@@ -67,6 +58,8 @@ def carregar_cbo():
 
 def carregar_pnad():
 
+    baixar_pnad()
+
     colunas = [
         "Ano",
         "Trimestre",
@@ -78,8 +71,6 @@ def carregar_pnad():
         "Anos_Estudo",
         "Rendimento_Mensal"
     ]
-
-    baixar_pnad()
 
     df = pd.read_parquet(
         ARQUIVO_PNAD_LOCAL,
@@ -101,10 +92,7 @@ def carregar_pnad():
 
 def limpar_dados(df):
 
-    # ======================================
-    # RENOMEAR COLUNAS
-    # ======================================
-
+    # RENOMEAR
     df = df.rename(columns={
 
         "AIOE_score": "AIOE_SCORE",
@@ -114,19 +102,13 @@ def limpar_dados(df):
 
     })
 
-    # ======================================
-    # AIOE NUMÉRICO
-    # ======================================
-
+    # NUMÉRICO
     df["AIOE_SCORE"] = pd.to_numeric(
         df["AIOE_SCORE"],
         errors="coerce"
     )
 
-    # ======================================
     # REMOVER NULOS
-    # ======================================
-
     df = df.dropna(
         subset=[
             "CBO_EXTRAIDO",
@@ -134,10 +116,7 @@ def limpar_dados(df):
         ]
     )
 
-    # ======================================
     # AJUSTAR CBO
-    # ======================================
-
     df["CBO_JOIN"] = (
 
         df["CBO_EXTRAIDO"]
@@ -149,13 +128,9 @@ def limpar_dados(df):
         .str[:6]
 
         .str.zfill(6)
-
     )
 
-    # ======================================
     # NÍVEL IMPACTO
-    # ======================================
-
     def classificar(score):
 
         if score >= 0.75:
@@ -164,28 +139,20 @@ def limpar_dados(df):
         elif score >= 0.45:
             return "🟡 Médio"
 
-        else:
-            return "🟢 Baixo"
+        return "🟢 Baixo"
 
     df["NIVEL_IMPACTO"] = (
         df["AIOE_SCORE"]
         .apply(classificar)
     )
 
-    # ======================================
     # CAMPOS AUXILIARES
-    # ======================================
-
     df["CONFIDENCE_SCORE"] = 1.0
 
     df["Grande Grupo"] = (
         df["CBO_JOIN"]
         .str[0]
     )
-
-    # ======================================
-    # DEBUG
-    # ======================================
 
     print("\nCBO LIMPO:")
     print(
@@ -196,7 +163,7 @@ def limpar_dados(df):
                 "TITULO_LIMPO",
                 "AIOE_SCORE"
             ]
-        ].head(20)
+        ].head(10)
     )
 
     return df
@@ -206,10 +173,6 @@ def limpar_dados(df):
 # ==========================================
 
 def limpar_pnad(df):
-
-    # ======================================
-    # NUMÉRICOS
-    # ======================================
 
     df["Ano"] = pd.to_numeric(
         df["Ano"],
@@ -226,10 +189,7 @@ def limpar_pnad(df):
         errors="coerce"
     )
 
-    # ======================================
     # AJUSTAR CBO
-    # ======================================
-
     df["CBO_JOIN"] = (
 
         df["CBO"]
@@ -238,16 +198,12 @@ def limpar_pnad(df):
 
         .str.replace(r"\D", "", regex=True)
 
-        .str.strip()
+        .str[:6]
 
         .str.zfill(6)
-
     )
 
-    # ======================================
     # SEXO
-    # ======================================
-
     mapa_sexo = {
         "1": "Masculino",
         "2": "Feminino"
@@ -259,10 +215,7 @@ def limpar_pnad(df):
         .map(mapa_sexo)
     )
 
-    # ======================================
     # DOMICÍLIO
-    # ======================================
-
     mapa_dom = {
         "1": "Urbana",
         "2": "Rural"
@@ -294,7 +247,6 @@ def cruzar_bases(df_cbo, df_pnad):
         "NIVEL_IMPACTO",
         "CONFIDENCE_SCORE",
         "Grande Grupo"
-
     ]
 
     df_final = pd.merge(
@@ -306,11 +258,11 @@ def cruzar_bases(df_cbo, df_pnad):
         on="CBO_JOIN",
 
         how="left"
-
     )
 
     print("\nMERGE RESULTADO:")
     print(
+
         df_final[
             [
                 "CBO",
@@ -319,7 +271,7 @@ def cruzar_bases(df_cbo, df_pnad):
                 "TITULO_LIMPO",
                 "AIOE_SCORE"
             ]
-        ].head(30)
+        ].head(20)
     )
 
     return df_final
