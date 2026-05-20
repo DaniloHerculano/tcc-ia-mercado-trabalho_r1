@@ -1,3 +1,4 @@
+```python
 import os
 import pandas as pd
 import gdown
@@ -34,22 +35,10 @@ ARQUIVO_PNAD_LOCAL = (
 
 def baixar_pnad():
 
-    # ======================================
-    # SE JÁ EXISTE
-    # ======================================
-
     if os.path.exists(ARQUIVO_PNAD_LOCAL):
         return
 
-    # ======================================
-    # CRIAR PASTA
-    # ======================================
-
     os.makedirs("data", exist_ok=True)
-
-    # ======================================
-    # DOWNLOAD GOOGLE DRIVE
-    # ======================================
 
     gdown.download(
         URL_PNAD,
@@ -58,7 +47,7 @@ def baixar_pnad():
     )
 
 # ==========================================
-# CARREGAR CBO / AIOE
+# CARREGAR CBO
 # ==========================================
 
 def carregar_cbo():
@@ -67,6 +56,7 @@ def carregar_cbo():
         ARQUIVO_CBO
     )
 
+    print("\nCOLUNAS CBO:")
     print(df.columns.tolist())
 
     return df
@@ -89,24 +79,12 @@ def carregar_pnad():
         "Rendimento_Mensal"
     ]
 
-    # ======================================
-    # BAIXAR SE NÃO EXISTIR
-    # ======================================
-
     baixar_pnad()
-
-    # ======================================
-    # LER PARQUET
-    # ======================================
 
     df = pd.read_parquet(
         ARQUIVO_PNAD_LOCAL,
         columns=colunas
     )
-
-    # ======================================
-    # REDUZIR AMOSTRA
-    # ======================================
 
     if len(df) > 300000:
 
@@ -162,7 +140,7 @@ def limpar_dados(df):
 
     df["CBO_JOIN"] = (
 
-        df["CBO"]
+        df["CBO_EXTRAIDO"]
 
         .astype(str)
 
@@ -171,6 +149,7 @@ def limpar_dados(df):
         .str.strip()
 
         .str.zfill(6)
+
     )
 
     # ======================================
@@ -242,11 +221,9 @@ def limpar_pnad(df):
         errors="coerce"
     )
 
-    df["Rendimento_Mensal"] = (
-        pd.to_numeric(
-            df["Rendimento_Mensal"],
-            errors="coerce"
-        )
+    df["Rendimento_Mensal"] = pd.to_numeric(
+        df["Rendimento_Mensal"],
+        errors="coerce"
     )
 
     # ======================================
@@ -260,6 +237,8 @@ def limpar_pnad(df):
         .astype(str)
 
         .str.replace(r"\D", "", regex=True)
+
+        .str.strip()
 
         .str.zfill(6)
 
@@ -298,7 +277,7 @@ def limpar_pnad(df):
     return df
 
 # ==========================================
-# MERGE PNAD + AIOE
+# MERGE
 # ==========================================
 
 def cruzar_bases(df_cbo, df_pnad):
@@ -315,6 +294,7 @@ def cruzar_bases(df_cbo, df_pnad):
         "NIVEL_IMPACTO",
         "CONFIDENCE_SCORE",
         "Grande Grupo"
+
     ]
 
     df_final = pd.merge(
@@ -326,6 +306,7 @@ def cruzar_bases(df_cbo, df_pnad):
         on="CBO_JOIN",
 
         how="left"
+
     )
 
     print("\nMERGE RESULTADO:")
@@ -347,38 +328,22 @@ def cruzar_bases(df_cbo, df_pnad):
 # CRIAR BASE FINAL
 # ==========================================
 
-# ==========================================
-# CRIAR BASE FINAL
-# ==========================================
-
 def criar_base_final():
 
-    # CARREGAR
     df_cbo = carregar_cbo()
 
     df_pnad = carregar_pnad()
 
-    # LIMPAR
     df_cbo = limpar_dados(df_cbo)
 
     df_pnad = limpar_pnad(df_pnad)
 
-    # CRUZAR
     df_final = cruzar_bases(
         df_cbo,
         df_pnad
     )
 
+    print("\nCOLUNAS FINAIS:")
     print(df_final.columns.tolist())
-
-    print(df_final[
-        [
-            "CBO",
-            "CBO_JOIN",
-            "CBO_EXTRAIDO",
-            "TITULO_LIMPO",
-            "AIOE_SCORE"
-        ]
-    ].head(20))
 
     return df_final
