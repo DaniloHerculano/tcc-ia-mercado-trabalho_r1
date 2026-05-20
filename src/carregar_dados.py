@@ -118,7 +118,7 @@ def carregar_pnad():
     return df
 
 # ==========================================
-# LIMPAR DADOS CBO / AIOE
+# LIMPAR CBO
 # ==========================================
 
 def limpar_dados(df):
@@ -137,14 +137,12 @@ def limpar_dados(df):
     })
 
     # ======================================
-    # NUMÉRICOS
+    # NUMÉRICO
     # ======================================
 
     df["AIOE_SCORE"] = pd.to_numeric(
-
         df["AIOE_SCORE"],
         errors="coerce"
-
     )
 
     # ======================================
@@ -152,26 +150,31 @@ def limpar_dados(df):
     # ======================================
 
     df = df.dropna(
-
         subset=[
-            "TITULO_LIMPO",
+            "CBO_EXTRAIDO",
             "AIOE_SCORE"
         ]
-
     )
 
     # ======================================
-    # CBO JOIN
+    # AJUSTAR CBO
     # ======================================
 
     df["CBO_JOIN"] = (
+
         df["CBO_EXTRAIDO"]
+
         .astype(str)
-        .str.replace(".0", "", regex=False)
-        .str.replace("-", "", regex=False)
-        .str.replace(" ", "", regex=False)
-        .str.strip()
+
+        # remove tudo que não for número
+        .str.replace(r"\D", "", regex=True)
+
+        # pega somente 6 primeiros
+        .str[:6]
+
+        # completa zeros
         .str.zfill(6)
+
     )
 
     # ======================================
@@ -192,6 +195,17 @@ def limpar_dados(df):
     df["NIVEL_IMPACTO"] = (
         df["AIOE_SCORE"]
         .apply(classificar)
+    )
+
+    # ======================================
+    # CAMPOS AUXILIARES
+    # ======================================
+
+    df["CONFIDENCE_SCORE"] = 1.0
+
+    df["Grande Grupo"] = (
+        df["CBO_JOIN"]
+        .str[0]
     )
 
     return df
@@ -224,17 +238,21 @@ def limpar_pnad(df):
     )
 
     # ======================================
-    # CBO JOIN
+    # AJUSTAR CBO
     # ======================================
 
     df["CBO_JOIN"] = (
+
         df["CBO"]
+
         .astype(str)
-        .str.replace(".0", "", regex=False)
-        .str.replace("-", "", regex=False)
-        .str.replace(" ", "", regex=False)
-        .str.strip()
+
+        .str.replace(r"\D", "", regex=True)
+
+        .str[:6]
+
         .str.zfill(6)
+
     )
 
     # ======================================
@@ -253,7 +271,7 @@ def limpar_pnad(df):
     )
 
     # ======================================
-    # SITUAÇÃO DOMICÍLIO
+    # DOMICÍLIO
     # ======================================
 
     mapa_dom = {
@@ -278,41 +296,26 @@ def cruzar_bases(df_cbo, df_pnad):
     colunas_merge = [
 
         "CBO_JOIN",
+        "CBO_EXTRAIDO",
         "TITULO_LIMPO",
         "DESCRIÇÃO SUMÁRIA",
         "FORMAÇÃO E EXPERIÊNCIA",
         "AIOE_SCORE",
+        "AIOE_MATCH_TITLE",
         "NIVEL_IMPACTO",
-        "AIOE_MATCH_TITLE"
-
+        "CONFIDENCE_SCORE",
+        "Grande Grupo"
     ]
-
-    # ======================================
-    # VALIDAR COLUNAS
-    # ======================================
-
-    colunas_existentes = [
-
-        c for c in colunas_merge
-        if c in df_cbo.columns
-
-    ]
-
-    print(df_cbo["CBO_JOIN"].head(10))
-    print(df_pnad["CBO_JOIN"].head(10))
-
-    # ======================================
-    # MERGE
-    # ======================================
 
     df_final = pd.merge(
 
         df_pnad,
-        df_cbo[colunas_existentes],
+
+        df_cbo[colunas_merge],
 
         on="CBO_JOIN",
-        how="left"
 
+        how="left"
     )
 
     return df_final
@@ -341,4 +344,12 @@ def criar_base_final():
 
     print(df_final.columns.tolist())
 
-    return df_final
+    print(df_final[
+        [
+            "CBO",
+            "CBO_JOIN",
+            "CBO_EXTRAIDO",
+            "TITULO_LIMPO",
+            "AIOE_SCORE"
+        ]
+    ].head(20))
