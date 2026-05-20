@@ -123,11 +123,13 @@ def limpar_dados(df):
 
         .astype(str)
 
+        .str.extract(r'(\d+)')[0]
+
         .str.replace(r"\D", "", regex=True)
 
-        .str[:6]
-
         .str.zfill(6)
+
+        .str[:6]
     )
 
     # NÍVEL IMPACTO
@@ -196,11 +198,13 @@ def limpar_pnad(df):
 
         .astype(str)
 
+        .str.extract(r'(\d+)')[0]
+
         .str.replace(r"\D", "", regex=True)
 
-        .str[:6]
-
         .str.zfill(6)
+
+        .str[:6]
     )
 
     # SEXO
@@ -272,6 +276,20 @@ def cruzar_bases(df_cbo, df_pnad):
                 "AIOE_SCORE"
             ]
         ].head(20)
+    )
+
+    print("\nTOTAL COM MATCH:")
+    print(
+        df_final["AIOE_SCORE"]
+        .notna()
+        .sum()
+    )
+
+    print("\nTOTAL SEM MATCH:")
+    print(
+        df_final["AIOE_SCORE"]
+        .isna()
+        .sum()
     )
 
     return df_final
