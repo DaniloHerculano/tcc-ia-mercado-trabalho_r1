@@ -20,6 +20,14 @@ def mostrar_pesquisa(df):
     st.divider()
 
     # ======================================
+    # REMOVER LINHAS SEM MATCH
+    # ======================================
+
+    resultado = df.dropna(
+        subset=["TITULO_LIMPO"]
+    ).copy()
+
+    # ======================================
     # BUSCA
     # ======================================
 
@@ -44,8 +52,6 @@ def mostrar_pesquisa(df):
     # ======================================
     # FILTROS
     # ======================================
-
-    resultado = df.copy()
 
     if filtro != "Todos":
 
@@ -80,15 +86,15 @@ def mostrar_pesquisa(df):
 
         st.markdown(f"""
         ---
-        ## {row['TITULO_LIMPO']}
+        ## {row.get('TITULO_LIMPO', '-')}
 
-        **CBO:** {row['CBO_EXTRAIDO']}
+        **CBO:** {row.get('CBO_EXTRAIDO', '-')}
 
-        **Impacto IA:** {row['NIVEL_IMPACTO']}
+        **Impacto IA:** {row.get('NIVEL_IMPACTO', '-')}
 
-        **AIOE Score:** {round(row['AIOE_SCORE'], 3)}
+        **AIOE Score:** {round(float(row.get('AIOE_SCORE', 0)), 3)}
 
-        **Match AIOE:** {row['AIOE_MATCH_TITLE']}
+        **Match AIOE:** {row.get('AIOE_MATCH_TITLE', '-')}
         """)
 
         with st.expander(
@@ -96,7 +102,8 @@ def mostrar_pesquisa(df):
         ):
 
             st.write(
-                row[
-                    "DESCRIÇÃO SUMÁRIA"
-                ]
+                row.get(
+                    "DESCRIÇÃO SUMÁRIA",
+                    "Descrição não disponível."
+                )
             )

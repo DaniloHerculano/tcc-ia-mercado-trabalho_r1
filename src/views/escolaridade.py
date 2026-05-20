@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 
-def mostrar_escolaridade(df, df_pnad):
+def mostrar_escolaridade(df):
 
     st.title("🎓 Escolaridade x IA")
 
@@ -16,18 +16,28 @@ def mostrar_escolaridade(df, df_pnad):
     # VALIDAR
     # ======================================
 
-    if "Anos_Estudo" not in df_pnad.columns:
+    if "Anos_Estudo" not in df.columns:
 
         st.error("Coluna Anos_Estudo não encontrada.")
 
         return
 
     # ======================================
+    # LIMPEZA
+    # ======================================
+
+    escolaridade = df.copy()
+
+    escolaridade = escolaridade.dropna(
+        subset=["Anos_Estudo"]
+    )
+
+    # ======================================
     # AGRUPAR
     # ======================================
 
     escolaridade = (
-        df_pnad.groupby("Anos_Estudo")
+        escolaridade.groupby("Anos_Estudo")
         .size()
         .reset_index(name="Quantidade")
     )

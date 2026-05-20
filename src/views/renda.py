@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 
-def mostrar_renda(df, df_pnad):
+def mostrar_renda(df):
 
     st.title("💰 Renda x IA")
 
@@ -16,7 +16,7 @@ def mostrar_renda(df, df_pnad):
     # VALIDAR
     # ======================================
 
-    if "Rendimento_Mensal" not in df_pnad.columns:
+    if "Rendimento_Mensal" not in df.columns:
 
         st.error("Coluna Rendimento_Mensal não encontrada.")
 
@@ -26,7 +26,7 @@ def mostrar_renda(df, df_pnad):
     # LIMPEZA
     # ======================================
 
-    renda = df_pnad.copy()
+    renda = df.copy()
 
     renda = renda.dropna(
         subset=["Rendimento_Mensal"]
