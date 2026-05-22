@@ -15,7 +15,7 @@ from views.similaridade import mostrar_similaridade
 from views.correlacao import mostrar_correlacao
 from views.insights import mostrar_insights
 from views.pesquisa import mostrar_pesquisa
-from views.simulador import simulador_ia
+from views.simulador import simulador
 from views.sobre import mostrar_sobre
 
 # ==========================================
@@ -210,7 +210,7 @@ elif pagina == "🔎 Pesquisar Ocupação":
 
 elif pagina == "🖥️ Simulador":
 
-    mostrar_simulador_ia()
+    mostrar_simulador()
 
 elif pagina == "ℹ️ Sobre":
 
