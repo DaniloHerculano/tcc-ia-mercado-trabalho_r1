@@ -4,6 +4,5 @@ openpyxl
 plotly
 numpy
 pyarrow
-fastparquet
 gdown
 requests
