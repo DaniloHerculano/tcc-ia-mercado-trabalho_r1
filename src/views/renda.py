@@ -10,24 +10,13 @@ def mostrar_renda(df):
 
     st.title("💰 Renda x IA")
 
-    st.markdown("""
-    Distribuição salarial
-    da base PNAD.
-    """)
-
-    # ======================================
-    # VALIDAR
-    # ======================================
-
     if "Rendimento_Mensal" not in df.columns:
 
-        st.error("Coluna Rendimento_Mensal não encontrada.")
+        st.error(
+            "Coluna Rendimento_Mensal não encontrada."
+        )
 
         return
-
-    # ======================================
-    # LIMPEZA
-    # ======================================
 
     renda = df.copy()
 
@@ -35,19 +24,22 @@ def mostrar_renda(df):
         subset=["Rendimento_Mensal"]
     )
 
-    # ======================================
-    # FAIXAS
-    # ======================================
+    if len(renda) == 0:
+
+        st.warning("Sem dados de renda.")
+
+        return
 
     renda["Faixa"] = pd.cut(
         renda["Rendimento_Mensal"],
-        bins=[0, 1000, 2000, 5000, 10000, 20000],
+        bins=[0, 1000, 2000, 5000, 10000, 20000, 999999],
         labels=[
             "Até 1k",
             "1k-2k",
             "2k-5k",
             "5k-10k",
-            "10k-20k"
+            "10k-20k",
+            "20k+"
         ]
     )
 
@@ -56,10 +48,6 @@ def mostrar_renda(df):
         .size()
         .reset_index(name="Quantidade")
     )
-
-    # ======================================
-    # GRÁFICO
-    # ======================================
 
     fig = px.bar(
         distribuicao,
@@ -73,8 +61,6 @@ def mostrar_renda(df):
         fig,
         width='stretch'
     )
-
-    st.divider()
 
     st.dataframe(
         distribuicao,
