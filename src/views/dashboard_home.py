@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 import plotly.express as px
 
 # ==========================================
@@ -8,14 +9,13 @@ import plotly.express as px
 def mostrar_dashboard(df):
 
     st.title(
-        "🤖 IA e Mercado de Trabalho Brasileiro"
+        "📊 Dashboard Executivo"
     )
 
     st.markdown("""
-    Plataforma analítica sobre o impacto da
-    Inteligência Artificial no mercado de trabalho
-    brasileiro utilizando dados da PNAD Contínua,
-    CBO e métricas AIOE/Felten.
+    Panorama geral da exposição
+    à Inteligência Artificial
+    no mercado de trabalho brasileiro.
     """)
 
     st.divider()
@@ -31,75 +31,20 @@ def mostrar_dashboard(df):
         2
     )
 
-    media_renda = round(
+    renda = round(
         df["Rendimento_Mensal"].mean(),
         2
     )
 
-    media_idade = round(
-        df["Idade"].mean(),
-        1
+    alto = len(
+        df[
+            df["NIVEL_IMPACTO"] == "🔴 Alto"
+        ]
     )
 
-    col1, col2, col3, col4 = st.columns(4)
-
-    col1.metric(
-        "👥 Trabalhadores",
-        f"{total:,}"
-    )
-
-    col2.metric(
-        "🤖 Média AIOE",
-        media_aioe
-    )
-
-    col3.metric(
-        "💰 Renda Média",
-        f"R$ {media_renda:,.0f}"
-    )
-
-    col4.metric(
-        "🎂 Idade Média",
-        media_idade
-    )
-
-    st.divider()
-
-    # ======================================
-    # DISTRIBUIÇÃO IMPACTO
-    # ======================================
-
-    impacto = (
-        df["NIVEL_IMPACTO"]
-        .value_counts()
-        .reset_index()
-    )
-
-    impacto.columns = [
-        "Impacto",
-        "Quantidade"
-    ]
-
-    fig = px.pie(
-        impacto,
-        names="Impacto",
-        values="Quantidade",
-        title="Distribuição Geral de Impacto IA"
-    )
-
-    st.plotly_chart(
-        fig,
-        width='stretch'
-    )
-
-    st.divider()
-
-    # ======================================
-    # TOP UFs
-    # ======================================
-
-    st.subheader(
-        "🌎 Média de Exposição IA por UF"
+    perc_alto = round(
+        (alto / total) * 100,
+        2
     )
 
     uf = (
@@ -109,23 +54,110 @@ def mostrar_dashboard(df):
         .reset_index()
     )
 
-    uf = uf.sort_values(
-        by="AIOE_SCORE",
-        ascending=False
+    uf_top = (
+        uf.sort_values(
+            by="AIOE_SCORE",
+            ascending=False
+        )
+        .iloc[0]
     )
 
-    fig2 = px.bar(
-        uf,
-        x="UF",
-        y="AIOE_SCORE",
-        color="AIOE_SCORE",
-        title="Exposição Média IA por Estado"
+    # ======================================
+    # CARDS
+    # ======================================
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    col1.metric(
+        "👥 Trabalhadores",
+        f"{total:,}"
     )
 
-    st.plotly_chart(
-        fig2,
-        width='stretch'
+    col2.metric(
+        "🤖 Média IA",
+        media_aioe
     )
+
+    col3.metric(
+        "💰 Renda Média",
+        f"R$ {renda:,.0f}"
+    )
+
+    col4.metric(
+        "🚨 Alto Impacto",
+        f"{perc_alto}%"
+    )
+
+    col5.metric(
+        "🌎 UF Mais Exposta",
+        uf_top["UF"]
+    )
+
+    st.divider()
+
+    # ======================================
+    # LINHA 1
+    # ======================================
+
+    col1, col2 = st.columns(2)
+
+    # ======================================
+    # IMPACTO IA
+    # ======================================
+
+    with col1:
+
+        impacto = (
+            df.groupby("NIVEL_IMPACTO")
+            .size()
+            .reset_index(name="Quantidade")
+        )
+
+        fig = px.pie(
+
+            impacto,
+
+            names="NIVEL_IMPACTO",
+
+            values="Quantidade",
+
+            title="Distribuição de Impacto IA"
+        )
+
+        st.plotly_chart(
+            fig,
+            width='stretch'
+        )
+
+    # ======================================
+    # SEXO
+    # ======================================
+
+    with col2:
+
+        sexo = (
+            df.groupby("Sexo")
+            .size()
+            .reset_index(name="Quantidade")
+        )
+
+        fig2 = px.bar(
+
+            sexo,
+
+            x="Sexo",
+
+            y="Quantidade",
+
+            color="Sexo",
+
+            title="Distribuição por Sexo"
+        )
+
+        st.plotly_chart(
+            fig2,
+            width='stretch'
+        )
 
     st.divider()
 
@@ -133,29 +165,32 @@ def mostrar_dashboard(df):
     # EVOLUÇÃO TEMPORAL
     # ======================================
 
-    st.subheader(
-        "📈 Evolução Temporal"
-    )
+    if "Ano" in df.columns:
 
-    evolucao = (
-        df.groupby("Ano")
-        ["AIOE_SCORE"]
-        .mean()
-        .reset_index()
-    )
+        evolucao = (
+            df.groupby("Ano")
+            ["AIOE_SCORE"]
+            .mean()
+            .reset_index()
+        )
 
-    fig3 = px.line(
-        evolucao,
-        x="Ano",
-        y="AIOE_SCORE",
-        markers=True,
-        title="Média AIOE ao Longo do Tempo"
-    )
+        fig3 = px.line(
 
-    st.plotly_chart(
-        fig3,
-        width='stretch'
-    )
+            evolucao,
+
+            x="Ano",
+
+            y="AIOE_SCORE",
+
+            markers=True,
+
+            title="Evolução Temporal da Exposição IA"
+        )
+
+        st.plotly_chart(
+            fig3,
+            width='stretch'
+        )
 
     st.divider()
 
@@ -164,10 +199,10 @@ def mostrar_dashboard(df):
     # ======================================
 
     st.subheader(
-        "🔥 Ocupações Mais Expostas"
+        "🚨 Top 10 Ocupações Mais Expostas"
     )
 
-    top10 = (
+    top = (
         df.sort_values(
             by="AIOE_SCORE",
             ascending=False
@@ -184,34 +219,29 @@ def mostrar_dashboard(df):
     )
 
     st.dataframe(
-        top10,
+        top,
         width='stretch'
     )
 
     st.divider()
 
     # ======================================
-    # INSIGHTS AUTOMÁTICOS
+    # NARRATIVA
     # ======================================
 
-    maior_uf = uf.iloc[0]
-
-    menor_uf = uf.iloc[-1]
-
-    st.success(f"""
-    📌 Estado mais exposto à IA:
-
-    {maior_uf['UF']}
-
-    Média AIOE:
-    {round(maior_uf['AIOE_SCORE'], 2)}
-    """)
+    st.subheader(
+        "🧠 Resumo Executivo"
+    )
 
     st.info(f"""
-    📉 Estado menos exposto à IA:
+    Os dados analisados indicam que
+    aproximadamente {perc_alto}% das ocupações
+    apresentam alto potencial de impacto
+    pela Inteligência Artificial.
 
-    {menor_uf['UF']}
+    A média geral de exposição encontrada
+    foi de {media_aioe}.
 
-    Média AIOE:
-    {round(menor_uf['AIOE_SCORE'], 2)}
+    O estado com maior exposição média
+    foi {uf_top["UF"]}.
     """)
