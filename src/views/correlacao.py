@@ -24,52 +24,97 @@ def mostrar_correlacao(df):
     # ======================================
 
     colunas = [
+
         "Idade",
         "Rendimento_Mensal",
-        "AIOE_SCORE",
-        "Exposure",
-        "Mean",
-        "SD"
+        "AIOE_SCORE"
     ]
 
-    existentes = [
+    # ======================================
+    # VALIDAR
+    # ======================================
+
+    faltando = [
         c for c in colunas
-        if c in df.columns
+        if c not in df.columns
     ]
 
+    if len(faltando) > 0:
+
+        st.error(f"""
+        Colunas faltando:
+
+        {faltando}
+        """)
+
+        return
+
     # ======================================
-    # DATAFRAME
+    # COPIAR
     # ======================================
 
-    corr_df = df[existentes].copy()
+    corr_df = df[colunas].copy()
 
-    for col in existentes:
+    # ======================================
+    # NUMÉRICOS
+    # ======================================
+
+    for col in colunas:
 
         corr_df[col] = pd.to_numeric(
             corr_df[col],
             errors="coerce"
         )
 
+    # ======================================
+    # REMOVER NAN
+    # ======================================
+
     corr_df = corr_df.dropna()
+
+    # DEBUG
+    st.write("Total linhas válidas:")
+    st.write(len(corr_df))
+
+    st.write("Prévia:")
+    st.write(corr_df.head())
+
+    # ======================================
+    # VALIDAR
+    # ======================================
+
+    if len(corr_df) == 0:
+
+        st.error("""
+        Nenhum dado válido encontrado
+        para gerar correlação.
+        """)
+
+        return
 
     # ======================================
     # MATRIZ
     # ======================================
 
-    matriz = corr_df.corr(
-        numeric_only=True
-    )
+    matriz = corr_df.corr()
+
+    st.write("Matriz:")
+    st.write(matriz)
 
     # ======================================
     # HEATMAP
     # ======================================
 
     fig = px.imshow(
+
         matriz,
 
         text_auto=".2f",
 
         color_continuous_scale="RdBu_r",
+
+        zmin=-1,
+        zmax=1,
 
         aspect="auto",
 
@@ -77,7 +122,7 @@ def mostrar_correlacao(df):
     )
 
     fig.update_layout(
-        height=700
+        height=650
     )
 
     st.plotly_chart(
@@ -95,51 +140,55 @@ def mostrar_correlacao(df):
         "🧠 Insights Automáticos"
     )
 
-    try:
+    corr_renda = round(
+        matriz.loc[
+            "AIOE_SCORE",
+            "Rendimento_Mensal"
+        ],
+        2
+    )
 
-        corr_renda = round(
-            matriz.loc[
-                "AIOE_SCORE",
-                "Rendimento_Mensal"
-            ],
-            2
-        )
+    corr_idade = round(
+        matriz.loc[
+            "AIOE_SCORE",
+            "Idade"
+        ],
+        2
+    )
 
-        corr_idade = round(
-            matriz.loc[
-                "AIOE_SCORE",
-                "Idade"
-            ],
-            2
-        )
+    st.info(f"""
+    💰 Correlação IA x Renda:
+    {corr_renda}
+    """)
 
-        st.info(f"""
-        💰 Correlação IA x Renda:
-        {corr_renda}
+    st.info(f"""
+    🎂 Correlação IA x Idade:
+    {corr_idade}
+    """)
+
+    # ======================================
+    # INTERPRETAÇÃO
+    # ======================================
+
+    if corr_renda >= 0.3:
+
+        st.success("""
+        Ocupações com maior renda
+        tendem a apresentar maior
+        exposição à IA.
         """)
 
-        st.info(f"""
-        🎂 Correlação IA x Idade:
-        {corr_idade}
+    elif corr_renda <= -0.3:
+
+        st.warning("""
+        Ocupações com menor renda
+        apresentam maior exposição
+        à IA.
         """)
 
-        if corr_renda > 0:
+    else:
 
-            st.success("""
-            Ocupações com maior renda
-            tendem a apresentar maior
-            exposição à IA.
-            """)
-
-        else:
-
-            st.warning("""
-            Não foi encontrada correlação
-            positiva entre renda e IA.
-            """)
-
-    except:
-
-        st.warning(
-            "Não foi possível gerar insights."
-        )
+        st.info("""
+        A relação entre renda e IA
+        foi fraca.
+        """)
