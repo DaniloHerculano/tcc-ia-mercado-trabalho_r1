@@ -1,7 +1,4 @@
-import os
-import pandas as pd
-import gdown
-
+```python
 import pandas as pd
 
 # ==========================================
@@ -17,24 +14,7 @@ ARQUIVO_PNAD_LOCAL = (
 )
 
 # ==========================================
-# DOWNLOAD
-# ==========================================
-
-def baixar_pnad():
-
-    if os.path.exists(ARQUIVO_PNAD_LOCAL):
-        return
-
-    os.makedirs("data", exist_ok=True)
-
-    gdown.download(
-        URL_PNAD,
-        ARQUIVO_PNAD_LOCAL,
-        quiet=False
-    )
-
-# ==========================================
-# CBO
+# CARREGAR CBO
 # ==========================================
 
 def carregar_cbo():
@@ -44,10 +24,13 @@ def carregar_cbo():
         engine="openpyxl"
     )
 
+    print("\nCOLUNAS CBO:")
+    print(df.columns.tolist())
+
     return df
 
 # ==========================================
-# PNAD
+# CARREGAR PNAD
 # ==========================================
 
 def carregar_pnad():
@@ -198,8 +181,6 @@ def cruzar_bases(df_cbo, df_pnad):
         how="left"
     )
 
-    # PADRONIZAÇÃO
-
     df_final["AIOE_SCORE"] = (
         df_final["AIOE"]
     )
@@ -219,6 +200,9 @@ def cruzar_bases(df_cbo, df_pnad):
     df_final["AIOE_MATCH_TITLE"] = (
         df_final["match_cod_metodo"]
     )
+
+    print("\nBASE FINAL:")
+    print(df_final.head())
 
     return df_final
 
@@ -242,3 +226,4 @@ def criar_base_final():
     )
 
     return df_final
+```
