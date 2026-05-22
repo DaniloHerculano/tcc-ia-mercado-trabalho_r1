@@ -1,4 +1,5 @@
 import pandas as pd
+import streamlit as st
 
 # ==========================================
 # CAMINHOS
@@ -34,12 +35,28 @@ def carregar_cbo():
 
 def carregar_pnad():
 
-    df = pd.read_parquet(
-        ARQUIVO_PNAD,
-        engine="pyarrow"
-    )
+    st = __import__("streamlit")
 
-    return df
+    st.write("Abrindo parquet...")
+
+    try:
+
+        df = pd.read_parquet(
+            ARQUIVO_PNAD,
+            engine="pyarrow"
+        )
+
+        st.write("Parquet carregado!")
+
+        st.write(df.head())
+
+        return df
+
+    except Exception as e:
+
+        st.error(f"ERRO PARQUET: {e}")
+
+        raise e
 
 # ==========================================
 # LIMPAR CBO
