@@ -1,73 +1,108 @@
 import streamlit as st
 
 from carregar_dados import (
-    carregar_pnad,
-    carregar_cbo,
-    limpar_cbo,
-    limpar_pnad,
-    cruzar_bases
+    criar_base_final
 )
 
+from views.dashboard_home import mostrar_dashboard
+from views.impacto_brasil import mostrar_impacto_brasil
+from views.evolucao_temporal import mostrar_evolucao_temporal
+from views.escolaridade import mostrar_escolaridade
+from views.renda import mostrar_renda
+from views.setores import mostrar_setores
+from views.ranking import mostrar_ranking
+from views.similaridade import mostrar_similaridade
+from views.pesquisa import mostrar_pesquisa
+from views.sobre import mostrar_sobre
+
+# ==========================================
+# CONFIG
+# ==========================================
+
 st.set_page_config(
-    page_title="DEBUG",
+    page_title="IA e Mercado de Trabalho",
     layout="wide"
 )
 
-st.title("DEBUG FINAL 2")
-
 # ==========================================
-# PNAD
+# CACHE
 # ==========================================
 
-st.write("1 - Carregando PNAD")
+@st.cache_data
+def carregar():
 
-df_pnad = carregar_pnad()
-
-st.success("PNAD OK")
-
-# ==========================================
-# CBO
-# ==========================================
-
-st.write("2 - Carregando CBO")
-
-df_cbo = carregar_cbo()
-
-st.success("CBO OK")
+    return criar_base_final()
 
 # ==========================================
-# LIMPEZA CBO
+# LOAD
 # ==========================================
 
-st.write("3 - Limpando CBO")
+with st.spinner("Carregando dados..."):
 
-df_cbo = limpar_cbo(df_cbo)
-
-st.success("LIMPEZA CBO OK")
+    df = carregar()
 
 # ==========================================
-# LIMPEZA PNAD
+# SIDEBAR
 # ==========================================
 
-st.write("4 - Limpando PNAD")
+st.sidebar.title("📌 Navegação")
 
-df_pnad = limpar_pnad(df_pnad)
-
-st.success("LIMPEZA PNAD OK")
-
-# ==========================================
-# MERGE
-# ==========================================
-
-st.write("5 - Fazendo merge")
-
-df_final = cruzar_bases(
-    df_cbo,
-    df_pnad
+pagina = st.sidebar.radio(
+    "Selecione:",
+    [
+        "📊 Dashboard",
+        "🇧🇷 Impacto no Brasil",
+        "📈 Evolução Temporal",
+        "🎓 Escolaridade x IA",
+        "💰 Renda x IA",
+        "🏭 Setores x IA",
+        "🏆 Ranking",
+        "🧠 Similaridade",
+        "🔎 Pesquisar Ocupação",
+        "ℹ️ Sobre"
+    ]
 )
 
-st.success("MERGE OK")
+# ==========================================
+# ROTAS
+# ==========================================
 
-st.write(df_final.head())
+if pagina == "📊 Dashboard":
 
-st.write(df_final.columns.tolist())
+    mostrar_dashboard(df)
+
+elif pagina == "🇧🇷 Impacto no Brasil":
+
+    mostrar_impacto_brasil(df)
+
+elif pagina == "📈 Evolução Temporal":
+
+    mostrar_evolucao_temporal(df)
+
+elif pagina == "🎓 Escolaridade x IA":
+
+    mostrar_escolaridade(df)
+
+elif pagina == "💰 Renda x IA":
+
+    mostrar_renda(df)
+
+elif pagina == "🏭 Setores x IA":
+
+    mostrar_setores(df)
+
+elif pagina == "🏆 Ranking":
+
+    mostrar_ranking(df)
+
+elif pagina == "🧠 Similaridade":
+
+    mostrar_similaridade(df)
+
+elif pagina == "🔎 Pesquisar Ocupação":
+
+    mostrar_pesquisa(df)
+
+elif pagina == "ℹ️ Sobre":
+
+    mostrar_sobre()

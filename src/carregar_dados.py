@@ -44,6 +44,10 @@ def carregar_pnad():
 
 def limpar_cbo(df):
 
+    # ======================================
+    # CBO JOIN
+    # ======================================
+
     df["CBO_JOIN"] = (
 
         df["CBO_EXTRAIDO"]
@@ -58,6 +62,10 @@ def limpar_cbo(df):
 
         .str[:6]
     )
+
+    # ======================================
+    # NUMÉRICOS
+    # ======================================
 
     numeros = [
         "AIOE",
@@ -74,6 +82,10 @@ def limpar_cbo(df):
                 df[col],
                 errors="coerce"
             )
+
+    # ======================================
+    # IMPACTO
+    # ======================================
 
     def classificar(score):
 
@@ -122,6 +134,10 @@ def limpar_pnad(df):
                 errors="coerce"
             )
 
+    # ======================================
+    # CBO JOIN
+    # ======================================
+
     df["CBO_JOIN"] = (
 
         df["CBO"]
@@ -136,6 +152,10 @@ def limpar_pnad(df):
 
         .str[:6]
     )
+
+    # ======================================
+    # SEXO
+    # ======================================
 
     mapa_sexo = {
 
@@ -183,6 +203,18 @@ def cruzar_bases(df_cbo, df_pnad):
         "match_cod_metodo"
     ]
 
+    # ======================================
+    # REMOVER DUPLICADOS CBO
+    # ======================================
+
+    df_cbo = df_cbo.drop_duplicates(
+        subset=["CBO_JOIN"]
+    )
+
+    # ======================================
+    # REMOVER DUPLICADOS PNAD
+    # ======================================
+
     remover = [
         "AIOE",
         "Exposure",
@@ -198,6 +230,10 @@ def cruzar_bases(df_cbo, df_pnad):
                 columns=col
             )
 
+    # ======================================
+    # MERGE
+    # ======================================
+
     df_final = pd.merge(
 
         df_pnad,
@@ -209,10 +245,9 @@ def cruzar_bases(df_cbo, df_pnad):
         how="left"
     )
 
-    df_final = df_final.loc[
-        :,
-        ~df_final.columns.duplicated()
-    ]
+    # ======================================
+    # PADRONIZAÇÃO
+    # ======================================
 
     df_final["AIOE_SCORE"] = (
         df_final["AIOE"]
@@ -232,10 +267,6 @@ def cruzar_bases(df_cbo, df_pnad):
 
     df_final["AIOE_MATCH_TITLE"] = (
         df_final["match_cod_metodo"]
-    )
-
-    df_final = df_final.reset_index(
-        drop=True
     )
 
     return df_final
