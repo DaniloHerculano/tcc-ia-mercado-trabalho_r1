@@ -249,13 +249,37 @@ def cruzar_bases(df_cbo, df_pnad):
     # PADRONIZAÇÃO
     # ======================================
 
-    df_final["AIOE_SCORE"] = (
-        df_final["AIOE"]
-    )
+    # ======================================
+    # AIOE SCORE
+    # ======================================
 
-    df_final["CONFIDENCE_SCORE"] = (
-        df_final["Mean"]
-    )
+    if "AIOE_y" in df_final.columns:
+
+        df_final["AIOE_SCORE"] = (
+            df_final["AIOE_y"]
+        )
+
+    else:
+
+        df_final["AIOE_SCORE"] = (
+            df_final["AIOE"]
+        )
+
+    # ======================================
+    # CONFIDENCE
+    # ======================================
+
+    if "Mean_y" in df_final.columns:
+
+        df_final["CONFIDENCE_SCORE"] = (
+            df_final["Mean_y"]
+        )
+
+    else:
+
+        df_final["CONFIDENCE_SCORE"] = (
+            df_final["Mean"]
+        )
 
     df_final["Grande Grupo"] = (
         df_final["COD_Grande_Grupo_TITULO"]
@@ -265,9 +289,27 @@ def cruzar_bases(df_cbo, df_pnad):
         df_final["COD_Subgrupo_TITULO"]
     )
 
-    df_final["AIOE_MATCH_TITLE"] = (
-        df_final["match_cod_metodo"]
-    )
+    # ======================================
+    # MATCH TITLE
+    # ======================================
+
+    if "match_cod_metodo_y" in df_final.columns:
+
+        df_final["AIOE_MATCH_TITLE"] = (
+            df_final["match_cod_metodo_y"]
+        )
+
+    elif "match_cod_metodo" in df_final.columns:
+
+        df_final["AIOE_MATCH_TITLE"] = (
+            df_final["match_cod_metodo"]
+        )
+
+    else:
+
+        df_final["AIOE_MATCH_TITLE"] = (
+            "Não informado"
+        )
 
     return df_final
 
