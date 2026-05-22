@@ -42,7 +42,7 @@ with st.spinner("Carregando dados..."):
     df = carregar()
 
 # ==========================================
-# SIDEBAR
+# FILTROS GLOBAIS
 # ==========================================
 
 st.sidebar.title("📌 Navegação")
@@ -62,6 +62,89 @@ pagina = st.sidebar.radio(
         "ℹ️ Sobre"
     ]
 )
+
+st.sidebar.divider()
+
+# ==========================================
+# FILTRO ANO
+# ==========================================
+
+anos = sorted(
+    df["Ano"]
+    .dropna()
+    .unique()
+)
+
+ano = st.sidebar.selectbox(
+    "📅 Ano",
+    anos
+)
+
+# ==========================================
+# FILTRO UF
+# ==========================================
+
+ufs = sorted(
+    df["UF"]
+    .dropna()
+    .unique()
+)
+
+uf = st.sidebar.selectbox(
+    "🌎 UF",
+    ["Todos"] + list(ufs)
+)
+
+# ==========================================
+# FILTRO IMPACTO
+# ==========================================
+
+impacto = st.sidebar.selectbox(
+    "🤖 Impacto IA",
+    [
+        "Todos",
+        "🔴 Alto",
+        "🟡 Médio",
+        "🟢 Baixo"
+    ]
+)
+
+# ==========================================
+# APLICAR FILTROS
+# ==========================================
+
+df = df[
+    df["Ano"] == ano
+]
+
+if uf != "Todos":
+
+    df = df[
+        df["UF"] == uf
+    ]
+
+if impacto != "Todos":
+
+    df = df[
+        df["NIVEL_IMPACTO"] == impacto
+    ]
+
+# ==========================================
+# INSIGHTS AUTOMÁTICOS
+# ==========================================
+
+st.sidebar.divider()
+
+media = round(
+    df["AIOE_SCORE"].mean(),
+    2
+)
+
+st.sidebar.info(f"""
+📌 Média geral AIOE:
+
+{media}
+""")
 
 # ==========================================
 # ROTAS
