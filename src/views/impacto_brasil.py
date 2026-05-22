@@ -107,28 +107,40 @@ def mostrar_impacto_brasil(df):
     # ======================================
     # SEXO
     # ======================================
-
+    
+    sexo_df = df.copy()
+    
+    sexo_df = sexo_df.dropna(
+        subset=["Sexo"]
+    )
+    
+    sexo_df["Sexo"] = (
+        sexo_df["Sexo"]
+        .astype(str)
+        .str.strip()
+    )
+    
     sexo = (
-        df.groupby("Sexo")
+        sexo_df.groupby("Sexo")
         ["AIOE_SCORE"]
         .mean()
         .reset_index()
     )
-
+    
+    # DEBUG
+    st.write(sexo)
+    
     fig2 = px.pie(
         sexo,
         names="Sexo",
         values="AIOE_SCORE",
         title="Média IA por Sexo"
     )
-
+    
     st.plotly_chart(
         fig2,
         width='stretch'
     )
-
-    st.divider()
-
     # ======================================
     # IDADE
     # ======================================
