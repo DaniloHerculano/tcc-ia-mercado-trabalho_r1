@@ -53,18 +53,43 @@ def mostrar_pesquisa(df):
     )
 
     # ======================================
-    # INPUT
+    # PESQUISA
     # ======================================
-
+    
     ocupacoes = sorted(
         pesquisa["TITULO_LIMPO"]
         .dropna()
         .unique()
     )
-
+    
+    busca = st.text_input(
+        "🔎 Pesquise uma ocupação"
+    )
+    
+    # ======================================
+    # FILTRAR LISTA
+    # ======================================
+    
+    if busca:
+    
+        ocupacoes_filtradas = [
+    
+            o for o in ocupacoes
+    
+            if busca.lower() in o.lower()
+        ]
+    
+    else:
+    
+        ocupacoes_filtradas = ocupacoes
+    
+    # ======================================
+    # SELECTBOX
+    # ======================================
+    
     ocupacao = st.selectbox(
         "Selecione uma ocupação",
-        ocupacoes
+        ocupacoes_filtradas
     )
 
     st.divider()
