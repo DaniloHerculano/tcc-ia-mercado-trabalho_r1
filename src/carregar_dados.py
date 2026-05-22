@@ -226,4 +226,3 @@ def criar_base_final():
     )
 
     return df_final
-```
