@@ -82,14 +82,21 @@ def mostrar_setores(df):
     )
 
     st.divider()
-
+    
     # ======================================
     # MAPA BRASIL
     # ======================================
     
+    import json
+    import plotly.graph_objects as go
+    
     st.subheader(
         "🗺️ Exposição IA por Estado"
     )
+    
+    # ======================================
+    # AGRUPAR DADOS
+    # ======================================
     
     mapa = (
         df.groupby("UF")
@@ -107,50 +114,73 @@ def mostrar_setores(df):
     )
     
     # ======================================
-    # CHOROPLETH
+    # GEOJSON LOCAL
     # ======================================
     
-    fig_mapa = px.choropleth(
+    with open(
+        "data/brasil_estados.geojson",
+        "r",
+        encoding="utf-8"
+    ) as f:
     
-        mapa,
+        geojson = json.load(f)
     
-        locations="UF",
+    # ======================================
+    # MAPA
+    # ======================================
     
-        locationmode="geojson-id",
+    fig_mapa = go.Figure(
     
-        color="AIOE_SCORE",
+        go.Choropleth(
     
-        scope="south america",
+            geojson=geojson,
     
-        color_continuous_scale="Reds",
+            locations=mapa["UF"],
     
-        hover_name="UF",
+            z=mapa["AIOE_SCORE"],
     
-        hover_data={
-            "AIOE_SCORE": ":.2f",
-            "Rendimento_Mensal": ":.2f"
-        },
+            featureidkey="properties.sigla",
     
-        title="Mapa de Exposição IA por Estado"
+            colorscale="Reds",
+    
+            colorbar_title="AIOE",
+    
+            text=mapa["UF"],
+    
+            customdata=mapa[
+                [
+                    "Rendimento_Mensal"
+                ]
+            ],
+    
+            hovertemplate=
+            "<b>UF:</b> %{text}<br>" +
+            "<b>AIOE:</b> %{z:.2f}<br>" +
+            "<b>Renda Média:</b> R$ %{customdata[0]:,.2f}<extra></extra>"
+        )
     )
+    
+    # ======================================
+    # LAYOUT
+    # ======================================
     
     fig_mapa.update_geos(
     
-        scope="south america",
-    
-        center=dict(
-            lat=-14,
-            lon=-52
-        ),
-    
-        projection_scale=4.5,
+        fitbounds="locations",
     
         visible=False
     )
     
     fig_mapa.update_layout(
     
-        height=700
+        height=700,
+    
+        margin=dict(
+            l=0,
+            r=0,
+            t=40,
+            b=0
+        )
     )
     
     st.plotly_chart(
