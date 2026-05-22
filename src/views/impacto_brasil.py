@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 import plotly.express as px
 
 # ==========================================
@@ -83,7 +84,7 @@ def mostrar_impacto_brasil(df):
     )
 
     # ======================================
-    # BAR CHART
+    # BAR CHART UF
     # ======================================
 
     fig = px.bar(
@@ -105,42 +106,63 @@ def mostrar_impacto_brasil(df):
     st.divider()
 
     # ======================================
-    # SEXO
+    # MÉDIA IA POR SEXO
     # ======================================
-    
-    sexo_df = df.copy()
-    
-    sexo_df = sexo_df.dropna(
-        subset=["Sexo"]
+
+    st.subheader(
+        "📊 Média IA por Sexo"
     )
-    
+
+    sexo_df = df.copy()
+
+    sexo_df = sexo_df.dropna(
+        subset=["Sexo", "AIOE_SCORE"]
+    )
+
     sexo_df["Sexo"] = (
         sexo_df["Sexo"]
         .astype(str)
         .str.strip()
     )
-    
+
+    sexo_df["AIOE_SCORE"] = pd.to_numeric(
+        sexo_df["AIOE_SCORE"],
+        errors="coerce"
+    )
+
     sexo = (
         sexo_df.groupby("Sexo")
         ["AIOE_SCORE"]
         .mean()
         .reset_index()
     )
-    
-    # DEBUG
-    st.write(sexo)
-    
-    fig2 = px.pie(
+
+    sexo = sexo.sort_values(
+        by="AIOE_SCORE",
+        ascending=False
+    )
+
+    fig2 = px.bar(
         sexo,
-        names="Sexo",
-        values="AIOE_SCORE",
+        x="Sexo",
+        y="AIOE_SCORE",
+        color="Sexo",
+        text_auto=".2f",
         title="Média IA por Sexo"
     )
-    
+
+    fig2.update_layout(
+        yaxis_title="Média AIOE",
+        xaxis_title="Sexo"
+    )
+
     st.plotly_chart(
         fig2,
         width='stretch'
     )
+
+    st.divider()
+
     # ======================================
     # IDADE
     # ======================================
@@ -149,10 +171,12 @@ def mostrar_impacto_brasil(df):
         "🎂 Idade x Exposição IA"
     )
 
+    amostra = df.sample(
+        min(len(df), 3000)
+    )
+
     fig3 = px.scatter(
-        df.sample(
-            min(len(df), 3000)
-        ),
+        amostra,
         x="Idade",
         y="AIOE_SCORE",
         color="NIVEL_IMPACTO",
@@ -185,24 +209,26 @@ def mostrar_impacto_brasil(df):
     # INSIGHTS
     # ======================================
 
-    maior = uf.iloc[0]
+    if len(uf) > 0:
 
-    menor = uf.iloc[-1]
+        maior = uf.iloc[0]
 
-    st.warning(f"""
-    🚨 Estado mais exposto à IA:
+        menor = uf.iloc[-1]
 
-    {maior['UF']}
+        st.warning(f"""
+        🚨 Estado mais exposto à IA:
 
-    Média AIOE:
-    {round(maior['AIOE_SCORE'], 2)}
-    """)
+        {maior['UF']}
 
-    st.success(f"""
-    📉 Estado menos exposto à IA:
+        Média AIOE:
+        {round(maior['AIOE_SCORE'], 2)}
+        """)
 
-    {menor['UF']}
+        st.success(f"""
+        📉 Estado menos exposto à IA:
 
-    Média AIOE:
-    {round(menor['AIOE_SCORE'], 2)}
-    """)
+        {menor['UF']}
+
+        Média AIOE:
+        {round(menor['AIOE_SCORE'], 2)}
+        """)
