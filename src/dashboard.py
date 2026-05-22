@@ -13,6 +13,7 @@ from views.setores import mostrar_setores
 from views.ranking import mostrar_ranking
 from views.similaridade import mostrar_similaridade
 from views.correlacao import mostrar_correlacao
+from views.insights import mostrar_insights
 from views.pesquisa import mostrar_pesquisa
 from views.sobre import mostrar_sobre
 
@@ -59,6 +60,7 @@ pagina = st.sidebar.radio(
         "🏭 Setores x IA",
         "🏆 Ranking",
         "🔥 Correlação",
+        "🧠 Insights IA",
         "🧠 Similaridade",
         "🔎 Pesquisar Ocupação",
         "ℹ️ Sobre"
@@ -191,6 +193,10 @@ elif pagina == "🏆 Ranking":
 elif pagina == "🔥 Correlação":
 
     mostrar_correlacao(df)
+
+elif pagina == "🧠 Insights IA":
+
+    mostrar_insights(df)
 
 elif pagina == "🧠 Similaridade":
 
