@@ -10,18 +10,13 @@ def mostrar_escolaridade(df):
 
     st.title("🎓 Escolaridade x IA")
 
-    st.markdown("""
-    Relação entre escolaridade
-    e exposição à IA.
-    """)
-
     # ======================================
     # VALIDAR
     # ======================================
 
-    if "Anos_Estudo" not in df.columns:
+    if "Curso" not in df.columns:
 
-        st.error("Coluna Anos_Estudo não encontrada.")
+        st.error("Coluna Curso não encontrada.")
 
         return
 
@@ -32,7 +27,7 @@ def mostrar_escolaridade(df):
     escolaridade = df.copy()
 
     escolaridade = escolaridade.dropna(
-        subset=["Anos_Estudo"]
+        subset=["Curso"]
     )
 
     # ======================================
@@ -40,7 +35,7 @@ def mostrar_escolaridade(df):
     # ======================================
 
     escolaridade = (
-        escolaridade.groupby("Anos_Estudo")
+        escolaridade.groupby("Curso")
         .size()
         .reset_index(name="Quantidade")
     )
@@ -48,7 +43,7 @@ def mostrar_escolaridade(df):
     escolaridade = escolaridade.sort_values(
         by="Quantidade",
         ascending=False
-    )
+    ).head(20)
 
     # ======================================
     # GRÁFICO
@@ -56,18 +51,16 @@ def mostrar_escolaridade(df):
 
     fig = px.bar(
         escolaridade,
-        x="Anos_Estudo",
+        x="Curso",
         y="Quantidade",
         color="Quantidade",
-        title="Distribuição por Escolaridade"
+        title="Distribuição por Curso"
     )
 
     st.plotly_chart(
         fig,
         width='stretch'
     )
-
-    st.divider()
 
     st.dataframe(
         escolaridade,
