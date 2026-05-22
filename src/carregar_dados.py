@@ -194,6 +194,11 @@ def cruzar_bases(df_cbo, df_pnad):
         "DESCRIÇÃO SUMÁRIA",
         "FORMAÇÃO E EXPERIÊNCIA",
 
+        "AIOE",
+        "Exposure",
+        "Mean",
+        "SD",
+
         "NIVEL_IMPACTO",
 
         "COD_Grande_Grupo_TITULO",
@@ -204,7 +209,7 @@ def cruzar_bases(df_cbo, df_pnad):
     ]
 
     # ======================================
-    # REMOVER DUPLICADAS DO PNAD
+    # REMOVER COLUNAS DUPLICADAS DA PNAD
     # ======================================
 
     remover = [
@@ -217,7 +222,10 @@ def cruzar_bases(df_cbo, df_pnad):
     for col in remover:
 
         if col in df_pnad.columns:
-            df_pnad = df_pnad.drop(columns=[col])
+
+            df_pnad = df_pnad.drop(
+                columns=col
+            )
 
     # ======================================
     # MERGE
@@ -227,7 +235,7 @@ def cruzar_bases(df_cbo, df_pnad):
 
         df_pnad,
 
-        df_cbo,
+        df_cbo[colunas_merge],
 
         on="CBO_JOIN",
 
@@ -256,25 +264,6 @@ def cruzar_bases(df_cbo, df_pnad):
 
     df_final["AIOE_MATCH_TITLE"] = (
         df_final["match_cod_metodo"]
-    )
-
-    # ======================================
-    # DEBUG
-    # ======================================
-
-    print("\nBASE FINAL:")
-    print(df_final.columns.tolist())
-
-    print(
-        df_final[
-            [
-                "CBO",
-                "CBO_JOIN",
-                "TITULO_LIMPO",
-                "AIOE_SCORE",
-                "NIVEL_IMPACTO"
-            ]
-        ].head(20)
     )
 
     return df_final
