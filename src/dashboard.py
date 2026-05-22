@@ -64,7 +64,7 @@ pagina = st.sidebar.radio(
         "🧠 Insights IA",
         "🧠 Similaridade",
         "🔎 Pesquisar Ocupação",
-        "🔎 Simulador",
+        "🤖 Simulador IA,
         "ℹ️ Sobre"
     ]
 )
@@ -208,7 +208,7 @@ elif pagina == "🔎 Pesquisar Ocupação":
 
     mostrar_pesquisa(df)
 
-elif pagina == "🖥️ Simulador":
+elif pagina == "🤖 Simulador IA":
 
     mostrar_simulador()
 
