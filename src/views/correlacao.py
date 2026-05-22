@@ -132,13 +132,11 @@ def mostrar_correlacao(df):
     fig2 = px.scatter(
 
         amostra,
-
+    
         x="Rendimento_Mensal",
-
+    
         y="AIOE_SCORE",
-
-        trendline="ols",
-
+    
         title="Correlação entre IA e Renda"
     )
 
@@ -160,13 +158,11 @@ def mostrar_correlacao(df):
     fig3 = px.scatter(
 
         amostra,
-
+    
         x="Idade",
-
+    
         y="AIOE_SCORE",
-
-        trendline="ols",
-
+    
         title="Correlação entre IA e Idade"
     )
 
