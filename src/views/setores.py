@@ -1,7 +1,6 @@
 import streamlit as st
 import plotly.express as px
 
-
 # ==========================================
 # SETORES
 # ==========================================
@@ -9,22 +8,44 @@ import plotly.express as px
 def mostrar_setores(df):
 
     st.title(
-        "🏭 Setores x IA"
+        "🏭 Grandes Grupos Ocupacionais"
     )
 
     st.markdown("""
-    Análise da exposição à Inteligência Artificial
-    nos estados brasileiros.
+    Análise da exposição à IA
+    por grupos ocupacionais brasileiros.
     """)
 
     st.divider()
 
     # ======================================
-    # MÉDIA POR UF
+    # VALIDAR
+    # ======================================
+
+    if "COD_Grande_Grupo_TITULO" not in df.columns:
+
+        st.error(
+            "Coluna COD_Grande_Grupo_TITULO não encontrada."
+        )
+
+        return
+
+    # ======================================
+    # LIMPEZA
+    # ======================================
+
+    setores = df.dropna(
+        subset=["COD_Grande_Grupo_TITULO"]
+    )
+
+    # ======================================
+    # MÉDIA POR GRUPO
     # ======================================
 
     grupo = (
-        df.groupby("UF")
+        setores.groupby(
+            "COD_Grande_Grupo_TITULO"
+        )
         ["AIOE_SCORE"]
         .mean()
         .reset_index()
@@ -41,76 +62,14 @@ def mostrar_setores(df):
 
     fig = px.bar(
         grupo,
-        x="UF",
+        x="COD_Grande_Grupo_TITULO",
         y="AIOE_SCORE",
         color="AIOE_SCORE",
-        title="Média de Exposição IA por UF"
+        title="Exposição IA por Grupo Ocupacional"
     )
 
     st.plotly_chart(
         fig,
-        width='stretch'
-    )
-
-    st.divider()
-
-    # ======================================
-    # DISTRIBUIÇÃO
-    # ======================================
-
-    impacto = (
-        df.groupby(
-            [
-                "UF",
-                "NIVEL_IMPACTO"
-            ]
-        )
-        .size()
-        .reset_index(name="Quantidade")
-    )
-
-    fig2 = px.bar(
-        impacto,
-        x="UF",
-        y="Quantidade",
-        color="NIVEL_IMPACTO",
-        barmode="group",
-        title="Distribuição de Impacto IA"
-    )
-
-    st.plotly_chart(
-        fig2,
-        width='stretch'
-    )
-
-    st.divider()
-
-    # ======================================
-    # TOP OCUPAÇÕES
-    # ======================================
-
-    st.subheader(
-        "🚨 Ocupações Mais Expostas"
-    )
-
-    top = (
-        df.sort_values(
-            by="AIOE_SCORE",
-            ascending=False
-        )
-        [
-            [
-                "TITULO_LIMPO",
-                "UF",
-                "AIOE_SCORE",
-                "NIVEL_IMPACTO"
-            ]
-        ]
-        .head(20)
-    )
-
-    st.dataframe(
-        top,
         width='stretch'
     )
 
@@ -127,19 +86,30 @@ def mostrar_setores(df):
         menor = grupo.iloc[-1]
 
         st.warning(f"""
-        🏭 UF mais exposta:
+        🚨 Grupo mais exposto:
 
-        {maior['UF']}
+        {maior['COD_Grande_Grupo_TITULO']}
 
-        Média AIOE:
+        Média:
         {round(maior['AIOE_SCORE'], 2)}
         """)
 
         st.success(f"""
-        📉 UF menos exposta:
+        📉 Grupo menos exposto:
 
-        {menor['UF']}
+        {menor['COD_Grande_Grupo_TITULO']}
 
-        Média AIOE:
+        Média:
         {round(menor['AIOE_SCORE'], 2)}
         """)
+
+    st.divider()
+
+    # ======================================
+    # TABELA
+    # ======================================
+
+    st.dataframe(
+        grupo,
+        width='stretch'
+    )
