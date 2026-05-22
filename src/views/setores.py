@@ -85,52 +85,57 @@ def mostrar_setores(df):
 
     st.divider()
     
-    # ======================================
-    # MAPA BRASIL
-    # ======================================
-    
-    import json
-    import plotly.graph_objects as go
-    
-    st.subheader(
-        "🗺️ Exposição IA por Estado"
-    )
-    
-    # ======================================
-    # AGRUPAR DADOS
-    # ======================================
-    
-    mapa = (
-        df.groupby("UF")
-        .agg({
-            "AIOE_SCORE": "mean",
-            "Rendimento_Mensal": "mean"
-        })
-        .reset_index()
-    )
-    
-    mapa["UF"] = (
-        mapa["UF"]
-        .astype(str)
-        .str.upper()
-    )
-    
-    # ======================================
-    # GEOJSON LOCAL
-    # ======================================
-    
-    with open(
+# ======================================
+# MAPA BRASIL
+# ======================================
+
+import json
+import plotly.graph_objects as go
+
+st.subheader(
+    "🗺️ Exposição IA por Estado"
+)
+
+# ======================================
+# AGRUPAR
+# ======================================
+
+mapa = (
+    df.groupby("UF")
+    .agg({
+        "AIOE_SCORE": "mean",
+        "Rendimento_Mensal": "mean"
+    })
+    .reset_index()
+)
+
+# ======================================
+# LIMPEZA UF
+# ======================================
+
+mapa["UF"] = (
+    mapa["UF"]
+    .astype(str)
+    .str.upper()
+    .str.strip()
+)
+
+# DEBUG
+st.write("UFs encontradas:")
+st.write(mapa["UF"].unique())
+
+# ======================================
+# GEOJSON
+# ======================================
+
+with open(
     "data/brasil_estados.geojson",
     "r",
     encoding="utf-8"
-    ) as f:
-    
-        geojson = json.load(f)
-    
-    st.write(
-        geojson["features"][0]["properties"]
-    )
-    
+) as f:
+
+    geojson = json.load(f)
+
     # ======================================
     # MAPA
     # ======================================
@@ -148,6 +153,10 @@ def mostrar_setores(df):
             featureidkey="properties.sigla",
     
             colorscale="Reds",
+    
+            marker_line_width=0.5,
+    
+            marker_line_color="white",
     
             colorbar_title="AIOE",
     
@@ -179,7 +188,7 @@ def mostrar_setores(df):
     
     fig_mapa.update_layout(
     
-        height=700,
+        height=750,
     
         margin=dict(
             l=0,
