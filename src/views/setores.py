@@ -120,12 +120,16 @@ def mostrar_setores(df):
     # ======================================
     
     with open(
-        "data/brasil_estados.geojson",
-        "r",
-        encoding="utf-8"
+    "data/brasil_estados.geojson",
+    "r",
+    encoding="utf-8"
     ) as f:
     
         geojson = json.load(f)
+    
+    st.write(
+        geojson["features"][0]["properties"]
+    )
     
     # ======================================
     # MAPA
