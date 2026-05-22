@@ -1,30 +1,22 @@
 import streamlit as st
+import traceback
 
-from carregar_dados import criar_base_final
-
-from views.dashboard_home import mostrar_dashboard
-
-st.set_page_config(
-    page_title="IA e Mercado",
-    layout="wide"
-)
-
-st.title("TESTE VIEW")
-
-@st.cache_data
-def carregar():
-
-    return criar_base_final()
-
-df = carregar()
-
-st.success("Dados carregados!")
+st.title("DEBUG TOTAL")
 
 try:
 
-    mostrar_dashboard(df)
+    from carregar_dados import criar_base_final
+
+    st.success("Import OK")
+
+    df = criar_base_final()
+
+    st.success("Base criada!")
+
+    st.write(df.head())
 
 except Exception as e:
 
-    st.error("Erro na view dashboard_home")
-    st.exception(e)
+    st.error("ERRO DETALHADO:")
+
+    st.code(traceback.format_exc())
