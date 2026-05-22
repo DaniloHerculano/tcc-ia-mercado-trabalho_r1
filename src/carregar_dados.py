@@ -35,11 +35,9 @@ def carregar_cbo():
 def carregar_pnad():
 
     df = pd.read_parquet(
-        ARQUIVO_PNAD
+        ARQUIVO_PNAD,
+        engine="pyarrow"
     )
-
-    print("\nCOLUNAS PNAD:")
-    print(df.columns.tolist())
 
     return df
 
