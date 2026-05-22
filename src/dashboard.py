@@ -96,6 +96,36 @@ uf = st.sidebar.selectbox(
 )
 
 # ==========================================
+# FILTRO ANO
+# ==========================================
+
+anos = sorted(
+    df["Ano"]
+    .dropna()
+    .unique()
+)
+
+ano = st.sidebar.selectbox(
+    "📅 Ano",
+    ["Todos"] + list(anos)
+)
+
+# ==========================================
+# FILTRO UF
+# ==========================================
+
+ufs = sorted(
+    df["UF"]
+    .dropna()
+    .unique()
+)
+
+uf = st.sidebar.selectbox(
+    "🌎 UF",
+    ["Todos"] + list(ufs)
+)
+
+# ==========================================
 # FILTRO IMPACTO
 # ==========================================
 
@@ -113,9 +143,11 @@ impacto = st.sidebar.selectbox(
 # APLICAR FILTROS
 # ==========================================
 
-df = df[
-    df["Ano"] == ano
-]
+if ano != "Todos":
+
+    df = df[
+        df["Ano"] == ano
+    ]
 
 if uf != "Todos":
 
