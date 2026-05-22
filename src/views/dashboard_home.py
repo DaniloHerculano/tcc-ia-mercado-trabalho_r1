@@ -61,8 +61,7 @@ def mostrar_dashboard(df):
     
     uf_top = uf_ordenado.iloc[0]
     
-    uf_bottom = uf_ordenado.iloc[-1]  .iloc[0]
-        )
+    uf_bottom = uf_ordenado.iloc[-1]
 
     # ======================================
     # CARDS
@@ -251,4 +250,7 @@ def mostrar_dashboard(df):
 
     O estado com maior exposição média
     foi {uf_top["UF"]}.
+    
+    Já o estado menos exposto
+    foi {uf_bottom["UF"]}.
     """)
