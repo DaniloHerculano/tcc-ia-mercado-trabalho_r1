@@ -7,17 +7,21 @@ import gdown
 # ==========================================
 
 ARQUIVO_CBO = (
-    "data/tabela_cbo_aioe_filtrada_tcc.xlsx"
+    "data/cbo_final_com_felten_gmyrek_cod_FINAL.xlsx"
 )
+
+# ==========================================
+# GOOGLE DRIVE
+# ==========================================
 
 FILE_ID = "1kfa3fXfkSMT3qAUP1OjKJCBjHFQvppOm"
 
 URL_PNAD = (
-    f"https://drive.google.com/uc?export=download&id={FILE_ID}"
+    f"https://drive.google.com/uc?/export=download&id={FILE_ID}"
 )
 
 ARQUIVO_PNAD_LOCAL = (
-    "data/pnad_completa_HISTORICO_LIMPA.parquet"
+    "data/pnad_2020_2025_analitica_ia.parquet"
 )
 
 # ==========================================
@@ -43,6 +47,33 @@ def baixar_pnad():
 
 def carregar_cbo():
 
+    print("\n========== DEBUG CBO ==========")
+
+    print("Diretório atual:")
+    print(os.getcwd())
+
+    print("\nArquivos na pasta data:")
+
+    if os.path.exists("data"):
+
+        print(os.listdir("data"))
+
+    else:
+
+        print("PASTA DATA NÃO EXISTE")
+
+    print("\nTentando abrir:")
+    print(ARQUIVO_CBO)
+
+    print("\nExiste?")
+    print(os.path.exists(ARQUIVO_CBO))
+
+    if not os.path.exists(ARQUIVO_CBO):
+
+        raise FileNotFoundError(
+            f"Arquivo não encontrado: {ARQUIVO_CBO}"
+        )
+
     df = pd.read_excel(
         ARQUIVO_CBO
     )
@@ -60,29 +91,12 @@ def carregar_pnad():
 
     baixar_pnad()
 
-    colunas = [
-        "Ano",
-        "Trimestre",
-        "UF",
-        "Situacao_Domicilio",
-        "Sexo",
-        "Idade",
-        "CBO",
-        "Anos_Estudo",
-        "Rendimento_Mensal"
-    ]
-
     df = pd.read_parquet(
-        ARQUIVO_PNAD_LOCAL,
-        columns=colunas
+        ARQUIVO_PNAD_LOCAL
     )
 
-    if len(df) > 300000:
-
-        df = df.sample(
-            n=300000,
-            random_state=42
-        )
+    print("\nCOLUNAS PNAD:")
+    print(df.columns.tolist())
 
     return df
 
@@ -90,33 +104,12 @@ def carregar_pnad():
 # LIMPAR CBO
 # ==========================================
 
-def limpar_dados(df):
+def limpar_cbo(df):
 
-    # RENOMEAR
-    df = df.rename(columns={
+    # ======================================
+    # CBO JOIN
+    # ======================================
 
-        "AIOE_score": "AIOE_SCORE",
-
-        "Occupation_Title_AIOE":
-        "AIOE_MATCH_TITLE"
-
-    })
-
-    # NUMÉRICO
-    df["AIOE_SCORE"] = pd.to_numeric(
-        df["AIOE_SCORE"],
-        errors="coerce"
-    )
-
-    # REMOVER NULOS
-    df = df.dropna(
-        subset=[
-            "CBO_EXTRAIDO",
-            "AIOE_SCORE"
-        ]
-    )
-
-    # AJUSTAR CBO
     df["CBO_JOIN"] = (
 
         df["CBO_EXTRAIDO"]
@@ -132,8 +125,28 @@ def limpar_dados(df):
         .str[:6]
     )
 
+    # ======================================
+    # NUMÉRICOS
+    # ======================================
+
+    df["AIOE"] = pd.to_numeric(
+        df["AIOE"],
+        errors="coerce"
+    )
+
+    df["Exposure"] = pd.to_numeric(
+        df["Exposure"],
+        errors="coerce"
+    )
+
+    # ======================================
     # NÍVEL IMPACTO
+    # ======================================
+
     def classificar(score):
+
+        if pd.isna(score):
+            return "Não informado"
 
         if score >= 0.75:
             return "🔴 Alto"
@@ -144,28 +157,8 @@ def limpar_dados(df):
         return "🟢 Baixo"
 
     df["NIVEL_IMPACTO"] = (
-        df["AIOE_SCORE"]
+        df["AIOE"]
         .apply(classificar)
-    )
-
-    # CAMPOS AUXILIARES
-    df["CONFIDENCE_SCORE"] = 1.0
-
-    df["Grande Grupo"] = (
-        df["CBO_JOIN"]
-        .str[0]
-    )
-
-    print("\nCBO LIMPO:")
-    print(
-        df[
-            [
-                "CBO_EXTRAIDO",
-                "CBO_JOIN",
-                "TITULO_LIMPO",
-                "AIOE_SCORE"
-            ]
-        ].head(10)
     )
 
     return df
@@ -176,22 +169,33 @@ def limpar_dados(df):
 
 def limpar_pnad(df):
 
-    df["Ano"] = pd.to_numeric(
-        df["Ano"],
-        errors="coerce"
-    )
+    # ======================================
+    # NUMÉRICOS
+    # ======================================
 
-    df["Idade"] = pd.to_numeric(
-        df["Idade"],
-        errors="coerce"
-    )
+    colunas_numericas = [
 
-    df["Rendimento_Mensal"] = pd.to_numeric(
-        df["Rendimento_Mensal"],
-        errors="coerce"
-    )
+        "Idade",
+        "Rendimento_Mensal",
+        "AIOE",
+        "Exposure",
+        "Mean",
+        "SD"
+    ]
 
-    # AJUSTAR CBO
+    for col in colunas_numericas:
+
+        if col in df.columns:
+
+            df[col] = pd.to_numeric(
+                df[col],
+                errors="coerce"
+            )
+
+    # ======================================
+    # CBO JOIN
+    # ======================================
+
     df["CBO_JOIN"] = (
 
         df["CBO"]
@@ -207,7 +211,10 @@ def limpar_pnad(df):
         .str[:6]
     )
 
+    # ======================================
     # SEXO
+    # ======================================
+
     mapa_sexo = {
         "1": "Masculino",
         "2": "Feminino"
@@ -216,25 +223,13 @@ def limpar_pnad(df):
     df["Sexo"] = (
         df["Sexo"]
         .astype(str)
-        .map(mapa_sexo)
-    )
-
-    # DOMICÍLIO
-    mapa_dom = {
-        "1": "Urbana",
-        "2": "Rural"
-    }
-
-    df["Situacao_Domicilio"] = (
-        df["Situacao_Domicilio"]
-        .astype(str)
-        .map(mapa_dom)
+        .replace(mapa_sexo)
     )
 
     return df
 
 # ==========================================
-# MERGE
+# CRUZAR BASES
 # ==========================================
 
 def cruzar_bases(df_cbo, df_pnad):
@@ -246,11 +241,26 @@ def cruzar_bases(df_cbo, df_pnad):
         "TITULO_LIMPO",
         "DESCRIÇÃO SUMÁRIA",
         "FORMAÇÃO E EXPERIÊNCIA",
-        "AIOE_SCORE",
-        "AIOE_MATCH_TITLE",
+
+        "AIOE",
+        "Exposure",
+        "Mean",
+        "SD",
+
         "NIVEL_IMPACTO",
-        "CONFIDENCE_SCORE",
-        "Grande Grupo"
+
+        "COD_Grupo_Base",
+        "COD_Titulacao",
+
+        "COD_Grande_Grupo",
+        "COD_Subgrupo_principal",
+        "COD_Subgrupo",
+
+        "COD_Grande_Grupo_TITULO",
+        "COD_Subgrupo_principal_TITULO",
+        "COD_Subgrupo_TITULO",
+
+        "match_cod_metodo"
     ]
 
     df_final = pd.merge(
@@ -264,38 +274,35 @@ def cruzar_bases(df_cbo, df_pnad):
         how="left"
     )
 
-    print("\nMERGE RESULTADO:")
-    print(
+    # ======================================
+    # PADRONIZAÇÃO NOMES
+    # ======================================
 
-        df_final[
-            [
-                "CBO",
-                "CBO_JOIN",
-                "CBO_EXTRAIDO",
-                "TITULO_LIMPO",
-                "AIOE_SCORE"
-            ]
-        ].head(20)
+    df_final["AIOE_SCORE"] = (
+        df_final["AIOE"]
     )
 
-    print("\nTOTAL COM MATCH:")
+    df_final["AIOE_MATCH_TITLE"] = (
+        df_final["ISCO-08 Title"]
+        if "ISCO-08 Title" in df_final.columns
+        else None
+    )
+
+    df_final["CONFIDENCE_SCORE"] = (
+        df_final["Mean"]
+    )
+
+    print("\nMATCHES:")
     print(
         df_final["AIOE_SCORE"]
         .notna()
         .sum()
     )
 
-    print("\nTOTAL SEM MATCH:")
-    print(
-        df_final["AIOE_SCORE"]
-        .isna()
-        .sum()
-    )
-
     return df_final
 
 # ==========================================
-# CRIAR BASE FINAL
+# BASE FINAL
 # ==========================================
 
 def criar_base_final():
@@ -304,7 +311,7 @@ def criar_base_final():
 
     df_pnad = carregar_pnad()
 
-    df_cbo = limpar_dados(df_cbo)
+    df_cbo = limpar_cbo(df_cbo)
 
     df_pnad = limpar_pnad(df_pnad)
 
@@ -313,7 +320,7 @@ def criar_base_final():
         df_pnad
     )
 
-    print("\nCOLUNAS FINAIS:")
-    print(df_final.columns.tolist())
+    print("\nBASE FINAL:")
+    print(df_final.head())
 
     return df_final
