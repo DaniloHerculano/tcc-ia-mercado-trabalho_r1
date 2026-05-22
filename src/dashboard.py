@@ -1,19 +1,23 @@
 import streamlit as st
 
+from carregar_dados import criar_base_final
+
 st.set_page_config(
-    page_title="TESTE",
+    page_title="DEBUG",
     layout="wide"
 )
 
-st.title("TESTE INICIAL")
+st.title("DEBUG DASHBOARD")
 
 try:
 
-    import carregar_dados
+    df = criar_base_final()
 
-    st.success("carregar_dados importado!")
+    st.success("Base carregada!")
+
+    st.write(df.head())
 
 except Exception as e:
 
-    st.error("ERRO AO IMPORTAR carregar_dados")
+    st.error("Erro ao carregar base")
     st.exception(e)
