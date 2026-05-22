@@ -10,6 +10,11 @@ def mostrar_escolaridade(df):
 
     st.title("🎓 Escolaridade x IA")
 
+    st.markdown("""
+    Relação entre formação profissional
+    e exposição à Inteligência Artificial.
+    """)
+
     # ======================================
     # VALIDAR
     # ======================================
@@ -36,12 +41,13 @@ def mostrar_escolaridade(df):
 
     escolaridade = (
         escolaridade.groupby("Curso")
-        .size()
-        .reset_index(name="Quantidade")
+        ["AIOE_SCORE"]
+        .mean()
+        .reset_index()
     )
 
     escolaridade = escolaridade.sort_values(
-        by="Quantidade",
+        by="AIOE_SCORE",
         ascending=False
     ).head(20)
 
@@ -52,9 +58,9 @@ def mostrar_escolaridade(df):
     fig = px.bar(
         escolaridade,
         x="Curso",
-        y="Quantidade",
-        color="Quantidade",
-        title="Distribuição por Curso"
+        y="AIOE_SCORE",
+        color="AIOE_SCORE",
+        title="Cursos com Maior Exposição à IA"
     )
 
     st.plotly_chart(
@@ -62,7 +68,26 @@ def mostrar_escolaridade(df):
         width='stretch'
     )
 
+    st.divider()
+
     st.dataframe(
         escolaridade,
         width='stretch'
     )
+
+    # ======================================
+    # INSIGHT
+    # ======================================
+
+    if len(escolaridade) > 0:
+
+        maior = escolaridade.iloc[0]
+
+        st.warning(f"""
+        📌 Curso mais exposto:
+
+        {maior['Curso']}
+
+        Média AIOE:
+        {round(maior['AIOE_SCORE'], 2)}
+        """)
