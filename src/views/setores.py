@@ -100,15 +100,18 @@ def mostrar_setores(df):
         .reset_index()
     )
     
-    fig_mapa = px.scatter_geo(
+    # PREFIXO BR
+    mapa["UF_BR"] = (
+        "BR-" + mapa["UF"].astype(str)
+    )
+    
+    fig_mapa = px.choropleth(
     
         mapa,
     
-        locations="UF",
+        locations="UF_BR",
     
-        locationmode="USA-states",
-    
-        size="AIOE_SCORE",
+        locationmode="geojson-id",
     
         color="AIOE_SCORE",
     
@@ -126,6 +129,12 @@ def mostrar_setores(df):
         title="Mapa de Exposição IA por Estado"
     )
     
+    fig_mapa.update_geos(
+        visible=False,
+        showcountries=True,
+        countrycolor="Black"
+    )
+    
     st.plotly_chart(
         fig_mapa,
         width='stretch'
@@ -133,7 +142,6 @@ def mostrar_setores(df):
     
     st.divider()
 
-    
     # ======================================
     # DISTRIBUIÇÃO IMPACTO
     # ======================================
