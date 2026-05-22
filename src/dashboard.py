@@ -1,7 +1,9 @@
 import streamlit as st
+import pandas as pd
 
 from carregar_dados import (
-    criar_base_final
+    carregar_pnad,
+    carregar_cbo
 )
 
 st.set_page_config(
@@ -9,23 +11,40 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("DEBUG")
+st.title("DEBUG FINAL")
 
-@st.cache_data
-def carregar():
-
-    return criar_base_final()
+# ==========================================
+# TESTE PNAD
+# ==========================================
 
 try:
 
-    df = carregar()
+    st.write("TESTE PARQUET")
 
-    st.success("DATAFRAME CARREGADO")
+    df_pnad = carregar_pnad()
 
-    st.write(df.head())
+    st.success("PARQUET OK")
 
-    st.write(df.columns.tolist())
+    st.write(df_pnad.head())
 
 except Exception as e:
 
-    st.error(str(e))
+    st.error(f"ERRO PARQUET: {e}")
+
+# ==========================================
+# TESTE CBO
+# ==========================================
+
+try:
+
+    st.write("TESTE CBO")
+
+    df_cbo = carregar_cbo()
+
+    st.success("CBO OK")
+
+    st.write(df_cbo.head())
+
+except Exception as e:
+
+    st.error(f"ERRO CBO: {e}")

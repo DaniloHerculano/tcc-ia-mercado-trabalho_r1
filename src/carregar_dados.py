@@ -1,5 +1,4 @@
 import pandas as pd
-import streamlit as st
 
 # ==========================================
 # CAMINHOS
@@ -24,9 +23,6 @@ def carregar_cbo():
         engine="openpyxl"
     )
 
-    print("\nCOLUNAS CBO:")
-    print(df.columns.tolist())
-
     return df
 
 # ==========================================
@@ -35,38 +31,18 @@ def carregar_cbo():
 
 def carregar_pnad():
 
-    st = __import__("streamlit")
+    df = pd.read_parquet(
+        ARQUIVO_PNAD,
+        engine="pyarrow"
+    )
 
-    st.write("Abrindo parquet...")
-
-    try:
-
-        df = pd.read_parquet(
-            ARQUIVO_PNAD,
-            engine="pyarrow"
-        )
-
-        st.write("Parquet carregado!")
-
-        st.write(df.head())
-
-        return df
-
-    except Exception as e:
-
-        st.error(f"ERRO PARQUET: {e}")
-
-        raise e
+    return df
 
 # ==========================================
 # LIMPAR CBO
 # ==========================================
 
 def limpar_cbo(df):
-
-    # ======================================
-    # CBO JOIN
-    # ======================================
 
     df["CBO_JOIN"] = (
 
@@ -83,10 +59,6 @@ def limpar_cbo(df):
         .str[:6]
     )
 
-    # ======================================
-    # NUMÉRICOS
-    # ======================================
-
     numeros = [
         "AIOE",
         "Exposure",
@@ -102,10 +74,6 @@ def limpar_cbo(df):
                 df[col],
                 errors="coerce"
             )
-
-    # ======================================
-    # IMPACTO
-    # ======================================
 
     def classificar(score):
 
@@ -154,10 +122,6 @@ def limpar_pnad(df):
                 errors="coerce"
             )
 
-    # ======================================
-    # CBO JOIN
-    # ======================================
-
     df["CBO_JOIN"] = (
 
         df["CBO"]
@@ -172,10 +136,6 @@ def limpar_pnad(df):
 
         .str[:6]
     )
-
-    # ======================================
-    # SEXO
-    # ======================================
 
     mapa_sexo = {
 
@@ -223,10 +183,6 @@ def cruzar_bases(df_cbo, df_pnad):
         "match_cod_metodo"
     ]
 
-    # ======================================
-    # REMOVER COLUNAS DUPLICADAS DA PNAD
-    # ======================================
-
     remover = [
         "AIOE",
         "Exposure",
@@ -242,10 +198,6 @@ def cruzar_bases(df_cbo, df_pnad):
                 columns=col
             )
 
-    # ======================================
-    # MERGE
-    # ======================================
-
     df_final = pd.merge(
 
         df_pnad,
@@ -257,9 +209,10 @@ def cruzar_bases(df_cbo, df_pnad):
         how="left"
     )
 
-    # ======================================
-    # PADRONIZAÇÃO
-    # ======================================
+    df_final = df_final.loc[
+        :,
+        ~df_final.columns.duplicated()
+    ]
 
     df_final["AIOE_SCORE"] = (
         df_final["AIOE"]
@@ -279,6 +232,10 @@ def cruzar_bases(df_cbo, df_pnad):
 
     df_final["AIOE_MATCH_TITLE"] = (
         df_final["match_cod_metodo"]
+    )
+
+    df_final = df_final.reset_index(
+        drop=True
     )
 
     return df_final
