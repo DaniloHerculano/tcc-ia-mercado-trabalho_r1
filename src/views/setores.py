@@ -100,7 +100,6 @@ def mostrar_setores(df):
         .reset_index()
     )
     
-    # SIGLA UF
     mapa["UF"] = (
         mapa["UF"]
         .astype(str)
@@ -108,26 +107,22 @@ def mostrar_setores(df):
     )
     
     # ======================================
-    # GEOJSON BRASIL
+    # CHOROPLETH
     # ======================================
-    
-    url_geojson = (
-        "https://raw.githubusercontent.com/"
-        "codeforamerica/click_that_hood/master/"
-        "public/data/brazil-states.geojson"
-    )
     
     fig_mapa = px.choropleth(
     
         mapa,
     
-        geojson=url_geojson,
-    
         locations="UF",
     
-        featureidkey="properties.sigla",
+        locationmode="geojson-id",
     
         color="AIOE_SCORE",
+    
+        scope="south america",
+    
+        color_continuous_scale="Reds",
     
         hover_name="UF",
     
@@ -136,14 +131,19 @@ def mostrar_setores(df):
             "Rendimento_Mensal": ":.2f"
         },
     
-        color_continuous_scale="Reds",
-    
         title="Mapa de Exposição IA por Estado"
     )
     
     fig_mapa.update_geos(
     
-        fitbounds="locations",
+        scope="south america",
+    
+        center=dict(
+            lat=-14,
+            lon=-52
+        ),
+    
+        projection_scale=4.5,
     
         visible=False
     )
