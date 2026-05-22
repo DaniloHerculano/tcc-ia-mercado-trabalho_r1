@@ -2,8 +2,10 @@ import os
 import pandas as pd
 import gdown
 
+import pandas as pd
+
 # ==========================================
-# ARQUIVOS
+# CAMINHOS
 # ==========================================
 
 ARQUIVO_CBO = (
@@ -12,16 +14,6 @@ ARQUIVO_CBO = (
 
 ARQUIVO_PNAD_LOCAL = (
     "data/pnad_2020_2025_analitica_ia.parquet"
-)
-
-# ==========================================
-# GOOGLE DRIVE
-# ==========================================
-
-FILE_ID = "1kfa3fXfkSMT3qAUP1OjKJCBjHFQvppOm"
-
-URL_PNAD = (
-    f"https://drive.google.com/uc?id={FILE_ID}"
 )
 
 # ==========================================
@@ -60,11 +52,12 @@ def carregar_cbo():
 
 def carregar_pnad():
 
-    baixar_pnad()
-
     df = pd.read_parquet(
         ARQUIVO_PNAD_LOCAL
     )
+
+    print("\nCOLUNAS PNAD:")
+    print(df.columns.tolist())
 
     return df
 
