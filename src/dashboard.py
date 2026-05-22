@@ -42,7 +42,7 @@ with st.spinner("Carregando dados..."):
     df = carregar()
 
 # ==========================================
-# FILTROS GLOBAIS
+# SIDEBAR
 # ==========================================
 
 st.sidebar.title("📌 Navegação")
@@ -64,36 +64,6 @@ pagina = st.sidebar.radio(
 )
 
 st.sidebar.divider()
-
-# ==========================================
-# FILTRO ANO
-# ==========================================
-
-anos = sorted(
-    df["Ano"]
-    .dropna()
-    .unique()
-)
-
-ano = st.sidebar.selectbox(
-    "📅 Ano",
-    anos
-)
-
-# ==========================================
-# FILTRO UF
-# ==========================================
-
-ufs = sorted(
-    df["UF"]
-    .dropna()
-    .unique()
-)
-
-uf = st.sidebar.selectbox(
-    "🌎 UF",
-    ["Todos"] + list(ufs)
-)
 
 # ==========================================
 # FILTRO ANO
@@ -172,10 +142,16 @@ media = round(
     2
 )
 
+total = len(df)
+
 st.sidebar.info(f"""
 📌 Média geral AIOE:
 
 {media}
+
+👥 Registros analisados:
+
+{total:,}
 """)
 
 # ==========================================
