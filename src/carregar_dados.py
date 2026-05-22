@@ -1,4 +1,3 @@
-import os
 import pandas as pd
 
 # ==========================================
@@ -24,6 +23,9 @@ def carregar_cbo():
         engine="openpyxl"
     )
 
+    print("\nCOLUNAS CBO:")
+    print(df.columns.tolist())
+
     return df
 
 # ==========================================
@@ -35,6 +37,9 @@ def carregar_pnad():
     df = pd.read_parquet(
         ARQUIVO_PNAD
     )
+
+    print("\nCOLUNAS PNAD:")
+    print(df.columns.tolist())
 
     return df
 
@@ -98,8 +103,7 @@ def limpar_cbo(df):
         elif score >= 0.45:
             return "🟡 Médio"
 
-        else:
-            return "🟢 Baixo"
+        return "🟢 Baixo"
 
     df["NIVEL_IMPACTO"] = (
         df["AIOE"]
@@ -113,10 +117,6 @@ def limpar_cbo(df):
 # ==========================================
 
 def limpar_pnad(df):
-
-    # ======================================
-    # NUMÉRICOS
-    # ======================================
 
     numeros = [
 
@@ -194,11 +194,6 @@ def cruzar_bases(df_cbo, df_pnad):
         "DESCRIÇÃO SUMÁRIA",
         "FORMAÇÃO E EXPERIÊNCIA",
 
-        "AIOE",
-        "Exposure",
-        "Mean",
-        "SD",
-
         "NIVEL_IMPACTO",
 
         "COD_Grande_Grupo_TITULO",
@@ -208,11 +203,31 @@ def cruzar_bases(df_cbo, df_pnad):
         "match_cod_metodo"
     ]
 
+    # ======================================
+    # REMOVER DUPLICADAS DO PNAD
+    # ======================================
+
+    remover = [
+        "AIOE",
+        "Exposure",
+        "Mean",
+        "SD"
+    ]
+
+    for col in remover:
+
+        if col in df_pnad.columns:
+            df_pnad = df_pnad.drop(columns=[col])
+
+    # ======================================
+    # MERGE
+    # ======================================
+
     df_final = pd.merge(
 
         df_pnad,
 
-        df_cbo[colunas_merge],
+        df_cbo,
 
         on="CBO_JOIN",
 
@@ -224,15 +239,11 @@ def cruzar_bases(df_cbo, df_pnad):
     # ======================================
 
     df_final["AIOE_SCORE"] = (
-        df_final["AIOE_y"]
-        if "AIOE_y" in df_final.columns
-        else df_final["AIOE"]
+        df_final["AIOE"]
     )
 
     df_final["CONFIDENCE_SCORE"] = (
-        df_final["Mean_y"]
-        if "Mean_y" in df_final.columns
-        else df_final["Mean"]
+        df_final["Mean"]
     )
 
     df_final["Grande Grupo"] = (
@@ -247,6 +258,25 @@ def cruzar_bases(df_cbo, df_pnad):
         df_final["match_cod_metodo"]
     )
 
+    # ======================================
+    # DEBUG
+    # ======================================
+
+    print("\nBASE FINAL:")
+    print(df_final.columns.tolist())
+
+    print(
+        df_final[
+            [
+                "CBO",
+                "CBO_JOIN",
+                "TITULO_LIMPO",
+                "AIOE_SCORE",
+                "NIVEL_IMPACTO"
+            ]
+        ].head(20)
+    )
+
     return df_final
 
 # ==========================================
@@ -255,32 +285,17 @@ def cruzar_bases(df_cbo, df_pnad):
 
 def criar_base_final():
 
-    # ======================================
-    # CARREGAR
-    # ======================================
-
     df_cbo = carregar_cbo()
 
     df_pnad = carregar_pnad()
-
-    # ======================================
-    # LIMPAR
-    # ======================================
 
     df_cbo = limpar_cbo(df_cbo)
 
     df_pnad = limpar_pnad(df_pnad)
 
-    # ======================================
-    # MERGE
-    # ======================================
-
     df_final = cruzar_bases(
         df_cbo,
         df_pnad
     )
-
-    print("\nBASE FINAL:")
-    print(df_final.head())
 
     return df_final
