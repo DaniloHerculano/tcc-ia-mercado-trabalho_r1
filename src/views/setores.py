@@ -100,18 +100,32 @@ def mostrar_setores(df):
         .reset_index()
     )
     
-    # PREFIXO BR
-    mapa["UF_BR"] = (
-        "BR-" + mapa["UF"].astype(str)
+    # SIGLA UF
+    mapa["UF"] = (
+        mapa["UF"]
+        .astype(str)
+        .str.upper()
+    )
+    
+    # ======================================
+    # GEOJSON BRASIL
+    # ======================================
+    
+    url_geojson = (
+        "https://raw.githubusercontent.com/"
+        "codeforamerica/click_that_hood/master/"
+        "public/data/brazil-states.geojson"
     )
     
     fig_mapa = px.choropleth(
     
         mapa,
     
-        locations="UF_BR",
+        geojson=url_geojson,
     
-        locationmode="geojson-id",
+        locations="UF",
+    
+        featureidkey="properties.sigla",
     
         color="AIOE_SCORE",
     
@@ -124,15 +138,19 @@ def mostrar_setores(df):
     
         color_continuous_scale="Reds",
     
-        scope="south america",
-    
         title="Mapa de Exposição IA por Estado"
     )
     
     fig_mapa.update_geos(
-        visible=False,
-        showcountries=True,
-        countrycolor="Black"
+    
+        fitbounds="locations",
+    
+        visible=False
+    )
+    
+    fig_mapa.update_layout(
+    
+        height=700
     )
     
     st.plotly_chart(
@@ -141,7 +159,7 @@ def mostrar_setores(df):
     )
     
     st.divider()
-
+    
     # ======================================
     # DISTRIBUIÇÃO IMPACTO
     # ======================================
