@@ -35,7 +35,10 @@ def mostrar_setores(df):
     # ======================================
 
     setores = df.dropna(
-        subset=["COD_Grande_Grupo_TITULO"]
+        subset=[
+            "COD_Grande_Grupo_TITULO",
+            "AIOE_SCORE"
+        ]
     )
 
     # ======================================
@@ -68,8 +71,130 @@ def mostrar_setores(df):
         title="Exposição IA por Grupo Ocupacional"
     )
 
+    fig.update_layout(
+        xaxis_title="Grupo Ocupacional",
+        yaxis_title="Média AIOE"
+    )
+
     st.plotly_chart(
         fig,
+        width='stretch'
+    )
+
+    st.divider()
+
+    # ======================================
+    # MAPA BRASIL
+    # ======================================
+    
+    st.subheader(
+        "🗺️ Exposição IA por Estado"
+    )
+    
+    mapa = (
+        df.groupby("UF")
+        .agg({
+            "AIOE_SCORE": "mean",
+            "Rendimento_Mensal": "mean"
+        })
+        .reset_index()
+    )
+    
+    fig_mapa = px.scatter_geo(
+    
+        mapa,
+    
+        locations="UF",
+    
+        locationmode="USA-states",
+    
+        size="AIOE_SCORE",
+    
+        color="AIOE_SCORE",
+    
+        hover_name="UF",
+    
+        hover_data={
+            "AIOE_SCORE": ":.2f",
+            "Rendimento_Mensal": ":.2f"
+        },
+    
+        color_continuous_scale="Reds",
+    
+        scope="south america",
+    
+        title="Mapa de Exposição IA por Estado"
+    )
+    
+    st.plotly_chart(
+        fig_mapa,
+        width='stretch'
+    )
+    
+    st.divider()
+
+    
+    # ======================================
+    # DISTRIBUIÇÃO IMPACTO
+    # ======================================
+
+    st.subheader(
+        "📊 Distribuição de Impacto por Grupo"
+    )
+
+    impacto = (
+        setores.groupby(
+            [
+                "COD_Grande_Grupo_TITULO",
+                "NIVEL_IMPACTO"
+            ]
+        )
+        .size()
+        .reset_index(name="Quantidade")
+    )
+
+    fig2 = px.bar(
+        impacto,
+        x="COD_Grande_Grupo_TITULO",
+        y="Quantidade",
+        color="NIVEL_IMPACTO",
+        barmode="group",
+        title="Distribuição de Impacto IA"
+    )
+
+    st.plotly_chart(
+        fig2,
+        width='stretch'
+    )
+
+    st.divider()
+
+    # ======================================
+    # TOP OCUPAÇÕES
+    # ======================================
+
+    st.subheader(
+        "🚨 Ocupações Mais Expostas"
+    )
+
+    top = (
+        setores.sort_values(
+            by="AIOE_SCORE",
+            ascending=False
+        )
+        [
+            [
+                "TITULO_LIMPO",
+                "COD_Grande_Grupo_TITULO",
+                "AIOE_SCORE",
+                "NIVEL_IMPACTO"
+            ]
+        ]
+        .head(20)
+    )
+
+    st.dataframe(
+        top,
         width='stretch'
     )
 
@@ -106,8 +231,12 @@ def mostrar_setores(df):
     st.divider()
 
     # ======================================
-    # TABELA
+    # TABELA FINAL
     # ======================================
+
+    st.subheader(
+        "📋 Média IA por Grupo"
+    )
 
     st.dataframe(
         grupo,
