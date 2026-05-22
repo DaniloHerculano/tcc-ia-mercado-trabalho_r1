@@ -70,31 +70,53 @@ pagina = st.sidebar.radio(
 # ==========================================
 
 if pagina == "📊 Dashboard":
+
     mostrar_dashboard(df)
 
 elif pagina == "🇧🇷 Impacto no Brasil":
-    mostrar_impacto_brasil(df)
+
+    mostrar_impacto_brasil(
+        df,
+        df
+    )
 
 elif pagina == "📈 Evolução Temporal":
-    mostrar_evolucao_temporal(df)
+
+    mostrar_evolucao_temporal(
+        df,
+        df
+    )
 
 elif pagina == "🎓 Escolaridade x IA":
-    mostrar_escolaridade(df)
+
+    mostrar_escolaridade(
+        df,
+        df
+    )
 
 elif pagina == "💰 Renda x IA":
-    mostrar_renda(df)
+
+    mostrar_renda(
+        df,
+        df
+    )
 
 elif pagina == "🏭 Setores x IA":
+
     mostrar_setores(df)
 
 elif pagina == "🏆 Ranking":
+
     mostrar_ranking(df)
 
 elif pagina == "🧠 Similaridade":
+
     mostrar_similaridade(df)
 
 elif pagina == "🔎 Pesquisar Ocupação":
+
     mostrar_pesquisa(df)
 
 elif pagina == "ℹ️ Sobre":
+
     mostrar_sobre()
