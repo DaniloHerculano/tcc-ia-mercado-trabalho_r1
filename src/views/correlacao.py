@@ -50,14 +50,10 @@ def mostrar_correlacao(df):
         return
 
     # ======================================
-    # COPIAR
+    # DATAFRAME
     # ======================================
 
     corr_df = df[colunas].copy()
-
-    # ======================================
-    # NUMÉRICOS
-    # ======================================
 
     for col in colunas:
 
@@ -66,18 +62,7 @@ def mostrar_correlacao(df):
             errors="coerce"
         )
 
-    # ======================================
-    # REMOVER NAN
-    # ======================================
-
     corr_df = corr_df.dropna()
-
-    # DEBUG
-    st.write("Total linhas válidas:")
-    st.write(len(corr_df))
-
-    st.write("Prévia:")
-    st.write(corr_df.head())
 
     # ======================================
     # VALIDAR
@@ -86,8 +71,7 @@ def mostrar_correlacao(df):
     if len(corr_df) == 0:
 
         st.error("""
-        Nenhum dado válido encontrado
-        para gerar correlação.
+        Nenhum dado válido encontrado.
         """)
 
         return
@@ -98,12 +82,13 @@ def mostrar_correlacao(df):
 
     matriz = corr_df.corr()
 
-    st.write("Matriz:")
-    st.write(matriz)
-
     # ======================================
     # HEATMAP
     # ======================================
+
+    st.subheader(
+        "🧠 Heatmap de Correlação"
+    )
 
     fig = px.imshow(
 
@@ -122,11 +107,71 @@ def mostrar_correlacao(df):
     )
 
     fig.update_layout(
-        height=650
+        height=700
     )
 
     st.plotly_chart(
         fig,
+        width='stretch'
+    )
+
+    st.divider()
+
+    # ======================================
+    # SCATTER IA X RENDA
+    # ======================================
+
+    st.subheader(
+        "💰 IA x Renda"
+    )
+
+    amostra = corr_df.sample(
+        min(len(corr_df), 3000)
+    )
+
+    fig2 = px.scatter(
+
+        amostra,
+
+        x="Rendimento_Mensal",
+
+        y="AIOE_SCORE",
+
+        trendline="ols",
+
+        title="Correlação entre IA e Renda"
+    )
+
+    st.plotly_chart(
+        fig2,
+        width='stretch'
+    )
+
+    st.divider()
+
+    # ======================================
+    # IA X IDADE
+    # ======================================
+
+    st.subheader(
+        "🎂 IA x Idade"
+    )
+
+    fig3 = px.scatter(
+
+        amostra,
+
+        x="Idade",
+
+        y="AIOE_SCORE",
+
+        trendline="ols",
+
+        title="Correlação entre IA e Idade"
+    )
+
+    st.plotly_chart(
+        fig3,
         width='stretch'
     )
 
@@ -156,29 +201,41 @@ def mostrar_correlacao(df):
         2
     )
 
-    st.info(f"""
-    💰 Correlação IA x Renda:
-    {corr_renda}
-    """)
+    col1, col2 = st.columns(2)
 
-    st.info(f"""
-    🎂 Correlação IA x Idade:
-    {corr_idade}
-    """)
+    with col1:
+
+        st.metric(
+            "💰 IA x Renda",
+            corr_renda
+        )
+
+    with col2:
+
+        st.metric(
+            "🎂 IA x Idade",
+            corr_idade
+        )
+
+    st.divider()
 
     # ======================================
     # INTERPRETAÇÃO
     # ======================================
 
-    if corr_renda >= 0.3:
+    st.subheader(
+        "📌 Interpretação"
+    )
+
+    if corr_renda >= 0.30:
 
         st.success("""
         Ocupações com maior renda
-        tendem a apresentar maior
+        tendem a possuir maior
         exposição à IA.
         """)
 
-    elif corr_renda <= -0.3:
+    elif corr_renda <= -0.30:
 
         st.warning("""
         Ocupações com menor renda
@@ -190,5 +247,18 @@ def mostrar_correlacao(df):
 
         st.info("""
         A relação entre renda e IA
-        foi fraca.
+        foi considerada fraca.
         """)
+
+    # ======================================
+    # TABELA
+    # ======================================
+
+    st.subheader(
+        "📋 Dados de Correlação"
+    )
+
+    st.dataframe(
+        matriz,
+        width='stretch'
+    )
