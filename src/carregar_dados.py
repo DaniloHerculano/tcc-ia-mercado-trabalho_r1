@@ -1,4 +1,4 @@
-```python
+import os
 import pandas as pd
 
 # ==========================================
@@ -9,7 +9,7 @@ ARQUIVO_CBO = (
     "data/cbo_final_com_felten_gmyrek_cod_FINAL.xlsx"
 )
 
-ARQUIVO_PNAD_LOCAL = (
+ARQUIVO_PNAD = (
     "data/pnad_2020_2025_analitica_ia.parquet"
 )
 
@@ -24,9 +24,6 @@ def carregar_cbo():
         engine="openpyxl"
     )
 
-    print("\nCOLUNAS CBO:")
-    print(df.columns.tolist())
-
     return df
 
 # ==========================================
@@ -36,11 +33,8 @@ def carregar_cbo():
 def carregar_pnad():
 
     df = pd.read_parquet(
-        ARQUIVO_PNAD_LOCAL
+        ARQUIVO_PNAD
     )
-
-    print("\nCOLUNAS PNAD:")
-    print(df.columns.tolist())
 
     return df
 
@@ -49,6 +43,10 @@ def carregar_pnad():
 # ==========================================
 
 def limpar_cbo(df):
+
+    # ======================================
+    # CBO JOIN
+    # ======================================
 
     df["CBO_JOIN"] = (
 
@@ -65,10 +63,29 @@ def limpar_cbo(df):
         .str[:6]
     )
 
-    df["AIOE"] = pd.to_numeric(
-        df["AIOE"],
-        errors="coerce"
-    )
+    # ======================================
+    # NUMÉRICOS
+    # ======================================
+
+    numeros = [
+        "AIOE",
+        "Exposure",
+        "Mean",
+        "SD"
+    ]
+
+    for col in numeros:
+
+        if col in df.columns:
+
+            df[col] = pd.to_numeric(
+                df[col],
+                errors="coerce"
+            )
+
+    # ======================================
+    # IMPACTO
+    # ======================================
 
     def classificar(score):
 
@@ -81,7 +98,8 @@ def limpar_cbo(df):
         elif score >= 0.45:
             return "🟡 Médio"
 
-        return "🟢 Baixo"
+        else:
+            return "🟢 Baixo"
 
     df["NIVEL_IMPACTO"] = (
         df["AIOE"]
@@ -96,8 +114,14 @@ def limpar_cbo(df):
 
 def limpar_pnad(df):
 
+    # ======================================
+    # NUMÉRICOS
+    # ======================================
+
     numeros = [
 
+        "Ano",
+        "Trimestre",
         "Idade",
         "Rendimento_Mensal",
         "AIOE",
@@ -115,6 +139,10 @@ def limpar_pnad(df):
                 errors="coerce"
             )
 
+    # ======================================
+    # CBO JOIN
+    # ======================================
+
     df["CBO_JOIN"] = (
 
         df["CBO"]
@@ -130,14 +158,21 @@ def limpar_pnad(df):
         .str[:6]
     )
 
+    # ======================================
+    # SEXO
+    # ======================================
+
     mapa_sexo = {
+
         "1": "Masculino",
-        "2": "Feminino"
+        "2": "Feminino",
+
+        1: "Masculino",
+        2: "Feminino"
     }
 
     df["Sexo"] = (
         df["Sexo"]
-        .astype(str)
         .replace(mapa_sexo)
     )
 
@@ -149,12 +184,15 @@ def limpar_pnad(df):
 
 def cruzar_bases(df_cbo, df_pnad):
 
-    colunas = [
+    colunas_merge = [
 
         "CBO_JOIN",
+
         "CBO_EXTRAIDO",
         "TITULO_LIMPO",
+
         "DESCRIÇÃO SUMÁRIA",
+        "FORMAÇÃO E EXPERIÊNCIA",
 
         "AIOE",
         "Exposure",
@@ -174,19 +212,27 @@ def cruzar_bases(df_cbo, df_pnad):
 
         df_pnad,
 
-        df_cbo[colunas],
+        df_cbo[colunas_merge],
 
         on="CBO_JOIN",
 
         how="left"
     )
 
+    # ======================================
+    # PADRONIZAÇÃO
+    # ======================================
+
     df_final["AIOE_SCORE"] = (
-        df_final["AIOE"]
+        df_final["AIOE_y"]
+        if "AIOE_y" in df_final.columns
+        else df_final["AIOE"]
     )
 
     df_final["CONFIDENCE_SCORE"] = (
-        df_final["Mean"]
+        df_final["Mean_y"]
+        if "Mean_y" in df_final.columns
+        else df_final["Mean"]
     )
 
     df_final["Grande Grupo"] = (
@@ -201,28 +247,40 @@ def cruzar_bases(df_cbo, df_pnad):
         df_final["match_cod_metodo"]
     )
 
-    print("\nBASE FINAL:")
-    print(df_final.head())
-
     return df_final
 
 # ==========================================
-# FINAL
+# BASE FINAL
 # ==========================================
 
 def criar_base_final():
+
+    # ======================================
+    # CARREGAR
+    # ======================================
 
     df_cbo = carregar_cbo()
 
     df_pnad = carregar_pnad()
 
+    # ======================================
+    # LIMPAR
+    # ======================================
+
     df_cbo = limpar_cbo(df_cbo)
 
     df_pnad = limpar_pnad(df_pnad)
+
+    # ======================================
+    # MERGE
+    # ======================================
 
     df_final = cruzar_bases(
         df_cbo,
         df_pnad
     )
+
+    print("\nBASE FINAL:")
+    print(df_final.head())
 
     return df_final
