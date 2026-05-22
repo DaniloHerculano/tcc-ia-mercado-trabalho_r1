@@ -1,6 +1,6 @@
 import streamlit as st
 import plotly.express as px
-import plotly.graph_objects as go
+import pandas as pd
 import json
 
 # ==========================================
@@ -70,14 +70,12 @@ def mostrar_setores(df):
         x="COD_Grande_Grupo_TITULO",
         y="AIOE_SCORE",
         color="AIOE_SCORE",
-        title="Exposição IA por Grupo Ocupacional",
-        color_continuous_scale="Reds"
+        title="Exposição IA por Grupo Ocupacional"
     )
 
     fig.update_layout(
         xaxis_title="Grupo Ocupacional",
-        yaxis_title="Média AIOE",
-        height=600
+        yaxis_title="Média AIOE"
     )
 
     st.plotly_chart(
@@ -96,16 +94,39 @@ def mostrar_setores(df):
     )
 
     # ======================================
-    # GEOJSON
+    # MAPA ESTADO -> SIGLA
     # ======================================
 
-    with open(
-        "data/brasil_estados.geojson",
-        "r",
-        encoding="utf-8"
-    ) as f:
+    estados_siglas = {
 
-        brasil_geo = json.load(f)
+        "ACRE": "AC",
+        "ALAGOAS": "AL",
+        "AMAPÁ": "AP",
+        "AMAZONAS": "AM",
+        "BAHIA": "BA",
+        "CEARÁ": "CE",
+        "DISTRITO FEDERAL": "DF",
+        "ESPÍRITO SANTO": "ES",
+        "GOIÁS": "GO",
+        "MARANHÃO": "MA",
+        "MATO GROSSO": "MT",
+        "MATO GROSSO DO SUL": "MS",
+        "MINAS GERAIS": "MG",
+        "PARÁ": "PA",
+        "PARAÍBA": "PB",
+        "PARANÁ": "PR",
+        "PERNAMBUCO": "PE",
+        "PIAUÍ": "PI",
+        "RIO DE JANEIRO": "RJ",
+        "RIO GRANDE DO NORTE": "RN",
+        "RIO GRANDE DO SUL": "RS",
+        "RONDÔNIA": "RO",
+        "RORAIMA": "RR",
+        "SANTA CATARINA": "SC",
+        "SÃO PAULO": "SP",
+        "SERGIPE": "SE",
+        "TOCANTINS": "TO"
+    }
 
     # ======================================
     # AGRUPAR
@@ -118,8 +139,6 @@ def mostrar_setores(df):
         .reset_index()
     )
 
-    mapa = mapa.dropna()
-
     mapa["UF"] = (
         mapa["UF"]
         .astype(str)
@@ -128,91 +147,48 @@ def mostrar_setores(df):
     )
 
     # ======================================
-    # MAPA DE CONVERSÃO
+    # CONVERTER PARA SIGLA
     # ======================================
 
-    mapa_nome_estado = {
-
-        "AC": "Acre",
-        "AL": "Alagoas",
-        "AP": "Amapá",
-        "AM": "Amazonas",
-        "BA": "Bahia",
-        "CE": "Ceará",
-        "DF": "Distrito Federal",
-        "ES": "Espírito Santo",
-        "GO": "Goiás",
-        "MA": "Maranhão",
-        "MT": "Mato Grosso",
-        "MS": "Mato Grosso do Sul",
-        "MG": "Minas Gerais",
-        "PA": "Pará",
-        "PB": "Paraíba",
-        "PR": "Paraná",
-        "PE": "Pernambuco",
-        "PI": "Piauí",
-        "RJ": "Rio de Janeiro",
-        "RN": "Rio Grande do Norte",
-        "RS": "Rio Grande do Sul",
-        "RO": "Rondônia",
-        "RR": "Roraima",
-        "SC": "Santa Catarina",
-        "SP": "São Paulo",
-        "SE": "Sergipe",
-        "TO": "Tocantins"
-    }
-
-    # ======================================
-    # CONVERTER NOMES
-    # ======================================
-
-    mapa["estado_nome"] = (
+    mapa["SIGLA"] = (
         mapa["UF"]
-        .replace(mapa_nome_estado)
+        .map(estados_siglas)
     )
 
     # ======================================
-    # DEBUG
+    # GEOJSON
     # ======================================
 
-    st.write("Estados encontrados:")
-    st.write(mapa["estado_nome"].tolist())
+    with open(
+        "data/brasil_estados.geojson",
+        "r",
+        encoding="utf-8"
+    ) as f:
+
+        brasil_geo = json.load(f)
 
     # ======================================
-    # CHOROPLETH
+    # MAPA
     # ======================================
 
-    fig_mapa = go.Figure(
+    fig_mapa = px.choropleth(
 
-        go.Choropleth(
+        mapa,
 
-            geojson=brasil_geo,
+        geojson=brasil_geo,
 
-            locations=mapa["estado_nome"],
+        locations="SIGLA",
 
-            z=mapa["AIOE_SCORE"],
+        featureidkey="properties.sigla",
 
-            featureidkey="properties.name",
+        color="AIOE_SCORE",
 
-            colorscale="Reds",
+        color_continuous_scale="Reds",
 
-            marker_line_width=1,
+        hover_name="UF",
 
-            marker_line_color="white",
-
-            colorbar_title="AIOE",
-
-            text=mapa["estado_nome"],
-
-            hovertemplate=
-            "<b>Estado:</b> %{text}<br>" +
-            "<b>AIOE:</b> %{z:.2f}<extra></extra>"
-        )
+        title="Mapa de Exposição IA por Estado"
     )
-
-    # ======================================
-    # LAYOUT MAPA
-    # ======================================
 
     fig_mapa.update_geos(
 
@@ -223,14 +199,12 @@ def mostrar_setores(df):
 
     fig_mapa.update_layout(
 
-        title="Mapa de Calor IA por Estado",
-
-        height=900,
+        height=800,
 
         margin=dict(
             l=0,
             r=0,
-            t=50,
+            t=40,
             b=0
         )
     )
@@ -268,10 +242,6 @@ def mostrar_setores(df):
         color="NIVEL_IMPACTO",
         barmode="group",
         title="Distribuição de Impacto IA"
-    )
-
-    fig2.update_layout(
-        height=650
     )
 
     st.plotly_chart(
