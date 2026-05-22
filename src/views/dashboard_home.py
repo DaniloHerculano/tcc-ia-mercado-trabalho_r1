@@ -54,19 +54,21 @@ def mostrar_dashboard(df):
         .reset_index()
     )
 
-    uf_top = (
-        uf.sort_values(
-            by="AIOE_SCORE",
-            ascending=False
-        )
-        .iloc[0]
+    uf_ordenado = uf.sort_values(
+        by="AIOE_SCORE",
+        ascending=False
     )
+    
+    uf_top = uf_ordenado.iloc[0]
+    
+    uf_bottom = uf_ordenado.iloc[-1]  .iloc[0]
+        )
 
     # ======================================
     # CARDS
     # ======================================
 
-    col1, col2, col3, col4, col5 = st.columns(5)
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
 
     col1.metric(
         "👥 Trabalhadores",
@@ -91,6 +93,11 @@ def mostrar_dashboard(df):
     col5.metric(
         "🌎 UF Mais Exposta",
         uf_top["UF"]
+    )
+    
+    col6.metric(
+        "📉 UF Menos Exposta",
+        uf_bottom["UF"]
     )
 
     st.divider()
