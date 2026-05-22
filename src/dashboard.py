@@ -62,7 +62,7 @@ pagina = st.sidebar.radio(
         "🏆 Ranking",
         "🔥 Correlação",
         "🧠 Insights IA",
-        "🧠 Similaridade",
+        "🪞 Similaridade",
         "🔎 Pesquisar Ocupação",
         "🤖 Simulador IA",
         "ℹ️ Sobre"
