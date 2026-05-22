@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 import json
 
 # ==========================================
@@ -76,7 +77,7 @@ def mostrar_setores(df):
     fig.update_layout(
         xaxis_title="Grupo Ocupacional",
         yaxis_title="Média AIOE",
-        height=550
+        height=600
     )
 
     st.plotly_chart(
@@ -112,11 +113,12 @@ def mostrar_setores(df):
 
     mapa = (
         df.groupby("UF")
-        .agg({
-            "AIOE_SCORE": "mean"
-        })
+        ["AIOE_SCORE"]
+        .mean()
         .reset_index()
     )
+
+    mapa = mapa.dropna()
 
     mapa["UF"] = (
         mapa["UF"]
@@ -125,14 +127,11 @@ def mostrar_setores(df):
         .str.strip()
     )
 
-    # DEBUG OPCIONAL
-    st.write("UFs detectadas:", mapa["UF"].tolist())
-
     # ======================================
-    # MAPEAR UF -> NOME ESTADO
+    # MAPA DE CONVERSÃO
     # ======================================
 
-    mapa_estados = {
+    mapa_nome_estado = {
 
         "AC": "Acre",
         "AL": "Alagoas",
@@ -163,32 +162,52 @@ def mostrar_setores(df):
         "TO": "Tocantins"
     }
 
+    # ======================================
+    # CONVERTER NOMES
+    # ======================================
+
     mapa["estado_nome"] = (
         mapa["UF"]
-        .map(mapa_estados)
+        .replace(mapa_nome_estado)
     )
+
+    # ======================================
+    # DEBUG
+    # ======================================
+
+    st.write("Estados encontrados:")
+    st.write(mapa["estado_nome"].tolist())
 
     # ======================================
     # CHOROPLETH
     # ======================================
 
-    fig_mapa = px.choropleth(
+    fig_mapa = go.Figure(
 
-        mapa,
+        go.Choropleth(
 
-        geojson=brasil_geo,
+            geojson=brasil_geo,
 
-        locations="estado_nome",
+            locations=mapa["estado_nome"],
 
-        featureidkey="properties.name",
+            z=mapa["AIOE_SCORE"],
 
-        color="AIOE_SCORE",
+            featureidkey="properties.name",
 
-        hover_name="estado_nome",
+            colorscale="Reds",
 
-        color_continuous_scale="Reds",
+            marker_line_width=1,
 
-        title="Mapa de Exposição IA por Estado"
+            marker_line_color="white",
+
+            colorbar_title="AIOE",
+
+            text=mapa["estado_nome"],
+
+            hovertemplate=
+            "<b>Estado:</b> %{text}<br>" +
+            "<b>AIOE:</b> %{z:.2f}<extra></extra>"
+        )
     )
 
     # ======================================
@@ -204,17 +223,15 @@ def mostrar_setores(df):
 
     fig_mapa.update_layout(
 
-        height=850,
+        title="Mapa de Calor IA por Estado",
+
+        height=900,
 
         margin=dict(
             l=0,
             r=0,
             t=50,
             b=0
-        ),
-
-        coloraxis_colorbar=dict(
-            title="AIOE"
         )
     )
 
@@ -254,7 +271,7 @@ def mostrar_setores(df):
     )
 
     fig2.update_layout(
-        height=600
+        height=650
     )
 
     st.plotly_chart(
