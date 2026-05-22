@@ -15,6 +15,7 @@ from views.similaridade import mostrar_similaridade
 from views.correlacao import mostrar_correlacao
 from views.insights import mostrar_insights
 from views.pesquisa import mostrar_pesquisa
+from views.simulador import simulador_ia
 from views.sobre import mostrar_sobre
 
 # ==========================================
@@ -63,6 +64,7 @@ pagina = st.sidebar.radio(
         "🧠 Insights IA",
         "🧠 Similaridade",
         "🔎 Pesquisar Ocupação",
+        "🔎 Simulador",
         "ℹ️ Sobre"
     ]
 )
@@ -198,13 +200,17 @@ elif pagina == "🧠 Insights IA":
 
     mostrar_insights(df)
 
-elif pagina == "🧠 Similaridade":
+elif pagina == "🪞 Similaridade":
 
     mostrar_similaridade(df)
 
 elif pagina == "🔎 Pesquisar Ocupação":
 
     mostrar_pesquisa(df)
+
+elif pagina == "🖥️ Simulador":
+
+    mostrar_simulador_ia()
 
 elif pagina == "ℹ️ Sobre":
 
