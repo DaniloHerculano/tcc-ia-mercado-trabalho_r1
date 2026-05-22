@@ -1,6 +1,5 @@
 import streamlit as st
 import plotly.express as px
-import plotly.graph_objects as go
 import json
 
 # ==========================================
@@ -70,12 +69,14 @@ def mostrar_setores(df):
         x="COD_Grande_Grupo_TITULO",
         y="AIOE_SCORE",
         color="AIOE_SCORE",
-        title="Exposição IA por Grupo Ocupacional"
+        title="Exposição IA por Grupo Ocupacional",
+        color_continuous_scale="Reds"
     )
 
     fig.update_layout(
         xaxis_title="Grupo Ocupacional",
-        yaxis_title="Média AIOE"
+        yaxis_title="Média AIOE",
+        height=550
     )
 
     st.plotly_chart(
@@ -88,98 +89,140 @@ def mostrar_setores(df):
     # ======================================
     # MAPA BRASIL
     # ======================================
-    
-    import json
-    
+
     st.subheader(
         "🗺️ Exposição IA por Estado"
     )
-    
+
     # ======================================
     # GEOJSON
     # ======================================
-    
+
     with open(
         "data/brasil_estados.geojson",
         "r",
         encoding="utf-8"
     ) as f:
-    
+
         brasil_geo = json.load(f)
-    
+
     # ======================================
     # AGRUPAR
     # ======================================
-    
+
     mapa = (
         df.groupby("UF")
-        ["AIOE_SCORE"]
-        .mean()
+        .agg({
+            "AIOE_SCORE": "mean"
+        })
         .reset_index()
     )
-    
+
     mapa["UF"] = (
         mapa["UF"]
         .astype(str)
         .str.upper()
         .str.strip()
     )
-    
+
+    # DEBUG OPCIONAL
+    st.write("UFs detectadas:", mapa["UF"].tolist())
+
+    # ======================================
+    # MAPEAR UF -> NOME ESTADO
+    # ======================================
+
+    mapa_estados = {
+
+        "AC": "Acre",
+        "AL": "Alagoas",
+        "AP": "Amapá",
+        "AM": "Amazonas",
+        "BA": "Bahia",
+        "CE": "Ceará",
+        "DF": "Distrito Federal",
+        "ES": "Espírito Santo",
+        "GO": "Goiás",
+        "MA": "Maranhão",
+        "MT": "Mato Grosso",
+        "MS": "Mato Grosso do Sul",
+        "MG": "Minas Gerais",
+        "PA": "Pará",
+        "PB": "Paraíba",
+        "PR": "Paraná",
+        "PE": "Pernambuco",
+        "PI": "Piauí",
+        "RJ": "Rio de Janeiro",
+        "RN": "Rio Grande do Norte",
+        "RS": "Rio Grande do Sul",
+        "RO": "Rondônia",
+        "RR": "Roraima",
+        "SC": "Santa Catarina",
+        "SP": "São Paulo",
+        "SE": "Sergipe",
+        "TO": "Tocantins"
+    }
+
+    mapa["estado_nome"] = (
+        mapa["UF"]
+        .map(mapa_estados)
+    )
+
     # ======================================
     # CHOROPLETH
     # ======================================
-    
+
     fig_mapa = px.choropleth(
-    
+
         mapa,
-    
+
         geojson=brasil_geo,
-    
-        locations="UF",
-    
-        featureidkey="properties.sigla",
-    
+
+        locations="estado_nome",
+
+        featureidkey="properties.name",
+
         color="AIOE_SCORE",
-    
+
+        hover_name="estado_nome",
+
         color_continuous_scale="Reds",
-    
-        hover_name="UF",
-    
+
         title="Mapa de Exposição IA por Estado"
     )
-    
+
     # ======================================
-    # LAYOUT
+    # LAYOUT MAPA
     # ======================================
-    
+
     fig_mapa.update_geos(
-    
+
         fitbounds="locations",
-    
+
         visible=False
     )
-    
+
     fig_mapa.update_layout(
-    
-        height=800,
-    
+
+        height=850,
+
         margin=dict(
             l=0,
             r=0,
-            t=40,
+            t=50,
             b=0
         ),
-    
+
         coloraxis_colorbar=dict(
             title="AIOE"
         )
     )
-    
+
     st.plotly_chart(
         fig_mapa,
         width='stretch'
     )
-    
+
     st.divider()
 
     # ======================================
@@ -208,6 +251,10 @@ def mostrar_setores(df):
         color="NIVEL_IMPACTO",
         barmode="group",
         title="Distribuição de Impacto IA"
+    )
+
+    fig2.update_layout(
+        height=600
     )
 
     st.plotly_chart(
