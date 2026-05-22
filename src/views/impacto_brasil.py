@@ -106,60 +106,100 @@ def mostrar_impacto_brasil(df):
     st.divider()
 
     # ======================================
-    # MÉDIA IA POR SEXO
+    # SEXO
     # ======================================
 
-    st.subheader(
-        "📊 Média IA por Sexo"
-    )
+    col1, col2 = st.columns(2)
 
-    sexo_df = df.copy()
+    # ======================================
+    # PIZZA - DISTRIBUIÇÃO
+    # ======================================
 
-    sexo_df = sexo_df.dropna(
-        subset=["Sexo", "AIOE_SCORE"]
-    )
+    with col1:
 
-    sexo_df["Sexo"] = (
-        sexo_df["Sexo"]
-        .astype(str)
-        .str.strip()
-    )
+        st.subheader(
+            "👥 Distribuição por Sexo"
+        )
 
-    sexo_df["AIOE_SCORE"] = pd.to_numeric(
-        sexo_df["AIOE_SCORE"],
-        errors="coerce"
-    )
+        sexo_qtd = (
+            df.groupby("Sexo")
+            .size()
+            .reset_index(name="Quantidade")
+        )
 
-    sexo = (
-        sexo_df.groupby("Sexo")
-        ["AIOE_SCORE"]
-        .mean()
-        .reset_index()
-    )
+        sexo_qtd = sexo_qtd.dropna(
+            subset=["Sexo"]
+        )
 
-    sexo = sexo.sort_values(
-        by="AIOE_SCORE",
-        ascending=False
-    )
+        fig2 = px.pie(
+            sexo_qtd,
+            names="Sexo",
+            values="Quantidade",
+            title="Distribuição da Força de Trabalho"
+        )
 
-    fig2 = px.bar(
-        sexo,
-        x="Sexo",
-        y="AIOE_SCORE",
-        color="Sexo",
-        text_auto=".2f",
-        title="Média IA por Sexo"
-    )
+        st.plotly_chart(
+            fig2,
+            width='stretch'
+        )
 
-    fig2.update_layout(
-        yaxis_title="Média AIOE",
-        xaxis_title="Sexo"
-    )
+    # ======================================
+    # BARRA - MÉDIA IA
+    # ======================================
 
-    st.plotly_chart(
-        fig2,
-        width='stretch'
-    )
+    with col2:
+
+        st.subheader(
+            "🤖 Média IA por Sexo"
+        )
+
+        sexo_df = df.copy()
+
+        sexo_df = sexo_df.dropna(
+            subset=["Sexo", "AIOE_SCORE"]
+        )
+
+        sexo_df["Sexo"] = (
+            sexo_df["Sexo"]
+            .astype(str)
+            .str.strip()
+        )
+
+        sexo_df["AIOE_SCORE"] = pd.to_numeric(
+            sexo_df["AIOE_SCORE"],
+            errors="coerce"
+        )
+
+        sexo = (
+            sexo_df.groupby("Sexo")
+            ["AIOE_SCORE"]
+            .mean()
+            .reset_index()
+        )
+
+        sexo = sexo.sort_values(
+            by="AIOE_SCORE",
+            ascending=False
+        )
+
+        fig3 = px.bar(
+            sexo,
+            x="Sexo",
+            y="AIOE_SCORE",
+            color="Sexo",
+            text_auto=".2f",
+            title="Média IA por Sexo"
+        )
+
+        fig3.update_layout(
+            yaxis_title="Média AIOE",
+            xaxis_title="Sexo"
+        )
+
+        st.plotly_chart(
+            fig3,
+            width='stretch'
+        )
 
     st.divider()
 
@@ -175,7 +215,7 @@ def mostrar_impacto_brasil(df):
         min(len(df), 3000)
     )
 
-    fig3 = px.scatter(
+    fig4 = px.scatter(
         amostra,
         x="Idade",
         y="AIOE_SCORE",
@@ -184,7 +224,7 @@ def mostrar_impacto_brasil(df):
     )
 
     st.plotly_chart(
-        fig3,
+        fig4,
         width='stretch'
     )
 
