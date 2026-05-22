@@ -3,11 +3,15 @@ import pandas as pd
 import gdown
 
 # ==========================================
-# CAMINHOS
+# ARQUIVOS
 # ==========================================
 
 ARQUIVO_CBO = (
     "data/cbo_final_com_felten_gmyrek_cod_FINAL.xlsx"
+)
+
+ARQUIVO_PNAD_LOCAL = (
+    "data/pnad_2020_2025_analitica_ia.parquet"
 )
 
 # ==========================================
@@ -17,15 +21,11 @@ ARQUIVO_CBO = (
 FILE_ID = "1kfa3fXfkSMT3qAUP1OjKJCBjHFQvppOm"
 
 URL_PNAD = (
-    f"https://drive.google.com/uc?/export=download&id={FILE_ID}"
-)
-
-ARQUIVO_PNAD_LOCAL = (
-    "data/pnad_2020_2025_analitica_ia.parquet"
+    f"https://drive.google.com/uc?id={FILE_ID}"
 )
 
 # ==========================================
-# DOWNLOAD PNAD
+# DOWNLOAD
 # ==========================================
 
 def baixar_pnad():
@@ -42,49 +42,20 @@ def baixar_pnad():
     )
 
 # ==========================================
-# CARREGAR CBO
+# CBO
 # ==========================================
 
 def carregar_cbo():
 
-    print("\n========== DEBUG CBO ==========")
-
-    print("Diretório atual:")
-    print(os.getcwd())
-
-    print("\nArquivos na pasta data:")
-
-    if os.path.exists("data"):
-
-        print(os.listdir("data"))
-
-    else:
-
-        print("PASTA DATA NÃO EXISTE")
-
-    print("\nTentando abrir:")
-    print(ARQUIVO_CBO)
-
-    print("\nExiste?")
-    print(os.path.exists(ARQUIVO_CBO))
-
-    if not os.path.exists(ARQUIVO_CBO):
-
-        raise FileNotFoundError(
-            f"Arquivo não encontrado: {ARQUIVO_CBO}"
-        )
-
     df = pd.read_excel(
-        ARQUIVO_CBO
+        ARQUIVO_CBO,
+        engine="openpyxl"
     )
-
-    print("\nCOLUNAS CBO:")
-    print(df.columns.tolist())
 
     return df
 
 # ==========================================
-# CARREGAR PNAD
+# PNAD
 # ==========================================
 
 def carregar_pnad():
@@ -95,9 +66,6 @@ def carregar_pnad():
         ARQUIVO_PNAD_LOCAL
     )
 
-    print("\nCOLUNAS PNAD:")
-    print(df.columns.tolist())
-
     return df
 
 # ==========================================
@@ -106,17 +74,13 @@ def carregar_pnad():
 
 def limpar_cbo(df):
 
-    # ======================================
-    # CBO JOIN
-    # ======================================
-
     df["CBO_JOIN"] = (
 
         df["CBO_EXTRAIDO"]
 
         .astype(str)
 
-        .str.extract(r'(\d+)')[0]
+        .str.extract(r"(\d+)")[0]
 
         .str.replace(r"\D", "", regex=True)
 
@@ -125,23 +89,10 @@ def limpar_cbo(df):
         .str[:6]
     )
 
-    # ======================================
-    # NUMÉRICOS
-    # ======================================
-
     df["AIOE"] = pd.to_numeric(
         df["AIOE"],
         errors="coerce"
     )
-
-    df["Exposure"] = pd.to_numeric(
-        df["Exposure"],
-        errors="coerce"
-    )
-
-    # ======================================
-    # NÍVEL IMPACTO
-    # ======================================
 
     def classificar(score):
 
@@ -169,11 +120,7 @@ def limpar_cbo(df):
 
 def limpar_pnad(df):
 
-    # ======================================
-    # NUMÉRICOS
-    # ======================================
-
-    colunas_numericas = [
+    numeros = [
 
         "Idade",
         "Rendimento_Mensal",
@@ -183,7 +130,7 @@ def limpar_pnad(df):
         "SD"
     ]
 
-    for col in colunas_numericas:
+    for col in numeros:
 
         if col in df.columns:
 
@@ -192,17 +139,13 @@ def limpar_pnad(df):
                 errors="coerce"
             )
 
-    # ======================================
-    # CBO JOIN
-    # ======================================
-
     df["CBO_JOIN"] = (
 
         df["CBO"]
 
         .astype(str)
 
-        .str.extract(r'(\d+)')[0]
+        .str.extract(r"(\d+)")[0]
 
         .str.replace(r"\D", "", regex=True)
 
@@ -210,10 +153,6 @@ def limpar_pnad(df):
 
         .str[:6]
     )
-
-    # ======================================
-    # SEXO
-    # ======================================
 
     mapa_sexo = {
         "1": "Masculino",
@@ -229,18 +168,17 @@ def limpar_pnad(df):
     return df
 
 # ==========================================
-# CRUZAR BASES
+# MERGE
 # ==========================================
 
 def cruzar_bases(df_cbo, df_pnad):
 
-    colunas_merge = [
+    colunas = [
 
         "CBO_JOIN",
         "CBO_EXTRAIDO",
         "TITULO_LIMPO",
         "DESCRIÇÃO SUMÁRIA",
-        "FORMAÇÃO E EXPERIÊNCIA",
 
         "AIOE",
         "Exposure",
@@ -248,13 +186,6 @@ def cruzar_bases(df_cbo, df_pnad):
         "SD",
 
         "NIVEL_IMPACTO",
-
-        "COD_Grupo_Base",
-        "COD_Titulacao",
-
-        "COD_Grande_Grupo",
-        "COD_Subgrupo_principal",
-        "COD_Subgrupo",
 
         "COD_Grande_Grupo_TITULO",
         "COD_Subgrupo_principal_TITULO",
@@ -267,42 +198,39 @@ def cruzar_bases(df_cbo, df_pnad):
 
         df_pnad,
 
-        df_cbo[colunas_merge],
+        df_cbo[colunas],
 
         on="CBO_JOIN",
 
         how="left"
     )
 
-    # ======================================
-    # PADRONIZAÇÃO NOMES
-    # ======================================
+    # PADRONIZAÇÃO
 
     df_final["AIOE_SCORE"] = (
         df_final["AIOE"]
-    )
-
-    df_final["AIOE_MATCH_TITLE"] = (
-        df_final["ISCO-08 Title"]
-        if "ISCO-08 Title" in df_final.columns
-        else None
     )
 
     df_final["CONFIDENCE_SCORE"] = (
         df_final["Mean"]
     )
 
-    print("\nMATCHES:")
-    print(
-        df_final["AIOE_SCORE"]
-        .notna()
-        .sum()
+    df_final["Grande Grupo"] = (
+        df_final["COD_Grande_Grupo_TITULO"]
+    )
+
+    df_final["Subgrupo"] = (
+        df_final["COD_Subgrupo_TITULO"]
+    )
+
+    df_final["AIOE_MATCH_TITLE"] = (
+        df_final["match_cod_metodo"]
     )
 
     return df_final
 
 # ==========================================
-# BASE FINAL
+# FINAL
 # ==========================================
 
 def criar_base_final():
@@ -319,8 +247,5 @@ def criar_base_final():
         df_cbo,
         df_pnad
     )
-
-    print("\nBASE FINAL:")
-    print(df_final.head())
 
     return df_final
