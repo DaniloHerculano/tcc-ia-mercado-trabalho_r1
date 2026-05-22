@@ -89,43 +89,23 @@ def mostrar_setores(df):
     # MAPA BRASIL
     # ======================================
     
+    import json
+    
     st.subheader(
         "🗺️ Exposição IA por Estado"
     )
     
     # ======================================
-    # LAT/LONG ESTADOS
+    # GEOJSON
     # ======================================
     
-    coords = {
-        "AC": [-8.77, -70.55],
-        "AL": [-9.71, -35.73],
-        "AP": [1.41, -51.77],
-        "AM": [-3.07, -61.66],
-        "BA": [-12.96, -38.51],
-        "CE": [-3.71, -38.54],
-        "DF": [-15.83, -47.86],
-        "ES": [-19.19, -40.34],
-        "GO": [-16.64, -49.31],
-        "MA": [-2.55, -44.30],
-        "MT": [-12.64, -55.42],
-        "MS": [-20.51, -54.54],
-        "MG": [-18.10, -44.38],
-        "PA": [-5.53, -52.29],
-        "PB": [-7.06, -35.55],
-        "PR": [-24.89, -51.55],
-        "PE": [-8.28, -35.07],
-        "PI": [-8.28, -43.68],
-        "RJ": [-22.84, -43.15],
-        "RN": [-5.22, -36.52],
-        "RS": [-30.01, -51.22],
-        "RO": [-11.22, -62.80],
-        "RR": [1.89, -61.22],
-        "SC": [-27.33, -49.44],
-        "SP": [-23.55, -46.64],
-        "SE": [-10.90, -37.07],
-        "TO": [-10.25, -48.25]
-    }
+    with open(
+        "data/brasil_estados.geojson",
+        "r",
+        encoding="utf-8"
+    ) as f:
+    
+        brasil_geo = json.load(f)
     
     # ======================================
     # AGRUPAR
@@ -146,73 +126,52 @@ def mostrar_setores(df):
     )
     
     # ======================================
-    # LAT/LONG
+    # CHOROPLETH
     # ======================================
     
-    mapa["lat"] = mapa["UF"].apply(
-        lambda x: coords[x][0]
-        if x in coords else None
-    )
-    
-    mapa["lon"] = mapa["UF"].apply(
-        lambda x: coords[x][1]
-        if x in coords else None
-    )
-    
-    # ======================================
-    # REMOVER INVÁLIDOS
-    # ======================================
-    
-    mapa = mapa.dropna(
-        subset=["lat", "lon"]
-    )
-    
-    # ======================================
-    # MAPA
-    # ======================================
-    
-    fig_mapa = px.scatter_geo(
+    fig_mapa = px.choropleth(
     
         mapa,
     
-        lat="lat",
+        geojson=brasil_geo,
     
-        lon="lon",
+        locations="UF",
     
-        size="AIOE_SCORE",
+        featureidkey="properties.sigla",
     
         color="AIOE_SCORE",
     
-        hover_name="UF",
-    
         color_continuous_scale="Reds",
     
-        size_max=45,
-    
-        projection="natural earth",
+        hover_name="UF",
     
         title="Mapa de Exposição IA por Estado"
     )
     
+    # ======================================
+    # LAYOUT
+    # ======================================
+    
+    fig_mapa.update_geos(
+    
+        fitbounds="locations",
+    
+        visible=False
+    )
+    
     fig_mapa.update_layout(
     
-        height=700,
-    
-        geo=dict(
-            scope="south america",
-            center=dict(
-                lat=-14,
-                lon=-52
-            ),
-            projection_scale=4.5,
-            showland=True
-        ),
+        height=800,
     
         margin=dict(
             l=0,
             r=0,
             t=40,
             b=0
+        ),
+    
+        coloraxis_colorbar=dict(
+            title="AIOE"
         )
     )
     
