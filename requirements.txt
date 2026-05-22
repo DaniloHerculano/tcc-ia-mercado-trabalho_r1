@@ -2,13 +2,8 @@ streamlit
 pandas
 openpyxl
 plotly
-matplotlib
-seaborn
-sentence-transformers
-torch
-scikit-learn
+numpy
 pyarrow
 fastparquet
-numpy
 gdown
 requests
