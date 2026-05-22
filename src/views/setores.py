@@ -1,7 +1,7 @@
 import streamlit as st
 import plotly.express as px
-import json
 import plotly.graph_objects as go
+import json
 
 # ==========================================
 # SETORES
@@ -62,7 +62,7 @@ def mostrar_setores(df):
     )
 
     # ======================================
-    # GRÁFICO
+    # BAR CHART
     # ======================================
 
     fig = px.bar(
@@ -84,112 +84,71 @@ def mostrar_setores(df):
     )
 
     st.divider()
-    
-# ======================================
-# MAPA BRASIL
-# ======================================
-
-import json
-import plotly.graph_objects as go
-
-st.subheader(
-    "🗺️ Exposição IA por Estado"
-)
-
-# ======================================
-# AGRUPAR
-# ======================================
-
-mapa = (
-    df.groupby("UF")
-    .agg({
-        "AIOE_SCORE": "mean",
-        "Rendimento_Mensal": "mean"
-    })
-    .reset_index()
-)
-
-# ======================================
-# LIMPEZA UF
-# ======================================
-
-mapa["UF"] = (
-    mapa["UF"]
-    .astype(str)
-    .str.upper()
-    .str.strip()
-)
-
-# DEBUG
-st.write("UFs encontradas:")
-st.write(mapa["UF"].unique())
-
-# ======================================
-# GEOJSON
-# ======================================
-
-with open(
-    "data/brasil_estados.geojson",
-    "r",
-    encoding="utf-8"
-) as f:
-
-    geojson = json.load(f)
 
     # ======================================
-    # MAPA
+    # MAPA BRASIL
     # ======================================
-    
+
+    st.subheader(
+        "🗺️ Exposição IA por Estado"
+    )
+
+    mapa = (
+        df.groupby("UF")
+        .agg({
+            "AIOE_SCORE": "mean"
+        })
+        .reset_index()
+    )
+
+    mapa["UF"] = (
+        mapa["UF"]
+        .astype(str)
+        .str.upper()
+        .str.strip()
+    )
+
+    with open(
+        "data/brasil_estados.geojson",
+        "r",
+        encoding="utf-8"
+    ) as f:
+
+        geojson = json.load(f)
+
     fig_mapa = go.Figure(
-    
+
         go.Choropleth(
-    
+
             geojson=geojson,
-    
+
             locations=mapa["UF"],
-    
+
             z=mapa["AIOE_SCORE"],
-    
+
             featureidkey="properties.sigla",
-    
+
             colorscale="Reds",
-    
-            marker_line_width=0.5,
-    
+
+            marker_line_width=1,
+
             marker_line_color="white",
-    
-            colorbar_title="AIOE",
-    
-            text=mapa["UF"],
-    
-            customdata=mapa[
-                [
-                    "Rendimento_Mensal"
-                ]
-            ],
-    
-            hovertemplate=
-            "<b>UF:</b> %{text}<br>" +
-            "<b>AIOE:</b> %{z:.2f}<br>" +
-            "<b>Renda Média:</b> R$ %{customdata[0]:,.2f}<extra></extra>"
+
+            colorbar_title="AIOE"
         )
     )
-    
-    # ======================================
-    # LAYOUT
-    # ======================================
-    
+
     fig_mapa.update_geos(
-    
+
         fitbounds="locations",
-    
+
         visible=False
     )
-    
+
     fig_mapa.update_layout(
-    
-        height=750,
-    
+
+        height=800,
+
         margin=dict(
             l=0,
             r=0,
@@ -197,14 +156,14 @@ with open(
             b=0
         )
     )
-    
+
     st.plotly_chart(
         fig_mapa,
         width='stretch'
     )
-    
+
     st.divider()
-    
+
     # ======================================
     # DISTRIBUIÇÃO IMPACTO
     # ======================================
