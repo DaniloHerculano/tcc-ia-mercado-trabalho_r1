@@ -10,7 +10,7 @@ ARQUIVO_CBO = (
     "data/tabela_cbo_aioe_filtrada_tcc.xlsx"
 )
 
-FILE_ID = "1lYFw5ruJAhvHnVpQWgJVYTHePtONS32V"
+FILE_ID = "1kfa3fXfkSMT3qAUP1OjKJCBjHFQvppOm"
 
 URL_PNAD = (
     f"https://drive.google.com/uc?export=download&id={FILE_ID}"
