@@ -16,7 +16,7 @@ from views.correlacao import mostrar_correlacao
 from views.insights import mostrar_insights
 from views.pesquisa import mostrar_pesquisa
 from views.simulador import mostrar_simulador
-from views.crosswalk import mostrar_crosswalk
+from views.analise_exploratoria import mostrar_analise_exploratoria
 from views.sobre import mostrar_sobre
 
 # ==========================================
@@ -66,7 +66,7 @@ pagina = st.sidebar.radio(
         "🪞 Similaridade",
         "🔎 Pesquisar Ocupação",
         "🤖 Simulador IA",
-        "🔗 Análise Exploratória dos Dados",
+        "🔗 Analise Exploratoria",
         "ℹ️ Sobre"
     ]
 )
@@ -214,9 +214,9 @@ elif pagina == "🤖 Simulador IA":
 
     mostrar_simulador(df)
 
-elif pagina == "🔗 Crosswalk Ocupacional":
+elif pagina == "🔗 Analise Exploratoria":
 
-    mostrar_crosswalk(df)
+    mostrar_analise_exploratoria(df)
 
 elif pagina == "ℹ️ Sobre":
 
