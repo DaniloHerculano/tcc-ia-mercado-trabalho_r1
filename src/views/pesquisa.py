@@ -1,336 +1,121 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-
-# ==========================================
-# PESQUISA
-# ==========================================
 
 def mostrar_pesquisa(df):
-
-    st.title(
-        "🔎 Pesquisa Inteligente de Ocupações"
-    )
-
+    st.title("🔎 Consulta Detalhada de Ocupações (CBO)")
     st.markdown("""
-    Pesquise ocupações e visualize
-    exposição à IA, renda e características.
+    Explore o portfólio completo de uma profissão: descrição oficial do Ministério do Trabalho, 
+    método de alinhamento estatístico (*crosswalk*) e indicadores demográficos consolidados.
     """)
 
     st.divider()
 
     # ======================================
-    # VALIDAR
+    # VALIDAR COLUNAS MÍNIMAS
     # ======================================
-
     if "TITULO_LIMPO" not in df.columns:
-
-        st.error(
-            "Coluna TITULO_LIMPO não encontrada."
-        )
-
+        st.error("Coluna TITULO_LIMPO não encontrada na base de dados.")
         return
 
     # ======================================
-    # LIMPEZA
+    # SISTEMA DE BUSCA OTIMIZADO
     # ======================================
-
     pesquisa = df.copy()
-
-    pesquisa["TITULO_LIMPO"] = (
-        pesquisa["TITULO_LIMPO"]
-        .astype(str)
-    )
-
-    pesquisa["AIOE_SCORE"] = pd.to_numeric(
-        pesquisa["AIOE_SCORE"],
-        errors="coerce"
-    )
-
-    pesquisa["Rendimento_Mensal"] = pd.to_numeric(
-        pesquisa["Rendimento_Mensal"],
-        errors="coerce"
-    )
-
-    # ======================================
-    # PESQUISA
-    # ======================================
+    ocupacoes_disponiveis = sorted(pesquisa["TITULO_LIMPO"].dropna().unique())
     
-    ocupacoes = sorted(
-        pesquisa["TITULO_LIMPO"]
-        .dropna()
-        .unique()
-    )
-    
-    busca = st.text_input(
-        "🔎 Pesquise uma ocupação"
-    )
-    
-    # ======================================
-    # FILTRAR LISTA
-    # ======================================
+    busca = st.text_input("⌨️ Digite palavras-chave para filtrar a busca (ex: Gerente, Engenheiro):")
     
     if busca:
-    
-        ocupacoes_filtradas = [
-    
-            o for o in ocupacoes
-    
-            if busca.lower() in o.lower()
-        ]
-    
+        ocupacoes_filtradas = [o for o in ocupacoes_disponiveis if busca.lower() in o.lower()]
     else:
-    
-        ocupacoes_filtradas = ocupacoes
-    
-    # ======================================
-    # SELECTBOX
-    # ======================================
-    
-    ocupacao = st.selectbox(
-        "Selecione uma ocupação",
-        ocupacoes_filtradas
-    )
+        ocupacoes_filtradas = ocupacoes_disponiveis
 
-    st.divider()
-
-    # ======================================
-    # FILTRAR
-    # ======================================
-
-    dados = pesquisa[
-        pesquisa["TITULO_LIMPO"] == ocupacao
-    ]
-
-    if len(dados) == 0:
-
-        st.warning(
-            "Nenhum dado encontrado."
-        )
-
+    if not ocupacoes_filtradas:
+        st.warning("Nenhuma ocupação corresponde aos termos digitados.")
         return
 
-    # ======================================
-    # KPIs
-    # ======================================
-
-    media_ia = round(
-        dados["AIOE_SCORE"].mean(),
-        2
-    )
-
-    renda = round(
-        dados["Rendimento_Mensal"].mean(),
-        2
-    )
-
-    impacto = (
-        dados["NIVEL_IMPACTO"]
-        .mode()[0]
-    )
-
-    uf = (
-        dados["UF"]
-        .mode()[0]
-    )
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    col1.metric(
-        "🤖 Média IA",
-        media_ia
-    )
-
-    col2.metric(
-        "💰 Renda Média",
-        f"R$ {renda:,.0f}"
-    )
-
-    col3.metric(
-        "🚨 Impacto",
-        impacto
-    )
-
-    col4.metric(
-        "🌎 UF Frequente",
-        uf
-    )
+    ocupacao_alvo = st.selectbox("💼 Selecione a Ocupação Desejada:", ocupacoes_filtradas)
 
     st.divider()
 
-    # ======================================
-    # DISTRIBUIÇÃO IA
-    # ======================================
-
-    fig = px.histogram(
-
-        dados,
-
-        x="AIOE_SCORE",
-
-        nbins=20,
-
-        title="Distribuição de Exposição IA"
-    )
-
-    fig.update_layout(
-        height=500
-    )
-
-    st.plotly_chart(
-        fig,
-        width='stretch'
-    )
-
-    st.divider()
+    # Filtra os dados da linha específica
+    dados_ocupacao = pesquisa[pesquisa["TITULO_LIMPO"] == ocupacao_alvo]
+    linha_registro = dados_ocupacao.iloc[0]
 
     # ======================================
-    # RENDA POR UF
+    # BLOCO 1: IDENTIDADE E METODOLOGIA DO TCC
     # ======================================
+    st.subheader("🧠 Rastreabilidade Metodológica")
+    st.markdown("Veja como essa ocupação foi processada e integrada no pipeline de dados do projeto:")
 
-    renda_uf = (
-        dados.groupby("UF")
-        ["Rendimento_Mensal"]
-        .mean()
-        .reset_index()
-    )
-
-    fig2 = px.bar(
-
-        renda_uf,
-
-        x="UF",
-
-        y="Rendimento_Mensal",
-
-        color="Rendimento_Mensal",
-
-        title="Renda Média por Estado"
-    )
-
-    fig2.update_layout(
-        height=500
-    )
-
-    st.plotly_chart(
-        fig2,
-        width='stretch'
-    )
-
-    st.divider()
-
-    # ======================================
-    # EVOLUÇÃO TEMPORAL
-    # ======================================
-
-    if "Ano" in dados.columns:
-
-        evolucao = (
-            dados.groupby("Ano")
-            ["AIOE_SCORE"]
-            .mean()
-            .reset_index()
-        )
-
-        fig3 = px.line(
-
-            evolucao,
-
-            x="Ano",
-
-            y="AIOE_SCORE",
-
-            markers=True,
-
-            title="Evolução Temporal IA"
-        )
-
-        fig3.update_layout(
-            height=500
-        )
-
-        st.plotly_chart(
-            fig3,
-            width='stretch'
-        )
-
-    st.divider()
-
-    # ======================================
-    # SIMILARES
-    # ======================================
-
-    st.subheader(
-        "🧠 Ocupações Similares"
-    )
-
-    similares = pesquisa.copy()
-
-    similares["DISTANCIA"] = (
-        similares["AIOE_SCORE"] - media_ia
-    ).abs()
-
-    similares = similares[
-        similares["TITULO_LIMPO"] != ocupacao
-    ]
-
-    similares = (
-        similares.sort_values(
-            by="DISTANCIA"
-        )
-        [
-            [
-                "TITULO_LIMPO",
-                "AIOE_SCORE",
-                "Rendimento_Mensal",
-                "NIVEL_IMPACTO"
-            ]
-        ]
-        .head(10)
-    )
-
-    st.dataframe(
-        similares,
-        width='stretch'
-    )
-
-    st.divider()
-
-    # ======================================
-    # INSIGHTS
-    # ======================================
-
-    st.subheader(
-        "🧠 Insights Automáticos"
-    )
-
-    if media_ia >= 0.75:
-
-        st.warning(f"""
-        A ocupação {ocupacao}
-        possui ALTA exposição à IA.
-        """)
-
-    elif media_ia >= 0.45:
-
-        st.info(f"""
-        A ocupação {ocupacao}
-        possui MÉDIA exposição à IA.
-        """)
-
+    # Criação de cards informativos sobre o backend do algoritmo
+    c1, c2, c3 = st.columns(3)
+    
+    # Identifica o método usado (grupo base, subgrupo, fuzzy, embedding)
+    metodo_match = linha_registro.get("AIOE_MATCH_TITLE", "Não informado")
+    if pd.isna(metodo_match): metodo_match = "Combinação Estrutural Direta"
+    
+    c1.metric("🤖 Código CBO Identificado", linha_registro.get("CBO_JOIN", "N/A"))
+    c2.metric("🧬 Método de Harmonização", str(metodo_match).replace("match_", ""))
+    
+    # Se houver score de confiança de embedding residual
+    confidence = linha_registro.get("CONFIDENCE_SCORE", None)
+    if pd.notna(confidence) and isinstance(confidence, (int, float)):
+        c3.metric("🎯 Confiança Semântica (Cosine)", f"{confidence:.2f}")
     else:
+        c3.metric("🎯 Alinhamento de Dicionário", "100% Estrutural")
 
-        st.success(f"""
-        A ocupação {ocupacao}
-        possui BAIXA exposição à IA.
-        """)
+    # Exibe a ementa real extraída por PDFPlumber/OCR
+    st.write("")
+    with st.expander("📖 Visualizar Descrição Sumária Oficial (MTE)", expanded=True):
+        descricao = linha_registro.get("DESCRIÇÃO SUMÁRIA", "Descrição textual não indexada na amostragem residual.")
+        if pd.isna(descricao): descricao = "Texto sumário indisponível para esta família ocupacional."
+        st.write(descricao)
 
-    st.info(f"""
-    💰 Renda média estimada:
+    st.divider()
 
-    R$ {renda:,.0f}
+    # ======================================
+    # BLOCO 2: MÉTRICAS HISTÓRICAS DE EXPOSIÇÃO À IA
+    # ======================================
+    st.subheader("📊 Indicadores de Exposição Consolidados")
+    
+    col_kpi1, col_kpi2, col_kpi3 = st.columns(3)
+    
+    score_aioe = float(linha_registro.get("AIOE_SCORE", 0.0))
+    nivel = linha_registro.get("NIVEL_IMPACTO", "Não informado")
+    
+    col_kpi1.metric("Índice AIOE (Felten)", f"{score_aioe:.2f}")
+    col_kpi2.metric("Classificação de Impacto", nivel)
+    
+    # Tenta trazer o desvio padrão interno para mostrar a dispersão (Variância de Agregação)
+    sd_score = linha_registro.get("SD", 0.0)
+    if pd.notna(sd_score) and sd_score > 0:
+        col_kpi3.metric("Variância de Agregação (SD)", f"{float(sd_score):.2f}")
+    else:
+        col_kpi3.metric("Estabilidade do Índice", "Alta Consistência")
 
-    🌎 Estado mais frequente:
+    st.divider()
 
-    {uf}
-    """)
+    # ======================================
+    # BLOCO 3: COMPOSIÇÃO DE MERCADO HISTÓRICA (PNAD CONTÍNUA)
+    # ======================================
+    st.subheader("🇧🇷 Retrato Estatístico na Amostra PNAD Contínua")
+    st.markdown("Estatísticas agregadas computadas a partir do universo de registros históricos válidos para esta profissão:")
+
+    renda_media = dados_ocupacao["Rendimento_Mensal"].mean()
+    idade_media = dados_ocupacao["Idade"].mean()
+    
+    col_pnad1, col_pnad2, col_pnad3 = st.columns(3)
+    
+    col_pnad1.metric("💰 Salário Médio Nacional", f"R$ {renda_media:,.2f}" if pd.notna(renda_media) else "Não Amostrado")
+    col_pnad2.metric("🎂 Média de Idade dos Ativos", f"{int(idade_media)} anos" if pd.notna(idade_media) else "N/A")
+    col_pnad3.metric("👥 Volume de Registros Limpos", f"{len(dados_ocupacao):,} trabalhadores")
+
+    # Distribuição Regional Simplificada por Tabela (Sem gráficos pesados repetidos)
+    if "UF" in dados_ocupacao.columns:
+        st.write("")
+        st.markdown("**Top 5 Estados com Maior Massa Salarial Declarada para esta Profissão:**")
+        dist_uf = dados_ocupacao.groupby("UF")["Rendimento_Mensal"].mean().reset_index()
+        dist_uf = dist_uf.sort_values(by="Rendimento_Mensal", ascending=False).head(5)
+        dist_uf.columns = ["Estado (UF)", "Rendimento Mensal Médio (R$)"]
+        st.dataframe(dist_uf, use_container_width=True, hide_index=True)
