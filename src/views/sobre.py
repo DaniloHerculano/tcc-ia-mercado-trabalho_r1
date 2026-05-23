@@ -1,102 +1,101 @@
 import streamlit as st
 
-
-# ==========================================
-# SOBRE
-# ==========================================
-
 def mostrar_sobre():
-
-    st.title(
-        "ℹ️ Sobre o Projeto"
-    )
-
-    st.markdown("""
-    ## TCC - Ciência de Dados
-
-    Plataforma desenvolvida para análise
-    do impacto da Inteligência Artificial
-    no mercado de trabalho brasileiro.
-
-    O projeto utiliza técnicas modernas
-    de NLP (Processamento de Linguagem Natural),
-    embeddings semânticos e similaridade de cosseno
-    para relacionar ocupações brasileiras da CBO
-    com ocupações internacionais do dataset AIOE.
+    st.title("ℹ️ Sobre o Projeto")
+    
+    # Card de Introdução Direta
+    st.success("""
+    🔬 **Trabalho de Conclusão de Curso (TCC) em Ciência de Dados — UNIVESP** Esta plataforma foi desenvolvida para mapear, mensurar e analisar o **impacto socioeconômico da Inteligência Artificial no mercado de trabalho brasileiro**, integrando indicadores globais de exposição aos microdados de emprego nacionais.
     """)
+    
+    st.divider()
+
+    # ==========================================
+    # O PROJETO (Visão Geral Curta)
+    # ==========================================
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("🎯 O Diferencial Metodológico")
+        st.markdown("""
+        Diferente de aplicações simples que usam apenas scores prontos, este projeto construiu uma **infraestrutura metodológica inédita de pesquisa ocupacional**. 
+        
+        Foi desenvolvido um pipeline de harmonização e *transfer learning* que traduz os índices globais de exposição à IA para a realidade estatística das famílias de trabalhadores no Brasil.
+        """)
+        
+    with col2:
+        st.subheader("📊 Bases de Dados Harmonizadas")
+        st.markdown("""
+        * **CBO (Classificação Brasileira de Ocupações)**: Dados e descrições sumárias oficiais do Ministério do Trabalho.
+        * **Microdados da PNAD Contínua (IBGE)**: Painel analítico abrangendo de **2020 a 2025**, totalizando uma amostra limpa de aproximadamente **15 milhões de registros** únicos.
+        * **Datasets Globais de IA**: Índices de exposição *AIOE (Felten et al., 2021)* e a classificação de impactos da OIT *(Gmyrek et al., 2025)*.
+        """)
 
     st.divider()
 
-    # ======================================
-    # METODOLOGIA
-    # ======================================
+    # ==========================================
+    # TECNOLOGIAS E ETAPAS (Organizado por Expander para não cansar o usuário)
+    # ==========================================
+    st.subheader("⚙️ Engenharia de Dados e Tecnologias Adotadas")
+    st.write("Clique nas etapas abaixo para expandir e visualizar as tecnologias e abordagens aplicadas:")
 
-    st.subheader(
-        "🧠 Metodologia"
-    )
+    with st.expander("🛠️ 1. Coleta, OCR e Pré-processamento"):
+        st.markdown("""
+        * **Extração e OCR:** Uso das bibliotecas `pdfplumber`, `pytesseract` e `pdf2image` (com Poppler) para extrair dados textuais estruturados diretamente dos livros oficiais em PDF da CBO.
+        * **Limpeza e Padronização:** Expressões Regulares (`re`) para tratar ruídos sistemáticos de formatação, hifens e reconstruir códigos hierárquicos ocupacionais de até 6 dígitos.
+        * **Motores de Arquivo:** Leitura e tratamento de matrizes intermediárias e planilhas com `openpyxl` e `xlrd`.
+        """)
 
-    st.markdown("""
-    ### Coleta de Dados
+    with st.expander("🧠 2. NLP, Embeddings e Mapeamento Semântico"):
+        st.markdown("""
+        * **Modelos de Linguagem (LLM):** Migração estratégica do modelo open-source *intfloat/multilingual-e5-large* para a API de vetores densos da OpenAI com o modelo **`text-embedding-3-large`**.
+        * **Algoritmo de Similaridade:** Aplicação de **Similaridade de Cosseno** via `scikit-learn` para resolver dados residuais onde não havia correspondência estrutural direta entre os dicionários de ocupações.
+        * **Ajuste Fino Textual:** Implementação de técnicas de *Fuzzy Matching* com a biblioteca `rapidfuzz` para correção automatizada de variações ortográficas, plurais e grafias entre os títulos das vagas.
+        * **Frameworks Base:** `PyTorch` e `Sentence-Transformers`.
+        """)
 
-    - CBO (Classificação Brasileira de Ocupações)
-    - PNAD Contínua
-    - Dataset AIOE (Felten et al.)
+    with st.expander("💾 3. Big Data, Processamento da PNAD e Estatística"):
+        st.markdown("""
+        * **Mecanismo de Consulta:** Utilização do **`DuckDB`** como banco analítico em memória para realizar junções e agregações complexas nos Parquets trimestrais da PNAD, contornando gargalos de estouro de memória RAM.
+        * **Armazenamento de Alta Performance:** Manipulação de Big Data utilizando `Pandas` integrado com formatos compactos **Apache Parquet** (`pyarrow` e `fastparquet`).
+        * **Tratamento de Outliers:** Técnicas de **Winsorização** aplicadas via Pandas (`quantile` e `clip`) nas caudas salariais para neutralizar a influência de outliers na renda mensal ponderada.
+        * **Cálculos Vetoriais:** Operações estatísticas, logaritmos de renda e médias ponderadas usando `NumPy` (`np.average`, `np.log`).
+        """)
 
-    ### NLP e Embeddings
-
-    - Sentence Transformers
-    - Modelo multilingual-e5-large
-    - Similaridade de Cosseno
-
-    ### Processamento
-
-    - OCR
-    - Regex
-    - Normalização textual
-    - Matching semântico
-
-    ### Visualização
-
-    - Streamlit
-    - Plotly
-    - Pandas
-    """)
-
-    st.divider()
-
-    # ======================================
-    # TECNOLOGIAS
-    # ======================================
-
-    st.subheader(
-        "⚙️ Tecnologias"
-    )
-
-    st.markdown("""
-    - Python
-    - Pandas
-    - PyTorch
-    - Sentence Transformers
-    - Plotly
-    - Streamlit
-    - Parquet
-    - OpenPyXL
-    """)
+    with st.expander("🖥️ 4. Visualização e Interface da Plataforma"):
+        st.markdown("""
+        * **Framework Web:** Interface responsiva construída inteiramente em `Streamlit`.
+        * **Gráficos Interativos:** Visualizações dinâmicas criadas com `Plotly Express` e `Plotly Graph Objects`, calibrados para evitar quebras em telas móveis e monitores horizontais.
+        """)
 
     st.divider()
 
-    # ======================================
-    # OBJETIVO
-    # ======================================
+    # ==========================================
+    # INTEGRANTES E ORIENTAÇÃO (UNIVESP)
+    # ==========================================
+    st.subheader("🎓 Integrantes do Projeto")
+    st.caption("Universidade Virtual do Estado de São Paulo — UNIVESP | Curso de Bacharelado em Ciência de Dados")
+    
+    # Organização dos integrantes em duas colunas
+    int_col1, int_col2 = st.columns(2)
+    
+    with int_col1:
+        st.markdown("""
+        * CAMILA DO NASCIMENTO MOREIRA LIMA
+        * CLAUDIA MARTINS GUIDARA
+        * DANILO VALENTIM HERCULANO
+        * FELIPE FERNANDES DELVECCHIO
+        """)
+        
+    with int_col2:
+        st.markdown("""
+        * FERNANDA OLIVEIRA PIOTTO
+        * LUIS FERNANDO DE JESUS SANTOS
+        * MARCELO VILELA MADURO
+        * RENATO REGIO DE ARAUJO
+        """)
 
-    st.subheader(
-        "🎯 Objetivo"
-    )
-
-    st.info("""
-    Identificar profissões e setores
-    com maior potencial de impacto
-    da Inteligência Artificial,
-    permitindo análises sociais,
-    econômicas e educacionais.
-    """)
+    st.write("")
+    
+    # Destaque para a Orientação do TCC
+    st.info("👨‍🏫 **Orientador:** Prof. DAVID LUZ")
