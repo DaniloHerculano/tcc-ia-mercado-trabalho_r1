@@ -38,7 +38,6 @@ def mostrar_analise_exploratoria(df):
                       yaxis={'categoryorder': 'array', 'categoryarray': dados_g1['Etapa'].values[::-1]},
                       height=400, margin=dict(l=20, r=70, t=10, b=10))
     st.plotly_chart(fig1, use_container_width=True)
-    st.caption("*Fonte: Autores do TCC.*")
     
     st.write("")
     
@@ -57,7 +56,6 @@ def mostrar_analise_exploratoria(df):
                       yaxis={'categoryorder': 'array', 'categoryarray': dados_g2['Método'].values[::-1]},
                       height=320, margin=dict(l=20, r=70, t=10, b=10))
     st.plotly_chart(fig2, use_container_width=True)
-    st.caption("*Fonte: Autores do TCC.*")
 
     st.write("")
 
@@ -77,7 +75,6 @@ def mostrar_analise_exploratoria(df):
                       yaxis={'categoryorder': 'array', 'categoryarray': dados_g10['Indicador'].values[::-1]},
                       height=350, margin=dict(l=20, r=70, t=10, b=10))
     st.plotly_chart(fig10, use_container_width=True)
-    st.caption("*Fonte: Autores do TCC.*")
 
     st.divider()
 
@@ -100,7 +97,6 @@ def mostrar_analise_exploratoria(df):
         fig3 = px.histogram(dados_g3, x="AIOE", nbins=30, title="Frequência de Ocupações x Score AIOE", color_discrete_sequence=["#ff7f0e"])
         fig3.update_layout(xaxis_title="Score AIOE", yaxis_title="Frequência (Quantidade)", height=380, margin=dict(l=10, r=30, t=40, b=10))
         st.plotly_chart(fig3, use_container_width=True)
-        st.caption("*Fonte: Autores do TCC.*")
 
     with col2:
         # --- Gráfico 04 ---
@@ -111,7 +107,6 @@ def mostrar_analise_exploratoria(df):
         fig4 = px.histogram(dados_g4, x="Média_Exposição", nbins=30, title="Frequência x Gradiente de Exposição", color_discrete_sequence=["#e377c2"])
         fig4.update_layout(xaxis_title="Gradiente de Exposição (Mean)", yaxis_title="Frequência (Quantidade)", height=380, margin=dict(l=10, r=30, t=40, b=10))
         st.plotly_chart(fig4, use_container_width=True)
-        st.caption("*Fonte: Autores do TCC.*")
 
     st.divider()
 
@@ -133,7 +128,6 @@ def mostrar_analise_exploratoria(df):
         fig5 = px.histogram(dados_g5, x="Score_Fuzzy", nbins=25, color_discrete_sequence=["#17becf"])
         fig5.update_layout(xaxis_title="Score de Similaridade Textual", yaxis_title="Frequência", height=320, margin=dict(l=10, r=20, t=10, b=10))
         st.plotly_chart(fig5, use_container_width=True)
-        st.caption("*Fonte: Autores do TCC.*")
 
     with col4:
         # --- Gráfico 06 ---
@@ -146,7 +140,6 @@ def mostrar_analise_exploratoria(df):
                      color_discrete_map={"Alta (Automático)": "#2ca02c", "Média (Revisar)": "#ff7f0e", "Baixa (Descartar)": "#d62728"})
         fig6.update_layout(xaxis_title="Nível de Confiança", yaxis_title="Ocupações Afetadas", height=320, showlegend=False, margin=dict(l=10, r=20, t=10, b=10))
         st.plotly_chart(fig6, use_container_width=True)
-        st.caption("*Fonte: Autores do TCC.*")
 
     st.write("")
 
@@ -161,7 +154,6 @@ def mostrar_analise_exploratoria(df):
         fig7 = px.histogram(dados_g7, x="Cosine_Similarity", nbins=20, color_discrete_sequence=["#bcbd22"])
         fig7.update_layout(xaxis_title="Cosine Similarity (Vetor)", yaxis_title="Frequência", height=320, margin=dict(l=10, r=20, t=10, b=10))
         st.plotly_chart(fig7, use_container_width=True)
-        st.caption("*Fonte: Autores do TCC.*")
 
     with col6:
         # --- Gráfico 08 ---
@@ -174,7 +166,6 @@ def mostrar_analise_exploratoria(df):
                      color_discrete_map={"alta_revisar": "#1f77b4", "media_revisar": "#aec7e8", "baixa_nao_usar_auto": "#ffbb78"})
         fig8.update_layout(xaxis_title="Classificação Residual", yaxis_title="Quantidade", height=320, showlegend=False, margin=dict(l=10, r=20, t=10, b=10))
         st.plotly_chart(fig8, use_container_width=True)
-        st.caption("*Fonte: Autores do TCC.*")
 
     st.divider()
 
