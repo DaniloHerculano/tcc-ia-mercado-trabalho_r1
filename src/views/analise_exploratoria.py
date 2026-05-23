@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
 
-def mostrar_crosswalk(df):
+def mostrar_analise_exploratoria(df):
     st.title("🔗 Resultados da Análise Exploratória dos Dados ")
     st.markdown("""
     Nesta página centralizamos todas as análises gráficas que validam a estrutura metodológica do projeto. 
