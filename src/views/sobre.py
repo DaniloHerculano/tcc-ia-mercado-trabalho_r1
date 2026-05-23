@@ -18,7 +18,7 @@ def mostrar_sobre():
     with col1:
         st.subheader("🎯 O Diferencial Metodológico")
         st.markdown("""
-        Diferente de aplicações simples que usam apenas scores prontos, este projeto construiu uma **infraestrutura metodológica inédita de pesquisa ocupacional**. 
+        Diferente de aplicações simples que usam apenas scores prontos, este projeto construiu uma **infraestrutura metodológica de pesquisa ocupacional**. 
         
         Foi desenvolvido um pipeline de harmonização e *transfer learning* que traduz os índices globais de exposição à IA para a realidade estatística das famílias de trabalhadores no Brasil.
         """)
@@ -27,7 +27,7 @@ def mostrar_sobre():
         st.subheader("📊 Bases de Dados Harmonizadas")
         st.markdown("""
         * **CBO (Classificação Brasileira de Ocupações)**: Dados e descrições sumárias oficiais do Ministério do Trabalho.
-        * **Microdados da PNAD Contínua (IBGE)**: Painel analítico abrangendo de **2020 a 2025**, totalizando uma amostra limpa de aproximadamente **15 milhões de registros** únicos.
+        * **Microdados da PNAD Contínua (IBGE)**: Painel analítico abrangendo de **2020 a 2025**, totalizando uma amostra limpa de quase **1 milhão de registros** únicos.
         * **Datasets Globais de IA**: Índices de exposição *AIOE (Felten et al., 2021)* e a classificação de impactos da OIT *(Gmyrek et al., 2025)*.
         """)
 
