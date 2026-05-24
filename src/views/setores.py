@@ -32,11 +32,7 @@ def mostrar_setores(df):
 
     if faltando:
 
-        st.error(f"""
-        Colunas não encontradas no dataframe:
-
-        {faltando}
-        """)
+        st.error(f"Colunas não encontradas: {faltando}")
 
         st.write("Colunas disponíveis:")
         st.write(df.columns.tolist())
@@ -55,7 +51,7 @@ def mostrar_setores(df):
     ).copy()
 
     # ======================================
-    # PADRONIZAÇÃO UF
+    # PADRONIZAÇÃO
     # ======================================
 
     mapa["UF"] = (
@@ -66,7 +62,7 @@ def mostrar_setores(df):
     )
 
     # ======================================
-    # MAPA ESTADO -> SIGLA
+    # ESTADOS -> SIGLAS
     # ======================================
 
     estados_siglas = {
@@ -101,19 +97,15 @@ def mostrar_setores(df):
     }
 
     # ======================================
-    # CONVERTER SIGLA
+    # CONVERTER
     # ======================================
 
     mapa["SIGLA"] = mapa["UF"].map(estados_siglas)
 
-    # ======================================
-    # REMOVER SEM SIGLA
-    # ======================================
-
     mapa = mapa.dropna(subset=["SIGLA"])
 
     # ======================================
-    # AGRUPAMENTO
+    # AGRUPAR
     # ======================================
 
     mapa = (
@@ -140,16 +132,12 @@ def mostrar_setores(df):
 
     except Exception as e:
 
-        st.error(f"""
-        Erro ao carregar o GeoJSON:
-
-        {e}
-        """)
+        st.error(f"Erro ao carregar GeoJSON: {e}")
 
         return
 
     # ======================================
-    # MAPA INTERATIVO
+    # MAPA
     # ======================================
 
     fig_mapa = px.choropleth(
@@ -177,7 +165,7 @@ def mostrar_setores(df):
     )
 
     # ======================================
-    # AJUSTES VISUAIS
+    # AJUSTES
     # ======================================
 
     fig_mapa.update_geos(
@@ -209,7 +197,7 @@ def mostrar_setores(df):
 
     st.plotly_chart(
         fig_mapa,
-        width='stretch'
+        use_container_width=True
     )
 
     st.caption("""
