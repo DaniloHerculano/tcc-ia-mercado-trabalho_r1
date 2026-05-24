@@ -3,32 +3,39 @@ import plotly.express as px
 import pandas as pd
 import json
 
+
 # ==========================================
-# SETORES
+# GRANDES GRUPOS OCUPACIONAIS
 # ==========================================
 
 def mostrar_setores(df):
 
-    st.title(
-        "🏭 Grandes Grupos Ocupacionais"
-    )
+    st.title("🏭 Grandes Grupos Ocupacionais")
 
     st.markdown("""
-    Análise da exposição à IA
-    por grupos ocupacionais brasileiros.
+    Visualização geográfica da exposição média à Inteligência Artificial
+    nas ocupações brasileiras, com base nos dados agregados por estado.
     """)
 
     st.divider()
 
     # ======================================
-    # VALIDAR
+    # VALIDAR COLUNAS
     # ======================================
 
-    if "COD_Grande_Grupo_TITULO" not in df.columns:
+    colunas_necessarias = ["UF", "AIOE_SCORE"]
 
-        st.error(
-            "Coluna COD_Grande_Grupo_TITULO não encontrada."
-        )
+    faltando = [
+        col for col in colunas_necessarias
+        if col not in df.columns
+    ]
+
+    if faltando:
+
+        st.error(f"Colunas não encontradas: {faltando}")
+
+        st.write("Colunas disponíveis:")
+        st.write(df.columns.tolist())
 
         return
 
@@ -36,65 +43,26 @@ def mostrar_setores(df):
     # LIMPEZA
     # ======================================
 
-    setores = df.dropna(
+    mapa = df.dropna(
         subset=[
-            "COD_Grande_Grupo_TITULO",
+            "UF",
             "AIOE_SCORE"
         ]
+    ).copy()
+
+    # ======================================
+    # PADRONIZAÇÃO
+    # ======================================
+
+    mapa["UF"] = (
+        mapa["UF"]
+        .astype(str)
+        .str.upper()
+        .str.strip()
     )
 
     # ======================================
-    # MÉDIA POR GRUPO
-    # ======================================
-
-    grupo = (
-        setores.groupby(
-            "COD_Grande_Grupo_TITULO"
-        )
-        ["AIOE_SCORE"]
-        .mean()
-        .reset_index()
-    )
-
-    grupo = grupo.sort_values(
-        by="AIOE_SCORE",
-        ascending=False
-    )
-
-    # ======================================
-    # BAR CHART
-    # ======================================
-
-    fig = px.bar(
-        grupo,
-        x="COD_Grande_Grupo_TITULO",
-        y="AIOE_SCORE",
-        color="AIOE_SCORE",
-        title="Exposição IA por Grupo Ocupacional"
-    )
-
-    fig.update_layout(
-        xaxis_title="Grupo Ocupacional",
-        yaxis_title="Média AIOE"
-    )
-
-    st.plotly_chart(
-        fig,
-        width='stretch'
-    )
-
-    st.divider()
-
-    # ======================================
-    # MAPA BRASIL
-    # ======================================
-
-    st.subheader(
-        "🗺️ Exposição IA por Estado"
-    )
-
-    # ======================================
-    # MAPA ESTADO -> SIGLA
+    # ESTADOS -> SIGLAS
     # ======================================
 
     estados_siglas = {
@@ -129,43 +97,44 @@ def mostrar_setores(df):
     }
 
     # ======================================
+    # CONVERTER
+    # ======================================
+
+    mapa["SIGLA"] = mapa["UF"].map(estados_siglas)
+
+    mapa = mapa.dropna(subset=["SIGLA"])
+
+    # ======================================
     # AGRUPAR
     # ======================================
 
     mapa = (
-        df.groupby("UF")
-        ["AIOE_SCORE"]
+        mapa.groupby(
+            ["UF", "SIGLA"]
+        )["AIOE_SCORE"]
         .mean()
         .reset_index()
-    )
-
-    mapa["UF"] = (
-        mapa["UF"]
-        .astype(str)
-        .str.upper()
-        .str.strip()
-    )
-
-    # ======================================
-    # CONVERTER PARA SIGLA
-    # ======================================
-
-    mapa["SIGLA"] = (
-        mapa["UF"]
-        .map(estados_siglas)
     )
 
     # ======================================
     # GEOJSON
     # ======================================
 
-    with open(
-        "data/brasil_estados.geojson",
-        "r",
-        encoding="utf-8"
-    ) as f:
+    try:
 
-        brasil_geo = json.load(f)
+        with open(
+            "data/brasil_estados.geojson",
+            "r",
+            encoding="utf-8"
+        ) as f:
+
+            brasil_geo = json.load(f)
+
+    except Exception as e:
+
+        st.error(f"Erro ao carregar GeoJSON: {e}")
+
+        return
 
     # ======================================
     # MAPA
@@ -187,8 +156,17 @@ def mostrar_setores(df):
 
         hover_name="UF",
 
-        title="Mapa de Exposição IA por Estado"
+        hover_data={
+            "SIGLA": True,
+            "AIOE_SCORE": ":.3f"
+        },
+
+        title="Mapa de Exposição Média à IA por Estado"
     )
+
+    # ======================================
+    # AJUSTES
+    # ======================================
 
     fig_mapa.update_geos(
 
@@ -199,128 +177,31 @@ def mostrar_setores(df):
 
     fig_mapa.update_layout(
 
-        height=800,
+        height=850,
 
         margin=dict(
             l=0,
             r=0,
-            t=40,
+            t=60,
             b=0
+        ),
+
+        coloraxis_colorbar=dict(
+            title="AIOE"
         )
     )
+
+    # ======================================
+    # EXIBIR
+    # ======================================
 
     st.plotly_chart(
         fig_mapa,
-        width='stretch'
+        use_container_width=True
     )
 
-    st.divider()
-
-    # ======================================
-    # DISTRIBUIÇÃO IMPACTO
-    # ======================================
-
-    st.subheader(
-        "📊 Distribuição de Impacto por Grupo"
-    )
-
-    impacto = (
-        setores.groupby(
-            [
-                "COD_Grande_Grupo_TITULO",
-                "NIVEL_IMPACTO"
-            ]
-        )
-        .size()
-        .reset_index(name="Quantidade")
-    )
-
-    fig2 = px.bar(
-        impacto,
-        x="COD_Grande_Grupo_TITULO",
-        y="Quantidade",
-        color="NIVEL_IMPACTO",
-        barmode="group",
-        title="Distribuição de Impacto IA"
-    )
-
-    st.plotly_chart(
-        fig2,
-        width='stretch'
-    )
-
-    st.divider()
-
-    # ======================================
-    # TOP OCUPAÇÕES
-    # ======================================
-
-    st.subheader(
-        "🚨 Ocupações Mais Expostas"
-    )
-
-    top = (
-        setores.sort_values(
-            by="AIOE_SCORE",
-            ascending=False
-        )
-        [
-            [
-                "TITULO_LIMPO",
-                "COD_Grande_Grupo_TITULO",
-                "AIOE_SCORE",
-                "NIVEL_IMPACTO"
-            ]
-        ]
-        .head(20)
-    )
-
-    st.dataframe(
-        top,
-        width='stretch'
-    )
-
-    st.divider()
-
-    # ======================================
-    # INSIGHTS
-    # ======================================
-
-    if len(grupo) > 0:
-
-        maior = grupo.iloc[0]
-
-        menor = grupo.iloc[-1]
-
-        st.warning(f"""
-        🚨 Grupo mais exposto:
-
-        {maior['COD_Grande_Grupo_TITULO']}
-
-        Média:
-        {round(maior['AIOE_SCORE'], 2)}
-        """)
-
-        st.success(f"""
-        📉 Grupo menos exposto:
-
-        {menor['COD_Grande_Grupo_TITULO']}
-
-        Média:
-        {round(menor['AIOE_SCORE'], 2)}
-        """)
-
-    st.divider()
-
-    # ======================================
-    # TABELA FINAL
-    # ======================================
-
-    st.subheader(
-        "📋 Média IA por Grupo"
-    )
-
-    st.dataframe(
-        grupo,
-        width='stretch'
-    )
+    st.caption("""
+    O mapa apresenta a média do score AIOE por estado brasileiro,
+    permitindo visualizar diferenças regionais na exposição ocupacional
+    à Inteligência Artificial.
+    """)
