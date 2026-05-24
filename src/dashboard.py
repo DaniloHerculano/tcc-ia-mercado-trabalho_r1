@@ -59,7 +59,7 @@ pagina = st.sidebar.radio(
         "📈 Evolução Temporal",
         # "🎓 Escolaridade x IA",
         # "💰 Renda x IA",
-        "🏭 Setores x IA",
+        "🏭 Mapa Exposição a IA",
         # "🏆 Ranking",
         # "🔥 Correlação",
         # "🧠 Insights IA",
@@ -97,7 +97,7 @@ elif pagina == "💰 Renda x IA":
 
     mostrar_renda(df)
 
-elif pagina == "🏭 Setores x IA":
+elif pagina == "🏭 Mapa Exposição a IA":
 
     mostrar_setores(df)
 
