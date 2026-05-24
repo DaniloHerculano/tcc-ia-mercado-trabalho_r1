@@ -75,13 +75,6 @@ def mostrar_sobre():
     # ==========================================
     st.subheader("🎓 Integrantes do Projeto")
     st.caption("Universidade Virtual do Estado de São Paulo — UNIVESP | Curso de Bacharelado em Ciência de Dados")
-
-    st.info("""
-    📚 **Grupo 6**  
-    Disciplina: **Trabalho de Conclusão de Curso em Ciência de Dados — TCC530**  
-    Turma: **010**  
-    Ano: **2026**
-    """)
     
     # Organização dos integrantes em duas colunas
     int_col1, int_col2 = st.columns(2)
@@ -106,3 +99,11 @@ def mostrar_sobre():
     
     # Destaque para a Orientação do TCC
     st.info("👨‍🏫 **Orientador:** Prof. DAVID LUZ")
+
+    # Destaque curso, disciplina, turma...
+    st.info("""
+    📚 **Grupo 6**  
+    Disciplina: **Trabalho de Conclusão de Curso em Ciência de Dados — TCC530**  
+    Turma: **010**  
+    Ano: **2026**
+    """)
