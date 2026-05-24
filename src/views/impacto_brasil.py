@@ -80,7 +80,7 @@ TOP20_GMYREK = [
     {"Ocupação": "FÍSICOS",                                                         "Score": 0.375},
 ]
 
-# --- BOTTOM 20 GMYREK — escala 0.07 a 0.21 ---
+# --- 20 GMYREK — escala 0.07 a 0.21 ---
 BOT20_GMYREK = [
     {"Ocupação": "TRABALHADORES NOS SERVIÇOS DE ADMINISTRAÇÃO DE EDIFÍCIOS",                          "Score": 0.090},
     {"Ocupação": "GARIMPEIROS E OPERADORES DE SALINAS",                                               "Score": 0.100},
