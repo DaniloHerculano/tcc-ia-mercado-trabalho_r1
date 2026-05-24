@@ -156,7 +156,7 @@ def mostrar_impacto_brasil(df=None):
             color_top = "Reds"
             color_bot = "Blues"
             title_top = "🚨 Top 20 Ocupações Mais Expostas — Felten/AIOE"
-            title_bot = "🟢 Bottom 20 Ocupações Menos Expostas — Felten/AIOE"
+            title_bot = "🟢 20 Ocupações Menos Expostas — Felten/AIOE"
         else:
             df_top = pd.DataFrame(TOP20_GMYREK)
             df_bot = pd.DataFrame(BOT20_GMYREK)
@@ -165,7 +165,7 @@ def mostrar_impacto_brasil(df=None):
             color_top = "Oranges"
             color_bot = "Blues"
             title_top = "🚨 Top 20 Ocupações Mais Expostas — Gmyrek Mean"
-            title_bot = "🟢 Bottom 20 Ocupações Menos Expostas — Gmyrek Mean"
+            title_bot = "🟢 Ocupações Menos Expostas — Gmyrek Mean"
 
         # ---- TOP 20 ----
         st.markdown(f"#### {title_top}")
