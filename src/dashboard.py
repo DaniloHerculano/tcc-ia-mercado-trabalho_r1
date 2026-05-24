@@ -57,6 +57,7 @@ pagina = st.sidebar.radio(
         # "📊 Dashboard",
         "🇧🇷 Impacto no Brasil",
         "📈 Evolução Temporal",
+        "🔗 Analise Exploratoria",
         # "🎓 Escolaridade x IA",
         # "💰 Renda x IA",
         "🏭 Mapa Exposição a IA",
@@ -66,7 +67,6 @@ pagina = st.sidebar.radio(
         "🪞 Similaridade",
         # "🔎 Pesquisar Ocupação",
         "🤖 Simulador IA",
-        "🔗 Analise Exploratoria",
         "ℹ️ Sobre"
     ]
 )
@@ -88,6 +88,10 @@ elif pagina == "🇧🇷 Impacto no Brasil":
 elif pagina == "📈 Evolução Temporal":
 
     mostrar_evolucao_temporal(df)
+
+elif pagina == "🔗 Analise Exploratoria":
+
+    mostrar_analise_exploratoria(df)
 
 elif pagina == "🎓 Escolaridade x IA":
 
@@ -124,10 +128,6 @@ elif pagina == "🔎 Pesquisar Ocupação":
 elif pagina == "🤖 Simulador IA":
 
     mostrar_simulador(df)
-
-elif pagina == "🔗 Analise Exploratoria":
-
-    mostrar_analise_exploratoria(df)
 
 elif pagina == "ℹ️ Sobre":
 
