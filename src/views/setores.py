@@ -9,6 +9,82 @@ import json
 
 def mostrar_setores(df):
 
+    st.title(
+        "🏭 Grandes Grupos Ocupacionais"
+    )
+
+    st.markdown("""
+    Análise da exposição à IA
+    por grupos ocupacionais brasileiros.
+    """)
+
+    st.divider()
+
+    # ======================================
+    # VALIDAR
+    # ======================================
+
+    if "COD_Grande_Grupo_TITULO" not in df.columns:
+
+        st.error(
+            "Coluna COD_Grande_Grupo_TITULO não encontrada."
+        )
+
+        return
+
+    # ======================================
+    # LIMPEZA
+    # ======================================
+
+    setores = df.dropna(
+        subset=[
+            "COD_Grande_Grupo_TITULO",
+            "AIOE_SCORE"
+        ]
+    )
+
+    # ======================================
+    # MÉDIA POR GRUPO
+    # ======================================
+
+    grupo = (
+        setores.groupby(
+            "COD_Grande_Grupo_TITULO"
+        )
+        ["AIOE_SCORE"]
+        .mean()
+        .reset_index()
+    )
+
+    grupo = grupo.sort_values(
+        by="AIOE_SCORE",
+        ascending=False
+    )
+
+    # ======================================
+    # BAR CHART
+    # ======================================
+
+    fig = px.bar(
+        grupo,
+        x="COD_Grande_Grupo_TITULO",
+        y="AIOE_SCORE",
+        color="AIOE_SCORE",
+        title="Exposição IA por Grupo Ocupacional"
+    )
+
+    fig.update_layout(
+        xaxis_title="Grupo Ocupacional",
+        yaxis_title="Média AIOE"
+    )
+
+    st.plotly_chart(
+        fig,
+        width='stretch'
+    )
+
+    st.divider()
+
     # ======================================
     # MAPA BRASIL
     # ======================================
