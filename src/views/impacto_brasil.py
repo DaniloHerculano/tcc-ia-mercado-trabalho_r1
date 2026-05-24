@@ -121,7 +121,7 @@ def mostrar_impacto_brasil(df=None):
     project_dir = os.path.dirname(os.path.dirname(current_dir))
     img_dir = os.path.join(project_dir, "img")
 
-    tab_renda, tab_rankings = st.tabs(["💰 IA vs. Rendimento Mensal", "🏆 Rankings Ocupacionais (Top/Bottom 20)"])
+    tab_renda, tab_rankings = st.tabs(["💰 IA vs. Rendimento Mensal", "🏆 Rankings Ocupacionais"])
 
     # =========================================================================
     # ABA 1: DISPERSÃO E REGRESSÃO (IMAGENS ESTÁTICAS — mantidas como estão)
