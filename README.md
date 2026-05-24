@@ -1,9 +1,11 @@
 TCC - Impacto da Inteligência Artificial no Mercado de Trabalho Brasileiro
 
 Plataforma analítica desenvolvida para o Trabalho de Conclusão de Curso (TCC) com foco na análise do impacto da Inteligência Artificial nas ocupações do mercado de trabalho brasileiro.
+
 O projeto utiliza bases públicas nacionais e internacionais, técnicas de Ciência de Dados, embeddings semânticos e visualizações interativas para analisar níveis de exposição das ocupações à IA.
 
 Objetivo
+
 O objetivo do projeto é classificar e analisar o impacto da Inteligência Artificial nas ocupações brasileiras, relacionando indicadores de exposição à IA com variáveis como:
 Escolaridade
 Renda
@@ -24,7 +26,9 @@ DuckDB
 PyArrow
 
 Funcionalidades da Plataforma
+
 A plataforma possui módulos interativos para:
+
 Análise exploratória dos dados
 Impacto no Brasil
 Evolução Temporaal
@@ -33,6 +37,7 @@ Similaridade
 Simulador IA
 
 Todos os gráficos são interativos utilizando Plotly, permitindo:
+
 Zoom
 Hover com detalhes
 Exportação em PNG
@@ -45,7 +50,9 @@ tcc-ia-mercado-trabalho_r1/
 ├── src/views/
 
 🚀 Como Executar
+
 Clone o repositório:
+
 git clone https://github.com/seu-repositorio.git
 Instale as dependências:
 pip install -r requirements.txt
