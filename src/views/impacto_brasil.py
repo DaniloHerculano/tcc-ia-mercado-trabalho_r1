@@ -167,64 +167,62 @@ def mostrar_impacto_brasil(df=None):
             title_top = "🚨 Top 20 Ocupações Mais Expostas — Gmyrek Mean"
             title_bot = "🟢 Bottom 20 Ocupações Menos Expostas — Gmyrek Mean"
 
-        col_t1, col_t2 = st.columns(2)
-
         # ---- TOP 20 ----
-        with col_t1:
-            st.markdown(f"#### {title_top}")
-            df_top_sorted = df_top.sort_values("Score", ascending=True)
+        st.markdown(f"#### {title_top}")
+        df_top_sorted = df_top.sort_values("Score", ascending=True)
 
-            fig_top = px.bar(
-                df_top_sorted,
-                x="Score",
-                y="Ocupação",
-                orientation="h",
-                text_auto=".2f",
-                color="Score",
-                color_continuous_scale=color_top,
-                labels={"Score": x_label_top, "Ocupação": ""},
-            )
-            fig_top.update_traces(
-                textposition="outside",
-                hovertemplate="<b>%{y}</b><br>Score: %{x:.3f}<extra></extra>",
-            )
-            fig_top.update_layout(
-                height=700,
-                showlegend=False,
-                coloraxis_showscale=False,
-                margin=dict(l=10, r=60, t=20, b=40),
-                xaxis_title=x_label_top,
-                yaxis_title="",
-                font=dict(size=11),
-            )
-            st.plotly_chart(fig_top, use_container_width=True)
+        fig_top = px.bar(
+            df_top_sorted,
+            x="Score",
+            y="Ocupação",
+            orientation="h",
+            text_auto=".2f",
+            color="Score",
+            color_continuous_scale=color_top,
+            labels={"Score": x_label_top, "Ocupação": ""},
+        )
+        fig_top.update_traces(
+            textposition="outside",
+            hovertemplate="<b>%{y}</b><br>Score: %{x:.3f}<extra></extra>",
+        )
+        fig_top.update_layout(
+            height=700,
+            showlegend=False,
+            coloraxis_showscale=False,
+            margin=dict(l=10, r=60, t=20, b=40),
+            xaxis_title=x_label_top,
+            yaxis_title="",
+            font=dict(size=11),
+        )
+        st.plotly_chart(fig_top, use_container_width=True)
+
+        st.divider()
 
         # ---- BOTTOM 20 ----
-        with col_t2:
-            st.markdown(f"#### {title_bot}")
-            df_bot_sorted = df_bot.sort_values("Score", ascending=False)
+        st.markdown(f"#### {title_bot}")
+        df_bot_sorted = df_bot.sort_values("Score", ascending=False)
 
-            fig_bot = px.bar(
-                df_bot_sorted,
-                x="Score",
-                y="Ocupação",
-                orientation="h",
-                text_auto=".2f",
-                color="Score",
-                color_continuous_scale=color_bot,
-                labels={"Score": x_label_bot, "Ocupação": ""},
-            )
-            fig_bot.update_traces(
-                textposition="outside",
-                hovertemplate="<b>%{y}</b><br>Score: %{x:.3f}<extra></extra>",
-            )
-            fig_bot.update_layout(
-                height=700,
-                showlegend=False,
-                coloraxis_showscale=False,
-                margin=dict(l=10, r=60, t=20, b=40),
-                xaxis_title=x_label_bot,
-                yaxis_title="",
-                font=dict(size=11),
-            )
-            st.plotly_chart(fig_bot, use_container_width=True)
+        fig_bot = px.bar(
+            df_bot_sorted,
+            x="Score",
+            y="Ocupação",
+            orientation="h",
+            text_auto=".2f",
+            color="Score",
+            color_continuous_scale=color_bot,
+            labels={"Score": x_label_bot, "Ocupação": ""},
+        )
+        fig_bot.update_traces(
+            textposition="outside",
+            hovertemplate="<b>%{y}</b><br>Score: %{x:.3f}<extra></extra>",
+        )
+        fig_bot.update_layout(
+            height=700,
+            showlegend=False,
+            coloraxis_showscale=False,
+            margin=dict(l=10, r=60, t=20, b=40),
+            xaxis_title=x_label_bot,
+            yaxis_title="",
+            font=dict(size=11),
+        )
+        st.plotly_chart(fig_bot, use_container_width=True)
