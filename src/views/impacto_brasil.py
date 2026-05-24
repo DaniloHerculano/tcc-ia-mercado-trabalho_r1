@@ -32,7 +32,7 @@ TOP20_AIOE = [
     {"Ocupação": "ARQUITETOS",                                                      "Score": 1.06},
 ]
 
-# --- BOTTOM 20 AIOE (Felten) — escala negativa ~-1.6 a 0.0 ---
+# --- AIOE (Felten) — escala negativa ~-1.6 a 0.0 ---
 BOT20_AIOE = [
     {"Ocupação": "TRABALHADORES DE MOLDAGEM DE METAIS E DE COMPÓSITOS",                                         "Score": -1.60},
     {"Ocupação": "TRABALHADORES DE BENEFICIAMENTO DE PEDRAS",                                                   "Score": -1.58},
