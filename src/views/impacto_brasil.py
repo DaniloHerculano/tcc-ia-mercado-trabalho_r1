@@ -12,8 +12,8 @@ import os
 TOP20_AIOE = [
     {"Ocupação": "PROFISSIONAIS DA ESTATÍSTICA",                                    "Score": 1.50},
     {"Ocupação": "CONTADORES E AUDITORES",                                          "Score": 1.48},
-    {"Ocupação": "SERVENTUÁRIOS DA JUSTIÇA E AFINS",                                "Score": 1.45},
-    {"Ocupação": "DELEGADOS DE POLÍCIA",                                            "Score": 1.43},
+    {"Ocupação": "SERVENTUÁRIOS DA JUSTIÇA E AFINS",                                "Score": 1.46},
+    {"Ocupação": "DELEGADOS DE POLÍCIA",                                            "Score": 1.44},
     {"Ocupação": "PROFISSIONAIS DO JORNALISMO",                                     "Score": 1.43},
     {"Ocupação": "PROFISSIONAIS EM PESQUISA E ANÁLISE ANTROPOLÓGICA E SOCIOLÓGICA", "Score": 1.42},
     {"Ocupação": "TÉCNICOS EM TRANSPORTES (ADUANEIROS)",                            "Score": 1.42},
