@@ -47,12 +47,12 @@ def mostrar_impacto_brasil(df=None):
                 st.markdown("#### 🚨 Top 20 Ocupações Mais Expostas")
                 st.image(os.path.join(img_dir, "top20-ocupacoes-br-AIOE.png"), use_container_width=True)
             with col_t2:
-                st.markdown("#### 🟢 Bottom 20 Ocupações Menos Expostas")
+                st.markdown("#### 🟢 20 Ocupações Menos Expostas")
                 st.image(os.path.join(img_dir, "20-ocupacoes-br-AIOE.png"), use_container_width=True)
         else:
             with col_t1:
                 st.markdown("#### 🚨 Top 20 Ocupações Mais Expostas")
                 st.image(os.path.join(img_dir, "top20-ocupacoes-br-Gmyrek.png"), use_container_width=True)
             with col_t2:
-                st.markdown("#### 🟢 Bottom 20 Ocupações Menos Expostas")
+                st.markdown("#### 🟢 20 Ocupações Menos Expostas")
                 st.image(os.path.join(img_dir, "20-ocupacoes-br-Gmyrek.png"), use_container_width=True)
