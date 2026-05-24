@@ -55,7 +55,7 @@ pagina = st.sidebar.radio(
     "Selecione:",
     [
         # "📊 Dashboard",
-        "🇧🇷 Análise e Ranking",
+        "🇧🇷 Impacto no Brasil",
         "📈 Evolução Temporal",
         # "🎓 Escolaridade x IA",
         # "💰 Renda x IA",
@@ -81,7 +81,7 @@ if pagina == "📊 Dashboard":
 
     mostrar_dashboard(df)
 
-elif pagina == "🇧🇷 Analise e Ranking":
+elif pagina == "🇧🇷 Impacto no Brasil":
 
     mostrar_impacto_brasil(df)
 
