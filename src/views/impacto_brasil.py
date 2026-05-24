@@ -1,6 +1,7 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
+import numpy as np  # <-- Faltava esse cara aqui!
 
 def mostrar_impacto_brasil(df):
     st.title("🇧🇷 Impacto Econômico e Rankings no Mercado Brasileiro")
@@ -25,11 +26,11 @@ def mostrar_impacto_brasil(df):
         df_renda = df_renda[df_renda["Rendimento_Mensal"] > 0]
         df_renda["Log_Renda"] = np.log10(df_renda["Rendimento_Mensal"])
         
-        # Agrupando por ocupação para gerar o gráfico de dispersão por profissão (idêntico ao do relatório)
+        # Agrupando por ocupação para gerar o gráfico de dispersão por profissão
         df_agrupado = df_renda.groupby("TITULO_LIMPO").agg({
             "Log_Renda": "mean",
             "AIOE_SCORE": "mean",
-            "CONFIDENCE_SCORE": "mean" # Usando o gradiente Gmyrek (Mean)
+            "CONFIDENCE_SCORE": "mean" # Gradiente Gmyrek (Mean)
         }).reset_index()
         
         col1, col2 = st.columns(2)
