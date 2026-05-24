@@ -10,7 +10,7 @@ import json
 
 def mostrar_setores(df):
 
-    st.title("🏭 Grandes Grupos Ocupacionais")
+    st.title("🏭 Mapa de Exposição a IA)
 
     st.markdown("""
     Visualização geográfica da exposição média à Inteligência Artificial
