@@ -1,6 +1,3 @@
-# Código Streamlit — Gráficos Interativos do PDF
-
-```python
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
