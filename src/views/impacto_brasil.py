@@ -1,274 +1,74 @@
 import streamlit as st
-import pandas as pd
-import plotly.express as px
-
-# ==========================================
-# IMPACTO BRASIL
-# ==========================================
 
 def mostrar_impacto_brasil(df):
-
-    st.title(
-        "🇧🇷 Impacto da IA no Brasil"
-    )
-
+    st.title("🇧🇷 Impacto Econômico e Rankings no Mercado Brasileiro")
     st.markdown("""
-    Análise da força de trabalho brasileira
-    utilizando dados da PNAD Contínua
-    e métricas de exposição à IA.
+    Nesta seção, exploramos os resultados substantivos do TCC: a relação entre a remuneração 
+    dos trabalhadores e sua exposição à IA, além dos rankings das profissões mais e menos afetadas.
     """)
-
+    
     st.divider()
-
-    # ======================================
-    # KPIs
-    # ======================================
-
-    total = len(df)
-
-    media_aioe = round(
-        df["AIOE_SCORE"].mean(),
-        2
-    )
-
-    media_renda = round(
-        df["Rendimento_Mensal"].mean(),
-        2
-    )
-
-    total_ufs = (
-        df["UF"]
-        .nunique()
-    )
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    col1.metric(
-        "👥 Trabalhadores",
-        f"{total:,}"
-    )
-
-    col2.metric(
-        "🤖 Média AIOE",
-        media_aioe
-    )
-
-    col3.metric(
-        "💰 Renda Média",
-        f"R$ {media_renda:,.0f}"
-    )
-
-    col4.metric(
-        "🌎 Estados",
-        total_ufs
-    )
-
-    st.divider()
-
-    # ======================================
-    # MÉDIA IA POR UF
-    # ======================================
-
-    uf = (
-        df.groupby("UF")
-        .agg({
-            "AIOE_SCORE": "mean",
-            "Rendimento_Mensal": "mean"
-        })
-        .reset_index()
-    )
-
-    uf = uf.sort_values(
-        by="AIOE_SCORE",
-        ascending=False
-    )
-
-    # ======================================
-    # BAR CHART UF
-    # ======================================
-
-    fig = px.bar(
-        uf,
-        x="UF",
-        y="AIOE_SCORE",
-        color="AIOE_SCORE",
-        hover_data=[
-            "Rendimento_Mensal"
-        ],
-        title="Média de Exposição IA por Estado"
-    )
-
-    st.plotly_chart(
-        fig,
-        width='stretch'
-    )
-
-    st.divider()
-
-    # ======================================
-    # SEXO
-    # ======================================
-
-    col1, col2 = st.columns(2)
-
-    # ======================================
-    # PIZZA - DISTRIBUIÇÃO
-    # ======================================
-
-    with col1:
-
-        st.subheader(
-            "👥 Distribuição por Sexo"
-        )
-
-        sexo_qtd = (
-            df.groupby("Sexo")
-            .size()
-            .reset_index(name="Quantidade")
-        )
-
-        sexo_qtd = sexo_qtd.dropna(
-            subset=["Sexo"]
-        )
-
-        fig2 = px.pie(
-            sexo_qtd,
-            names="Sexo",
-            values="Quantidade",
-            title="Distribuição da Força de Trabalho"
-        )
-
-        st.plotly_chart(
-            fig2,
-            width='stretch'
-        )
-
-    # ======================================
-    # BARRA - MÉDIA IA
-    # ======================================
-
-    with col2:
-
-        st.subheader(
-            "🤖 Média IA por Sexo"
-        )
-
-        sexo_df = df.copy()
-
-        sexo_df = sexo_df.dropna(
-            subset=["Sexo", "AIOE_SCORE"]
-        )
-
-        sexo_df["Sexo"] = (
-            sexo_df["Sexo"]
-            .astype(str)
-            .str.strip()
-        )
-
-        sexo_df["AIOE_SCORE"] = pd.to_numeric(
-            sexo_df["AIOE_SCORE"],
-            errors="coerce"
-        )
-
-        sexo = (
-            sexo_df.groupby("Sexo")
-            ["AIOE_SCORE"]
-            .mean()
-            .reset_index()
-        )
-
-        sexo = sexo.sort_values(
-            by="AIOE_SCORE",
-            ascending=False
-        )
-
-        fig3 = px.bar(
-            sexo,
-            x="Sexo",
-            y="AIOE_SCORE",
-            color="Sexo",
-            text_auto=".2f",
-            title="Média IA por Sexo"
-        )
-
-        fig3.update_layout(
-            yaxis_title="Média AIOE",
-            xaxis_title="Sexo"
-        )
-
-        st.plotly_chart(
-            fig3,
-            width='stretch'
-        )
-
-    st.divider()
-
-    # ======================================
-    # IDADE
-    # ======================================
-
-    st.subheader(
-        "🎂 Idade x Exposição IA"
-    )
-
-    amostra = df.sample(
-        min(len(df), 3000)
-    )
-
-    fig4 = px.scatter(
-        amostra,
-        x="Idade",
-        y="AIOE_SCORE",
-        color="NIVEL_IMPACTO",
-        title="Idade vs Exposição IA"
-    )
-
-    st.plotly_chart(
-        fig4,
-        width='stretch'
-    )
-
-    st.divider()
-
-    # ======================================
-    # TOP ESTADOS
-    # ======================================
-
-    st.subheader(
-        "🏆 Estados Mais Expostos"
-    )
-
-    st.dataframe(
-        uf.head(10),
-        width='stretch'
-    )
-
-    st.divider()
-
-    # ======================================
-    # INSIGHTS
-    # ======================================
-
-    if len(uf) > 0:
-
-        maior = uf.iloc[0]
-
-        menor = uf.iloc[-1]
-
-        st.warning(f"""
-        🚨 Estado mais exposto à IA:
-
-        {maior['UF']}
-
-        Média AIOE:
-        {round(maior['AIOE_SCORE'], 2)}
+    
+    # Criação de abas para organizar o conteúdo de forma limpa
+    tab_renda, tab_rankings = st.tabs(["💰 IA vs. Rendimento Mensal", "🏆 Rankings Ocupacionais (Top/Bottom 20)"])
+    
+    # -------------------------------------------------------------------------
+    # ABA 1: ANÁLISE DE RENDA
+    # -------------------------------------------------------------------------
+    with tab_renda:
+        st.subheader("Análise de Elasticidade: Exposição à IA × Logaritmo da Renda")
+        st.markdown("""
+        Os gráficos de dispersão abaixo apresentam as retas de regressão linear calculadas sobre os microdados da PNAD Contínua. 
+        Eles testam a hipótese central de que a IA generativa impacta predominantemente ocupações de maior remuneração.
+        """)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("#### Modelo de Regressão — Métrica AIOE (Felten)")
+            st.image("exposicao-ia-vs-log-renda-AIOE.png", use_container_width=True)
+            st.caption("*Reta de tendência com inclinação positiva indicando maior exposição no topo salarial.*")
+            
+        with col2:
+            st.markdown("#### Modelo de Regressão — Métrica Exposure (Gmyrek/OIT)")
+            st.image("exposicao-ia-vs-log-renda-Gmyrek.png", use_container_width=True)
+            st.caption("*Validação convergente utilizando o gradiente de tarefas expostas da OIT.*")
+            
+        st.info("""
+        💡 **Análise Científica para o Relatório:** A inclinação positiva das retas em ambos os modelos confirma 
+        estatisticamente que, no mercado brasileiro, as ocupações com maiores salários médios (ligadas ao setor de 
+        tecnologia, finanças, gestão e administrativo) concentram o maior potencial de transformação tecnológica.
         """)
 
-        st.success(f"""
-        📉 Estado menos exposto à IA:
-
-        {menor['UF']}
-
-        Média AIOE:
-        {round(menor['AIOE_SCORE'], 2)}
-        """)
+    # -------------------------------------------------------------------------
+    # ABA 2: RANKINGS
+    # -------------------------------------------------------------------------
+    with tab_rankings:
+        st.subheader("Classificação dos Extremos de Exposição no Universo CBO")
+        st.markdown("Escolha o modelo metodológico abaixo para visualizar quais profissões ocupam os extremos da amostragem:")
+        
+        modelo_ranking = st.radio(
+            "Selecione o referencial teórico:",
+            ["Indicador AIOE (Felten et al.)", "Indicador de Exposição (Gmyrek / OIT)"],
+            horizontal=True
+        )
+        
+        st.write("")
+        
+        if "AIOE" in modelo_ranking:
+            col_t1, col_t2 = st.columns(2)
+            with col_t1:
+                st.markdown("#### 🚨 Top 20 Ocupações Mais Expostas")
+                st.image("top20-ocupacoes-br-AIOE.png", use_container_width=True)
+            with col_t2:
+                st.markdown("#### 🟢 Bottom 20 Ocupações Menos Expostas")
+                st.image("bottom20-ocupacoes-br-AIOE.png", use_container_width=True)
+            st.caption("*Fonte: Autores do TCC (Mapeamento baseado em Felten et al.).*")
+        else:
+            col_g1, col_g2 = st.columns(2)
+            with col_g1:
+                st.markdown("#### 🚨 Top 20 Ocupações Mais Expostas")
+                st.image("top20-ocupacoes-br-Gmyrek.png", use_container_width=True)
+            with col_g2:
+                st.markdown("#### 🟢 Bottom 20 Ocupações Menos Expostas")
+                st.image("bottom20-ocupacoes-br-Gmyrek.png", use_container_width=True)
+            st.caption("*Fonte: Autores do TCC (Mapeamento baseado nos critérios de tarefas da OIT).*")
