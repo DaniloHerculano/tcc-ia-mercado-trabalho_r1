@@ -2,333 +2,297 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
-import numpy as np
 
 
 def mostrar_evolucao_temporal(df):
 
     st.title("📈 Evolução Temporal da Exposição à IA")
-    
-    st.markdown("""
-    Esta seção apresenta a evolução temporal dos indicadores de exposição à Inteligência Artificial
-    ao longo dos períodos analisados da PNAD Contínua.
-    
-    Os gráficos permitem analisar tendências, variações por setor, escolaridade,
-    renda e comportamento geral dos indicadores ocupacionais.
-    """)
 
-    st.info("""
-    💡 Nesta página você pode:
-    - Aplicar zoom nos gráficos
-    - Filtrar períodos
-    - Passar o mouse para visualizar detalhes
-    - Exportar gráficos em PNG
+    st.markdown("""
+    Nesta seção são apresentados os gráficos temporais e comparativos
+    relacionados à exposição das ocupações brasileiras à Inteligência Artificial,
+    utilizando os indicadores de Gmyrek e Felten/AIOE.
     """)
 
     # ============================================================
-    # PREPARAÇÃO DOS DADOS
+    # AJUSTE DAS COLUNAS
     # ============================================================
 
     df = df.copy()
 
-    # Ajuste defensivo caso existam nomes diferentes
-    if "ANO" in df.columns:
-        df["ano"] = df["ANO"]
+    # Ajuste automático para evitar KeyError
+    colunas = [c.lower() for c in df.columns]
+    mapa = dict(zip(colunas, df.columns))
 
-    if "TRIMESTRE" in df.columns:
-        df["trimestre"] = df["TRIMESTRE"]
+    # tenta identificar colunas
+    col_ano = mapa.get("ano")
+    col_trim = mapa.get("trimestre")
+    col_genero = mapa.get("genero")
+    col_mean = mapa.get("mean")
+    col_aioe = mapa.get("aioe")
+    col_renda = mapa.get("log_renda")
 
-    # Cria coluna temporal
-    if "ano" in df.columns and "trimestre" in df.columns:
+    # Debug opcional
+    # st.write(df.columns)
+
+    # ============================================================
+    # CRIA PERÍODO
+    # ============================================================
+
+    if col_ano and col_trim:
         df["periodo"] = (
-            df["ano"].astype(str)
-            + " T"
-            + df["trimestre"].astype(str)
+            df[col_ano].astype(str)
+            + "T"
+            + df[col_trim].astype(str)
         )
 
     # ============================================================
-    # FILTROS
+    # GRÁFICOS POR GÊNERO
     # ============================================================
 
-    st.sidebar.header("🔎 Filtros")
+    st.header("👥 Exposição à IA por gênero")
 
-    anos_disponiveis = sorted(df["ano"].dropna().unique())
+    col1, col2 = st.columns(2)
 
-    anos_selecionados = st.sidebar.multiselect(
-        "Selecione os anos",
-        anos_disponiveis,
-        default=anos_disponiveis
-    )
+    with col1:
 
-    df_filtrado = df[df["ano"].isin(anos_selecionados)]
+        if all([col_ano, col_genero, col_mean]):
 
-    # ============================================================
-    # KPIs
-    # ============================================================
-
-    st.subheader("📌 Indicadores Gerais")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    media_aioe = round(df_filtrado["AIOE"].mean(), 3) if "AIOE" in df_filtrado.columns else 0
-    media_exposure = round(df_filtrado["Exposure_Mean"].mean(), 3) if "Exposure_Mean" in df_filtrado.columns else 0
-    total_ocupacoes = df_filtrado["ocupacao"].nunique() if "ocupacao" in df_filtrado.columns else len(df_filtrado)
-    total_registros = len(df_filtrado)
-
-    col1.metric("Média AIOE", media_aioe)
-    col2.metric("Média Exposure", media_exposure)
-    col3.metric("Ocupações", f"{total_ocupacoes:,}")
-    col4.metric("Registros", f"{total_registros:,}")
-
-    st.divider()
-
-    # ============================================================
-    # EVOLUÇÃO TEMPORAL AIOE
-    # ============================================================
-
-    st.header("📊 Evolução Temporal do Score AIOE")
-
-    if "AIOE" in df_filtrado.columns:
-
-        evolucao_aioe = (
-            df_filtrado
-            .groupby("periodo", as_index=False)["AIOE"]
-            .mean()
-        )
-
-        fig1 = px.line(
-            evolucao_aioe,
-            x="periodo",
-            y="AIOE",
-            markers=True,
-            title="Evolução Média do Score AIOE"
-        )
-
-        fig1.update_layout(
-            height=500,
-            xaxis_title="Período",
-            yaxis_title="Média AIOE",
-            hovermode="x unified"
-        )
-
-        st.plotly_chart(fig1, use_container_width=True)
-
-    # ============================================================
-    # EVOLUÇÃO EXPOSURE
-    # ============================================================
-
-    st.header("🤖 Evolução do Gradiente de Exposição")
-
-    if "Exposure_Mean" in df_filtrado.columns:
-
-        evolucao_exposure = (
-            df_filtrado
-            .groupby("periodo", as_index=False)["Exposure_Mean"]
-            .mean()
-        )
-
-        fig2 = px.line(
-            evolucao_exposure,
-            x="periodo",
-            y="Exposure_Mean",
-            markers=True,
-            title="Evolução Média da Exposição à IA"
-        )
-
-        fig2.update_layout(
-            height=500,
-            xaxis_title="Período",
-            yaxis_title="Exposure Mean",
-            hovermode="x unified"
-        )
-
-        st.plotly_chart(fig2, use_container_width=True)
-
-    st.divider()
-
-    # ============================================================
-    # COMPARAÇÃO AIOE X EXPOSURE
-    # ============================================================
-
-    st.header("⚖️ Comparação entre Indicadores")
-
-    if (
-        "AIOE" in df_filtrado.columns
-        and "Exposure_Mean" in df_filtrado.columns
-    ):
-
-        comparativo = (
-            df_filtrado
-            .groupby("periodo", as_index=False)
-            .agg({
-                "AIOE": "mean",
-                "Exposure_Mean": "mean"
-            })
-        )
-
-        fig3 = go.Figure()
-
-        fig3.add_trace(
-            go.Scatter(
-                x=comparativo["periodo"],
-                y=comparativo["AIOE"],
-                mode="lines+markers",
-                name="AIOE"
+            dados_genero_mean = (
+                df.groupby([col_ano, col_genero])[col_mean]
+                .mean()
+                .reset_index()
             )
-        )
 
-        fig3.add_trace(
-            go.Scatter(
-                x=comparativo["periodo"],
-                y=comparativo["Exposure_Mean"],
-                mode="lines+markers",
-                name="Exposure Mean"
+            fig1 = px.line(
+                dados_genero_mean,
+                x=col_ano,
+                y=col_mean,
+                color=col_genero,
+                markers=True,
+                title="Exposição à IA por gênero — Gmyrek"
             )
-        )
 
-        fig3.update_layout(
-            title="Comparação Temporal dos Indicadores",
-            height=550,
-            xaxis_title="Período",
-            yaxis_title="Score Médio",
-            hovermode="x unified"
-        )
+            fig1.update_layout(
+                xaxis_title="Ano",
+                yaxis_title="Mean médio ponderado",
+                height=450,
+                hovermode="x unified"
+            )
 
-        st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig1, use_container_width=True)
+
+    with col2:
+
+        if all([col_ano, col_genero, col_aioe]):
+
+            dados_genero_aioe = (
+                df.groupby([col_ano, col_genero])[col_aioe]
+                .mean()
+                .reset_index()
+            )
+
+            fig2 = px.line(
+                dados_genero_aioe,
+                x=col_ano,
+                y=col_aioe,
+                color=col_genero,
+                markers=True,
+                title="Exposição à IA por gênero — Felten"
+            )
+
+            fig2.update_layout(
+                xaxis_title="Ano",
+                yaxis_title="AIOE médio ponderado",
+                height=450,
+                hovermode="x unified"
+            )
+
+            st.plotly_chart(fig2, use_container_width=True)
 
     st.divider()
 
     # ============================================================
-    # DISTRIBUIÇÃO TEMPORAL
+    # EVOLUÇÃO TRIMESTRAL
     # ============================================================
 
-    st.header("📦 Distribuição Temporal dos Scores")
+    st.header("📊 Evolução trimestral da exposição à IA")
+
+    col3, col4 = st.columns(2)
+
+    with col3:
+
+        if "periodo" in df.columns and col_mean:
+
+            evolucao_mean = (
+                df.groupby("periodo")[col_mean]
+                .mean()
+                .reset_index()
+            )
+
+            fig3 = px.line(
+                evolucao_mean,
+                x="periodo",
+                y=col_mean,
+                markers=True,
+                title="Evolução trimestral da exposição à IA — Gmyrek"
+            )
+
+            fig3.update_layout(
+                xaxis_title="Período",
+                yaxis_title="Mean médio ponderado",
+                height=450
+            )
+
+            st.plotly_chart(fig3, use_container_width=True)
+
+    with col4:
+
+        if "periodo" in df.columns and col_aioe:
+
+            evolucao_aioe = (
+                df.groupby("periodo")[col_aioe]
+                .mean()
+                .reset_index()
+            )
+
+            fig4 = px.line(
+                evolucao_aioe,
+                x="periodo",
+                y=col_aioe,
+                markers=True,
+                title="Evolução trimestral da exposição à IA — Felten/AIOE"
+            )
+
+            fig4.update_layout(
+                xaxis_title="Período",
+                yaxis_title="AIOE médio ponderado",
+                height=450
+            )
+
+            st.plotly_chart(fig4, use_container_width=True)
+
+    st.divider()
+
+    # ============================================================
+    # RENDA X IA
+    # ============================================================
+
+    st.header("💰 Exposição à IA e renda ocupacional")
 
     col5, col6 = st.columns(2)
 
     with col5:
 
-        if "AIOE" in df_filtrado.columns:
+        if all([col_mean, col_renda]):
 
-            fig4 = px.box(
-                df_filtrado,
-                x="ano",
-                y="AIOE",
-                points="outliers",
-                title="Distribuição AIOE por Ano"
-            )
-
-            fig4.update_layout(
-                height=450,
-                xaxis_title="Ano",
-                yaxis_title="AIOE"
-            )
-
-            st.plotly_chart(fig4, use_container_width=True)
-
-    with col6:
-
-        if "Exposure_Mean" in df_filtrado.columns:
-
-            fig5 = px.box(
-                df_filtrado,
-                x="ano",
-                y="Exposure_Mean",
-                points="outliers",
-                title="Distribuição Exposure por Ano"
+            fig5 = px.scatter(
+                df,
+                x=col_mean,
+                y=col_renda,
+                opacity=0.7,
+                title="Exposição à IA e renda ocupacional — Gmyrek"
             )
 
             fig5.update_layout(
-                height=450,
-                xaxis_title="Ano",
-                yaxis_title="Exposure Mean"
+                xaxis_title="Mean — Gmyrek",
+                yaxis_title="Log da renda média ponderada",
+                height=500
             )
 
             st.plotly_chart(fig5, use_container_width=True)
 
-    st.divider()
+    with col6:
 
-    # ============================================================
-    # HEATMAP TEMPORAL
-    # ============================================================
+        if all([col_aioe, col_renda]):
 
-    st.header("🔥 Heatmap Temporal")
-
-    if (
-        "ano" in df_filtrado.columns
-        and "trimestre" in df_filtrado.columns
-        and "AIOE" in df_filtrado.columns
-    ):
-
-        heatmap_data = (
-            df_filtrado
-            .pivot_table(
-                values="AIOE",
-                index="ano",
-                columns="trimestre",
-                aggfunc="mean"
+            fig6 = px.scatter(
+                df,
+                x=col_aioe,
+                y=col_renda,
+                opacity=0.7,
+                title="Exposição à IA e renda ocupacional — Felten"
             )
-        )
 
-        fig6 = px.imshow(
-            heatmap_data,
-            text_auto=".2f",
-            aspect="auto",
-            title="Mapa de Calor - Média AIOE"
-        )
+            fig6.update_layout(
+                xaxis_title="AIOE — Felten",
+                yaxis_title="Log da renda média ponderada",
+                height=500
+            )
 
-        fig6.update_layout(
-            height=500
-        )
-
-        st.plotly_chart(fig6, use_container_width=True)
+            st.plotly_chart(fig6, use_container_width=True)
 
     st.divider()
 
     # ============================================================
-    # ANÁLISE ESTATÍSTICA
+    # TOP 20 MAIS EXPOSTAS
     # ============================================================
 
-    st.header("📈 Estatísticas Descritivas")
+    st.header("🏆 Ocupações mais expostas à IA")
 
-    col7, col8 = st.columns(2)
+    col_ocup = None
 
-    with col7:
+    for c in df.columns:
+        if "ocup" in c.lower():
+            col_ocup = c
+            break
 
-        if "AIOE" in df_filtrado.columns:
+    if col_ocup and col_mean:
 
-            st.subheader("AIOE")
+        top20 = (
+            df.groupby(col_ocup)[col_mean]
+            .mean()
+            .reset_index()
+            .sort_values(col_mean, ascending=False)
+            .head(20)
+        )
 
-            st.dataframe(
-                df_filtrado["AIOE"].describe().round(3),
-                use_container_width=True
-            )
+        fig7 = px.bar(
+            top20.sort_values(col_mean),
+            x=col_mean,
+            y=col_ocup,
+            orientation="h",
+            title="Top 20 ocupações mais expostas — Gmyrek Mean"
+        )
 
-    with col8:
+        fig7.update_layout(
+            xaxis_title="Gmyrek Mean",
+            yaxis_title="",
+            height=700
+        )
 
-        if "Exposure_Mean" in df_filtrado.columns:
-
-            st.subheader("Exposure Mean")
-
-            st.dataframe(
-                df_filtrado["Exposure_Mean"].describe().round(3),
-                use_container_width=True
-            )
+        st.plotly_chart(fig7, use_container_width=True)
 
     st.divider()
 
     # ============================================================
-    # CONCLUSÃO ANALÍTICA
+    # BOTTOM 20 MENOS EXPOSTAS
     # ============================================================
 
-    st.header("🧠 Insights Analíticos")
+    st.header("🛡️ Ocupações menos expostas à IA")
 
-    st.markdown("""
-    - Os gráficos temporais permitem acompanhar a evolução dos indicadores de exposição à IA ao longo do tempo.
-    
-    - As distribuições ajudam a identificar assimetrias, dispersões e possíveis outliers nos dados ocupacionais.
-    
-    - A comparação entre AIOE e Exposure Mean auxilia na validação da consistência metodológica entre diferentes métricas internacionais.
-    
-    - O heatmap temporal facilita a identificação visual de períodos com maior concentração de exposição ocupacional à Inteligência Artificial.
-    """)
+    if col_ocup and col_aioe:
+
+        bottom20 = (
+            df.groupby(col_ocup)[col_aioe]
+            .mean()
+            .reset_index()
+            .sort_values(col_aioe, ascending=True)
+            .head(20)
+        )
+
+        fig8 = px.bar(
+            bottom20.sort_values(col_aioe),
+            x=col_aioe,
+            y=col_ocup,
+            orientation="h",
+            title="Bottom 20 ocupações menos expostas — Felten/AIOE"
+        )
+
+        fig8.update_layout(
+            xaxis_title="Felten/AIOE",
+            yaxis_title="",
+            height=700
+        )
+
+        st.plotly_chart(fig8, use_container_width=True)
