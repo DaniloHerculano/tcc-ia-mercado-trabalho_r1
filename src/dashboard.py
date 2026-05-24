@@ -140,29 +140,6 @@ if impacto != "Todos":
     ]
 
 # ==========================================
-# INSIGHTS AUTOMÁTICOS
-# ==========================================
-
-st.sidebar.divider()
-
-media = round(
-    df["AIOE_SCORE"].mean(),
-    2
-)
-
-total = len(df)
-
-st.sidebar.info(f"""
-📌 Média geral AIOE:
-
-{media}
-
-👥 Registros analisados:
-
-{total:,}
-""")
-
-# ==========================================
 # ROTAS
 # ==========================================
 
