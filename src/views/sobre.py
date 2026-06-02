@@ -107,3 +107,37 @@ def mostrar_sobre():
     Turma: **010**  
     Ano: **2026**
     """)
+
+    st.divider()
+
+    # ==========================================
+    # VÍDEO DE APRESENTAÇÃO
+    # ==========================================
+    st.subheader("🎥 Vídeo de Apresentação")
+
+    st.markdown("""
+    Assista à apresentação oficial do Trabalho de Conclusão de Curso, onde são apresentados os objetivos, metodologia, bases de dados, resultados obtidos e a plataforma analítica desenvolvida pelo Grupo 6.
+    """)
+
+    # Substitua pelo link oficial do vídeo
+    youtube_url = "https://www.youtube.com/watch?v=SEU_VIDEO_AQUI"
+
+    st.video(youtube_url)
+
+    st.divider()
+
+    # ==========================================
+    # LINKS DO PROJETO
+    # ==========================================
+    st.subheader("🔗 Links do Projeto")
+
+    st.markdown(f"""
+    **🌐 Plataforma Analítica**  
+    https://tcc-ia-mercado-trabalhor1-r1-grupo-6.streamlit.app/
+
+    **💻 Repositório GitHub**  
+    https://github.com/DaniloHerculano/tcc-ia-mercado-trabalho_r1
+
+    **🎥 Vídeo de Apresentação**  
+    {youtube_url}
+    """)
