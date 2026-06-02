@@ -120,7 +120,7 @@ def mostrar_sobre():
     """)
 
     # Substitua pelo link oficial do vídeo
-    youtube_url = "https://www.youtube.com/watch?v=SEU_VIDEO_AQUI"
+    youtube_url = "https://www.youtube.com/watch?v=VIDEO_PENDENTE_AGUARDAR..."
 
     st.video(youtube_url)
 
