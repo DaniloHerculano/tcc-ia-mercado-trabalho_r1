@@ -1,3 +1,5 @@
+fiz tudo mas a parte do rodapé não apareceu na página...
+
 import streamlit as st
 
 def mostrar_sobre():
@@ -127,12 +129,8 @@ def mostrar_sobre():
     Assista à apresentação oficial do Trabalho de Conclusão de Curso, onde são apresentados os objetivos, metodologia, bases de dados, resultados obtidos e a plataforma analítica desenvolvida pelo Grupo 6.
     """)
 
-    # youtube_url = "https://www.youtube.com/watch?v=VIDEO_PENDENTE_AGUARDAR..."
-    # st.video(youtube_url)
-    
-    st.info("""
-    O vídeo de apresentação será disponibilizado após a publicação oficial do TCC.
-    """)
+    # Substitua pelo link oficial do vídeo
+    youtube_url = "https://www.youtube.com/watch?v=VIDEO_PENDENTE_AGUARDAR..."
 
     st.video(youtube_url)
 
@@ -156,8 +154,8 @@ def mostrar_sobre():
 
     st.divider()
 
-    st.info("""
-    📄 Trabalho de Conclusão de Curso desenvolvido no âmbito do Bacharelado em Ciência de Dados da UNIVESP.
+    st.caption("""
+    Trabalho de Conclusão de Curso desenvolvido no âmbito do Bacharelado em Ciência de Dados da Universidade Virtual do Estado de São Paulo (UNIVESP).
     
     As análises apresentadas possuem finalidade acadêmica e científica.
     """)
