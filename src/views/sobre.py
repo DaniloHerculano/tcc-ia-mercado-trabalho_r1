@@ -17,10 +17,18 @@ def mostrar_sobre():
     
     with col1:
         st.subheader("🎯 O Diferencial Metodológico")
+
+        m1, m2, m3, m4 = st.columns(4)
+
+        m1.metric("Registros Analisados", "≈ 1 milhão")
+        m2.metric("Ocupações Mapeadas", "2.600+")
+        m3.metric("Estados Brasileiros", "27")
+        m4.metric("Período", "2020–2025")
+
         st.markdown("""
         Diferente de aplicações simples que usam apenas scores prontos, este projeto construiu uma **infraestrutura metodológica de pesquisa ocupacional**. 
         
-        Foi desenvolvido um pipeline de harmonização e *transfer learning* que traduz os índices globais de exposição à IA para a realidade estatística das famílias de trabalhadores no Brasil.
+        Foi desenvolvido um pipeline de harmonização ocupacional capaz de transferir indicadores internacionais de exposição à Inteligência Artificial para as ocupações brasileiras da CBO, utilizando técnicas de correspondência estrutural e similaridade semântica baseada em embeddings.
         """)
         
     with col2:
@@ -28,7 +36,7 @@ def mostrar_sobre():
         st.markdown("""
         * **CBO (Classificação Brasileira de Ocupações)**: Dados e descrições sumárias oficiais do Ministério do Trabalho.
         * **Microdados da PNAD Contínua (IBGE)**: Painel analítico abrangendo de **2020 a 2025**, totalizando uma amostra limpa de quase **1 milhão de registros** únicos.
-        * **Datasets Globais de IA**: Índices de exposição *AIOE (Felten et al., 2021)* e a classificação de impactos da OIT *(Gmyrek et al., 2025)*.
+        * **Datasets Globais de IA:** Índice de Exposição Ocupacional à IA (AIOE) de **Felten, Raj e Seamans (2023)** e classificação de impacto da OIT (**Gmyrek et al., 2025**).
         """)
 
     st.divider()
@@ -48,13 +56,13 @@ def mostrar_sobre():
 
     with st.expander("🧠 2. NLP, Embeddings e Mapeamento Semântico"):
         st.markdown("""
-        * **Modelos de Linguagem (LLM):** Migração estratégica do modelo open-source *intfloat/multilingual-e5-large* para a API de vetores densos da OpenAI com o modelo **`text-embedding-3-large`**.
+        * **Modelos de Embeddings:** Migração estratégica do modelo open-source `intfloat/multilingual-e5-large`para a API de embeddings da OpenAI utilizando o modelo `text-embedding-3-large`.
         * **Algoritmo de Similaridade:** Aplicação de **Similaridade de Cosseno** via `scikit-learn` para resolver dados residuais onde não havia correspondência estrutural direta entre os dicionários de ocupações.
         * **Ajuste Fino Textual:** Implementação de técnicas de *Fuzzy Matching* com a biblioteca `rapidfuzz` para correção automatizada de variações ortográficas, plurais e grafias entre os títulos das vagas.
         * **Frameworks Base:** `PyTorch` e `Sentence-Transformers`.
         """)
 
-    with st.expander("💾 3. Big Data, Processamento da PNAD e Estatística"):
+    with st.expander("💾 3. Processamento de Dados, Estatística e Integração da PNAD"):
         st.markdown("""
         * **Mecanismo de Consulta:** Utilização do **`DuckDB`** como banco analítico em memória para realizar junções e agregações complexas nos Parquets trimestrais da PNAD, contornando gargalos de estouro de memória RAM.
         * **Armazenamento de Alta Performance:** Manipulação de Big Data utilizando `Pandas` integrado com formatos compactos **Apache Parquet** (`pyarrow` e `fastparquet`).
@@ -140,4 +148,12 @@ def mostrar_sobre():
 
     **🎥 Vídeo de Apresentação**  
     {youtube_url}
+    """)
+
+    st.divider()
+
+    st.caption("""
+    Trabalho de Conclusão de Curso desenvolvido no âmbito do Bacharelado em Ciência de Dados da Universidade Virtual do Estado de São Paulo (UNIVESP).
+    
+    As análises apresentadas possuem finalidade acadêmica e científica.
     """)
