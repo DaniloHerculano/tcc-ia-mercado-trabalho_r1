@@ -156,11 +156,8 @@ def mostrar_sobre():
 
     st.divider()
 
-    st.markdown("""
-    ---
-    ### 📄 Informações Institucionais
+    st.info("""
+    📄 Trabalho de Conclusão de Curso desenvolvido no âmbito do Bacharelado em Ciência de Dados da UNIVESP.
     
-    Trabalho de Conclusão de Curso desenvolvido no âmbito do **Bacharelado em Ciência de Dados da Universidade Virtual do Estado de São Paulo (UNIVESP)**.
-    
-    As análises apresentadas possuem finalidade exclusivamente acadêmica e científica.
+    As análises apresentadas possuem finalidade acadêmica e científica.
     """)
