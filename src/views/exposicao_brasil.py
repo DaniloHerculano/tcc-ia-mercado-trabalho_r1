@@ -259,7 +259,7 @@ SCATTER_GMYREK = [
 # FUNÇÃO PRINCIPAL
 # =============================================================================
 
-def mostrar_impacto_brasil(df=None):
+def mostrar_exposicao_brasil(df=None):
     st.title("🇧🇷 Exposição Econômica e Rankings no Mercado Brasileiro")
     st.markdown("""
     Resultados consolidados da exposição potencial à IA no cenário nacional: a relação com a renda média
