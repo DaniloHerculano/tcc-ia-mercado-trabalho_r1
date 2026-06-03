@@ -291,6 +291,17 @@ def mostrar_impacto_brasil(df=None):
         st.subheader("Análise de Elasticidade: Exposição à IA × Logaritmo da Renda")
 
         # --- AIOE ---
+
+        st.markdown("""
+        ### 📈 Relação entre Exposição à IA e Rendimento
+        
+        Os gráficos de dispersão abaixo analisam a associação entre os índices de exposição à Inteligência Artificial e a renda média das ocupações brasileiras.
+        
+        Cada ponto representa uma ocupação da Classificação Brasileira de Ocupações (CBO), enquanto a linha vermelha representa a tendência estatística estimada por regressão linear.
+        
+        O objetivo não é identificar causalidade, mas verificar se ocupações mais expostas à IA tendem a apresentar características salariais diferentes das ocupações menos expostas.
+        """)
+        
         st.markdown("#### Exposição à IA e renda ocupacional — Felten/AIOE")
         df_aioe = pd.DataFrame(SCATTER_AIOE)
 
@@ -326,6 +337,14 @@ def mostrar_impacto_brasil(df=None):
             hovermode="closest",
         )
         st.plotly_chart(fig_aioe, use_container_width=True)
+
+        st.success("""
+        🔎 **Interpretação dos resultados**
+        
+        Observa-se uma tendência positiva entre o índice AIOE e a renda média ocupacional. Em termos gerais, ocupações mais expostas à IA concentram-se em atividades intensivas em conhecimento, análise de informações, tomada de decisão e produção de conteúdo simbólico.
+        
+        Esse comportamento sugere que a exposição à IA não está necessariamente associada à substituição integral do trabalho, mas frequentemente à transformação das atividades desempenhadas pelos profissionais.
+        """)
 
         st.divider()
 
@@ -365,10 +384,27 @@ def mostrar_impacto_brasil(df=None):
         )
         st.plotly_chart(fig_gmy, use_container_width=True)
 
+        st.success("""
+        🔎 **Interpretação dos resultados**
+        
+        Os resultados obtidos com o indicador da OIT apresentam comportamento semelhante ao observado no índice AIOE. A concentração das ocupações de maior exposição ocorre predominantemente entre funções administrativas, técnicas e profissionais.
+        
+        A convergência entre os dois referenciais fortalece a robustez metodológica do estudo, indicando consistência entre diferentes abordagens internacionais de mensuração da exposição ocupacional à IA.
+        """)
+
     # =========================================================================
     # ABA 2: RANKINGS EXTREMOS — GRÁFICOS INTERATIVOS PLOTLY
     # =========================================================================
     with tab_rankings:
+
+        st.info("""
+        📊 **O que representam os rankings?**
+        
+        Os rankings apresentam os extremos da distribuição ocupacional, destacando os grupos profissionais com maior e menor exposição potencial às tecnologias de Inteligência Artificial.
+        
+        Importante destacar que maior exposição não significa necessariamente maior risco de substituição. Em muitos casos, a IA atua como tecnologia complementar, aumentando produtividade, eficiência e capacidade analítica dos profissionais.
+        """)
+        
         st.subheader("Classificação dos Extremos de Exposição")
         modelo = st.radio(
             "Selecione o referencial teórico:",
@@ -418,6 +454,21 @@ def mostrar_impacto_brasil(df=None):
         )
         st.plotly_chart(fig_top, use_container_width=True)
 
+        st.markdown("""
+        ### 🧠 Principais características das ocupações mais expostas
+        
+        As ocupações que aparecem nas primeiras posições dos rankings possuem, em geral, atividades relacionadas a:
+        
+        - Processamento de informações;
+        - Produção e análise de documentos;
+        - Pesquisa e investigação;
+        - Atividades administrativas;
+        - Geração de conteúdo textual;
+        - Apoio à tomada de decisão.
+        
+        Essas características estão entre aquelas mais diretamente impactadas pelos avanços recentes dos modelos de IA generativa.
+        """)
+
         st.divider()
 
         # ---- BOTTOM 20 ----
@@ -441,3 +492,21 @@ def mostrar_impacto_brasil(df=None):
             xaxis_title=x_label_bot, yaxis_title="", font=dict(size=11),
         )
         st.plotly_chart(fig_bot, use_container_width=True)
+
+        st.markdown("""
+        ### 🔧 Principais características das ocupações menos expostas
+        
+        As ocupações classificadas entre as menos expostas tendem a depender de habilidades físicas, manuais, operacionais ou de interação direta com ambientes e equipamentos.
+        
+        Em muitos desses casos, a automação completa ainda enfrenta limitações tecnológicas, econômicas ou operacionais, reduzindo a capacidade de substituição por sistemas baseados exclusivamente em Inteligência Artificial.
+        """)
+
+        st.divider()
+
+        st.info("""
+        🎯 **Síntese dos resultados**
+        
+        Os resultados indicam que a exposição à Inteligência Artificial está distribuída de forma desigual entre as ocupações brasileiras. Profissões intensivas em informação, análise e conhecimento tendem a apresentar maior exposição, enquanto atividades predominantemente manuais permanecem menos impactadas.
+        
+        Entretanto, os dados sugerem que a principal consequência da IA no mercado de trabalho brasileiro não é necessariamente a eliminação imediata de ocupações, mas a transformação gradual das tarefas e competências exigidas dos trabalhadores.
+        """)
