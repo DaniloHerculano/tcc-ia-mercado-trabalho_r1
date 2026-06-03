@@ -260,9 +260,9 @@ SCATTER_GMYREK = [
 # =============================================================================
 
 def mostrar_impacto_brasil(df=None):
-    st.title("🇧🇷 Impacto Econômico e Rankings no Mercado Brasileiro")
+    st.title("🇧🇷 Exposição Econômica e Rankings no Mercado Brasileiro")
     st.markdown("""
-    Resultados consolidados do impacto da IA no cenário nacional: a relação com a renda média
+    Resultados consolidados da exposição potencial à IA no cenário nacional: a relação com a renda média
     e os rankings das ocupações nos extremos do mercado.
     """)
 
@@ -466,7 +466,7 @@ def mostrar_impacto_brasil(df=None):
         - Geração de conteúdo textual;
         - Apoio à tomada de decisão.
         
-        Essas características estão entre aquelas mais diretamente impactadas pelos avanços recentes dos modelos de IA generativa.
+        Essas características estão entre aquelas mais diretamente expostas pelos avanços recentes dos modelos de IA generativa.
         """)
 
         st.divider()
@@ -506,7 +506,7 @@ def mostrar_impacto_brasil(df=None):
         st.info("""
         🎯 **Síntese dos resultados**
         
-        Os resultados indicam que a exposição à Inteligência Artificial está distribuída de forma desigual entre as ocupações brasileiras. Profissões intensivas em informação, análise e conhecimento tendem a apresentar maior exposição, enquanto atividades predominantemente manuais permanecem menos impactadas.
+        Os resultados indicam que a exposição à Inteligência Artificial está distribuída de forma desigual entre as ocupações brasileiras. Profissões intensivas em informação, análise e conhecimento tendem a apresentar maior exposição, enquanto atividades predominantemente manuais permanecem menos expostas.
         
         Entretanto, os dados sugerem que a principal consequência da IA no mercado de trabalho brasileiro não é necessariamente a eliminação imediata de ocupações, mas a transformação gradual das tarefas e competências exigidas dos trabalhadores.
         """)
