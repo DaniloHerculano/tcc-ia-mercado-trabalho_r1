@@ -17,6 +17,12 @@ def mostrar_setores(df):
     nas ocupações brasileiras, com base nos dados agregados por estado.
     """)
 
+    st.info("""
+    O mapa apresenta a distribuição geográfica da exposição ocupacional à Inteligência Artificial no Brasil.
+    
+    Para cada estado foi calculada a média dos indicadores AIOE das ocupações presentes na base analisada. Valores mais elevados indicam maior concentração de ocupações potencialmente impactadas por tecnologias de IA generativa, enquanto valores menores sugerem predominância de atividades menos suscetíveis à automação baseada em conhecimento.
+    """)
+
     st.divider()
 
     # ======================================
@@ -200,8 +206,59 @@ def mostrar_setores(df):
         use_container_width=True
     )
 
+    st.success("""
+    Interpretação:
+    
+    Diferenças entre estados não significam necessariamente maior ou menor adoção de Inteligência Artificial, mas refletem a composição ocupacional predominante em cada região.
+    
+    Estados com maior participação de atividades administrativas, financeiras, técnicas, científicas e de serviços intensivos em informação tendem a apresentar indicadores médios mais elevados. Já regiões com maior concentração de atividades operacionais, industriais, agrícolas ou manuais costumam apresentar níveis médios menores de exposição.
+    """)
+
+    # ======================================
+    # MÉTRICAS NACIONAIS
+    # ======================================
+    
+    media_nacional = mapa["AIOE_SCORE"].mean()
+    
+    estado_maior = mapa.loc[
+        mapa["AIOE_SCORE"].idxmax()
+    ]
+    
+    estado_menor = mapa.loc[
+        mapa["AIOE_SCORE"].idxmin()
+    ]
+    
+    col1, col2, col3 = st.columns(3)
+    
+    col1.metric(
+        "Média Nacional",
+        f"{media_nacional:.3f}"
+    )
+    
+    col2.metric(
+        "Maior Exposição",
+        estado_maior["SIGLA"]
+    )
+    
+    col3.metric(
+        "Menor Exposição",
+        estado_menor["SIGLA"]
+    )
+    
     st.caption("""
     O mapa apresenta a média do score AIOE por estado brasileiro,
     permitindo visualizar diferenças regionais na exposição ocupacional
     à Inteligência Artificial.
     """)
+
+    st.info(f"""
+    Resumo dos resultados:
+    
+    • Exposição média nacional: {media_nacional:.3f}
+    
+    • Estado com maior exposição média: {estado_maior['UF']}
+    
+    • Estado com menor exposição média: {estado_menor['UF']}
+    
+    Esses resultados permitem identificar padrões regionais na distribuição das ocupações mais suscetíveis ao impacto da Inteligência Artificial, contribuindo para análises de desigualdade regional, qualificação profissional e planejamento de políticas públicas voltadas ao futuro do trabalho.
+""")
