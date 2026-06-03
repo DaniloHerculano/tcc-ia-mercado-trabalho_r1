@@ -19,6 +19,12 @@ def mostrar_similaridade(df):
     do dataset AIOE/Felten.
     """)
 
+    st.info("""
+    Esta etapa foi utilizada para associar ocupações brasileiras da CBO às ocupações presentes na base internacional de Felten et al. (2023).
+    
+    Como as nomenclaturas entre os sistemas ocupacionais não são idênticas, foi aplicada uma estratégia de similaridade semântica baseada em embeddings de linguagem natural. Dessa forma, cada ocupação brasileira foi vinculada à ocupação internacional mais semanticamente próxima, permitindo a transferência dos indicadores de exposição à Inteligência Artificial.
+    """)
+
     st.divider()
 
     # ======================================
@@ -36,6 +42,73 @@ def mostrar_similaridade(df):
         fig,
         width='stretch'
     )
+
+    st.subheader("🎯 Exemplos de Correspondência Semântica")
+
+    top_matches = (
+        df[
+            [
+                "TITULO_LIMPO",
+                "AIOE_MATCH_TITLE",
+                "AIOE_SCORE"
+            ]
+        ]
+        .sort_values(
+            "AIOE_SCORE",
+            ascending=False
+        )
+        .head(10)
+    )
+
+    fig_match = px.bar(
+    top_matches.sort_values(
+        "AIOE_SCORE",
+        ascending=True
+    ),
+    x="AIOE_SCORE",
+    y="TITULO_LIMPO",
+    orientation="h",
+    text="AIOE_SCORE",
+    hover_data=["AIOE_MATCH_TITLE"],
+    color="AIOE_SCORE",
+    color_continuous_scale="Blues"
+    )
+    
+    fig_match.update_traces(
+        texttemplate="%{text:.2f}",
+        textposition="outside",
+    )
+    
+    fig_match.update_layout(
+        height=500,
+        coloraxis_showscale=False,
+        xaxis_title="Score AIOE",
+        yaxis_title="Ocupação Brasileira",
+    )
+    
+    st.plotly_chart(
+        fig_match,
+        width='stretch'
+    )
+
+    st.info("""
+    O gráfico apresenta exemplos de ocupações brasileiras associadas às ocupações da base internacional de Felten por meio de similaridade semântica.
+    
+    Quanto maior o score observado, maior a proximidade entre a descrição da ocupação brasileira e sua correspondente internacional. Isso aumenta a confiança na transferência dos indicadores de exposição à Inteligência Artificial utilizados ao longo deste estudo.
+    
+    Passe o mouse sobre cada barra para visualizar a ocupação correspondente encontrada na base internacional.
+    """)
+
+    ///////
+    st.success("""
+    Interpretação:
+    
+    A distribuição demonstra como os indicadores AIOE ficaram distribuídos entre as ocupações brasileiras após o processo de compatibilização semântica.
+    
+    Valores mais elevados indicam ocupações potencialmente mais expostas à automação baseada em Inteligência Artificial, enquanto valores menores sugerem atividades menos suscetíveis à substituição ou complementação por tecnologias generativas.
+    
+    A concentração dos valores permite avaliar se o impacto da IA está distribuído de forma homogênea ou concentrado em grupos específicos de ocupações.
+    """)
 
     st.divider()
 
@@ -67,6 +140,12 @@ def mostrar_similaridade(df):
         width='stretch'
     )
 
+    st.info("""
+    As ocupações listadas acima representam os maiores níveis de exposição à IA segundo a metodologia AIOE.
+    
+    Em geral, aparecem atividades intensivas em processamento de informação, análise de dados, produção de conteúdo, elaboração de documentos e tomada de decisão baseada em conhecimento. Essas características tendem a ser mais facilmente complementadas ou automatizadas por modelos modernos de Inteligência Artificial.
+    """)
+
     st.divider()
 
     # ======================================
@@ -96,6 +175,12 @@ def mostrar_similaridade(df):
         baixo,
         width='stretch'
     )
+
+    st.info("""
+    As ocupações com menores scores de exposição costumam envolver atividades predominantemente manuais, físicas ou dependentes de interação presencial.
+    
+    Essas funções normalmente apresentam menor potencial de automação por ferramentas de IA generativa, exigindo habilidades motoras, operação de equipamentos ou atuação em ambientes físicos complexos.
+    """)
 
     st.divider()
 
@@ -137,3 +222,15 @@ def mostrar_similaridade(df):
         "Menor Score",
         menor
     )
+
+    st.success(f"""
+    Resumo dos resultados:
+    
+    • Score médio observado: {media}
+    
+    • Maior exposição identificada: {maior}
+    
+    • Menor exposição identificada: {menor}
+    
+    Esses indicadores fornecem uma visão consolidada do grau de exposição à IA presente no conjunto de ocupações analisadas. A amplitude observada entre os valores mínimo e máximo evidencia que o impacto potencial da Inteligência Artificial não ocorre de forma uniforme entre as diferentes profissões.
+    """)
