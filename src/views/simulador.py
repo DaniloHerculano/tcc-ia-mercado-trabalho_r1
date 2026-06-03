@@ -233,29 +233,69 @@ def mostrar_simulador(df):
 
     st.divider()
 
-    st.success("""
-    Conclusão da Simulação
-    
-    Os resultados apresentados devem ser interpretados como indicadores de exposição ocupacional e não como previsões determinísticas de substituição de empregos.
-    
-    A literatura recente aponta que os efeitos da Inteligência Artificial tendem a ocorrer principalmente por transformação das tarefas, reorganização dos processos produtivos e aumento de produtividade, podendo gerar tanto riscos quanto oportunidades para trabalhadores e organizações.
-    """)
+       st.divider()
 
-    media_nacional = df["AIOE_SCORE"].mean()
+    # ==========================================
+    # COMPARAÇÃO COM A MÉDIA NACIONAL
+    # ==========================================
+
+    st.subheader("📈 Comparação com a Média Nacional")
+
+    media_nacional = float(df["AIOE_SCORE"].mean())
 
     fig_comp = go.Figure()
-    
+
     fig_comp.add_trace(
         go.Bar(
-            x=["Média Nacional", "Ocupação Selecionada"],
-            y=[media_nacional, score_real_ia]
+            x=["Média Nacional", ocupacao_selecionada],
+            y=[media_nacional, score_real_ia],
+            text=[
+                f"{media_nacional:.2f}",
+                f"{score_real_ia:.2f}"
+            ],
+            textposition="outside"
         )
     )
-    
+
     fig_comp.update_layout(
-        title="Comparação com a Média Nacional de Exposição",
+        title="Comparação do Score AIOE",
         yaxis_title="Score AIOE",
-        height=350
+        height=400,
+        showlegend=False
     )
-    
-    st.plotly_chart(fig_comp, use_container_width=True)
+
+    st.plotly_chart(
+        fig_comp,
+        use_container_width=True
+    )
+
+    diferenca = score_real_ia - media_nacional
+
+    if diferenca > 0:
+        st.info(f"""
+        A ocupação selecionada apresenta exposição à IA superior à média nacional.
+
+        Diferença observada: **+{diferenca:.2f} pontos** em relação ao conjunto das ocupações analisadas.
+
+        Isso sugere que as atividades associadas a essa profissão possuem maior proximidade com tarefas potencialmente impactadas por ferramentas de Inteligência Artificial.
+        """)
+    else:
+        st.info(f"""
+        A ocupação selecionada apresenta exposição à IA inferior à média nacional.
+
+        Diferença observada: **{diferenca:.2f} pontos** em relação à média das ocupações analisadas.
+
+        Isso indica que as atividades exercidas nessa profissão tendem a depender mais de habilidades manuais, operacionais ou de interação humana direta.
+        """)
+
+    st.divider()
+
+    st.success("""
+    Conclusão da Simulação
+
+    Os resultados apresentados devem ser interpretados como indicadores de exposição ocupacional e não como previsões determinísticas de substituição de empregos.
+
+    A literatura recente aponta que os efeitos da Inteligência Artificial tendem a ocorrer principalmente por transformação das tarefas, reorganização dos processos produtivos e aumento de produtividade, podendo gerar tanto riscos quanto oportunidades para trabalhadores e organizações.
+
+    Dessa forma, ocupações com maior exposição não necessariamente desaparecerão, mas tendem a sofrer mudanças mais intensas em seus processos de trabalho ao longo dos próximos anos.
+    """)
