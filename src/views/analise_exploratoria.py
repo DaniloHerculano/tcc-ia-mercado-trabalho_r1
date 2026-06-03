@@ -39,6 +39,14 @@ def mostrar_analise_exploratoria(df):
                       yaxis={'categoryorder': 'array', 'categoryarray': dados_g1['Etapa'].values[::-1]},
                       height=400, margin=dict(l=20, r=70, t=10, b=10))
     st.plotly_chart(fig1, use_container_width=True)
+
+    st.info("""
+    **Interpretação:** O gráfico demonstra a cobertura obtida em cada etapa do processo
+    de compatibilização ocupacional. Observa-se cobertura integral nas conversões
+    estruturais entre classificações internacionais, enquanto a incorporação dos
+    índices globais de exposição à IA reduz parcialmente a cobertura devido à
+    ausência de correspondência para determinadas ocupações.
+    """)
     
     st.write("")
     
