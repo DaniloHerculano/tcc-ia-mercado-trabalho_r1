@@ -5,7 +5,7 @@ from carregar_dados import (
 )
 
 from views.dashboard_home import mostrar_dashboard
-from views.impacto_brasil import mostrar_impacto_brasil
+from views.exposicao_brasil import mostrar_exposicao_brasil
 from views.evolucao_temporal import mostrar_evolucao_temporal
 from views.escolaridade import mostrar_escolaridade
 from views.renda import mostrar_renda
@@ -81,9 +81,9 @@ if pagina == "📊 Dashboard":
 
     mostrar_dashboard(df)
 
-elif pagina == "🇧🇷 Impacto no Brasil":
+elif pagina == "🇧🇷 Exposição no Brasil":
 
-    mostrar_impacto_brasil(df)
+    mostrar_exposicao_brasil(df)
 
 elif pagina == "📈 Evolução Temporal":
 
