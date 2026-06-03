@@ -223,17 +223,25 @@ def mostrar_simulador(df):
         colunas_exibicao = ["CBO_JOIN", "TITULO_LIMPO", "UF", "Sexo", "Rendimento_Mensal", "AIOE_SCORE"]
         colunas_validas = [c for c in colunas_exibicao if c in df.columns]
         
+        tabela = df[
+            df["TITULO_LIMPO"] == ocupacao_selecionada
+        ][colunas_validas]
+
+        if "CBO_JOIN" in tabela.columns:
+            tabela = tabela.drop_duplicates(subset=["CBO_JOIN"])
+        else:
+            tabela = tabela.drop_duplicates()
+
         st.dataframe(
-            df[(df["TITULO_LIMPO"] == ocupacao_selecionada)][colunas_validas].drop_duplicates(subset=["CBO_JOIN"]).head(5),
+            tabela.head(5),
             use_container_width=True
         )
+    
     else:
         st.warning("⚠️ Não foram encontrados registros com a combinação exata de UF e Sexo para esta profissão na amostragem da PNAD. Exibindo dados consolidados nacionais:")
         st.dataframe(df_ocup[["TITULO_LIMPO", "AIOE_SCORE"]].head(1), use_container_width=True)
 
     st.divider()
-
-       st.divider()
 
     # ==========================================
     # COMPARAÇÃO COM A MÉDIA NACIONAL
