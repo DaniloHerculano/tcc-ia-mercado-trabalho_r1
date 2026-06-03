@@ -1,5 +1,3 @@
-fiz tudo mas a parte do rodapé não apareceu na página...
-
 import streamlit as st
 
 def mostrar_sobre():
