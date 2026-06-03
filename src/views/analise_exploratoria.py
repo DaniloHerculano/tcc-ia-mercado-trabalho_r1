@@ -22,7 +22,6 @@ def mostrar_analise_exploratoria(df):
     
     # --- Gráfico 01 ---
     st.subheader("Cobertura por Etapa do Crosswalk Ocupacional")
-    st.write("Apenas um teste...")
     dados_g1 = pd.DataFrame([
         {"Etapa": "CBO → ISCO-88", "Cobertura": 100.0},
         {"Etapa": "ISCO-88 → ISCO-08", "Cobertura": 100.0},
