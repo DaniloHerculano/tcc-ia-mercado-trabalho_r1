@@ -99,7 +99,6 @@ def mostrar_similaridade(df):
     Passe o mouse sobre cada barra para visualizar a ocupação correspondente encontrada na base internacional.
     """)
 
-    ///////
     st.success("""
     Interpretação:
     
