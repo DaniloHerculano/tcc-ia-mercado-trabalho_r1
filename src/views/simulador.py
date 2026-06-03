@@ -10,6 +10,12 @@ def mostrar_simulador(df):
     classificação de risco de acordo com a metodologia da **Organização Internacional do Trabalho (OIT/Gmyrek et al., 2025)**.
     """)
 
+    st.info("""
+    Este simulador utiliza os indicadores de exposição à Inteligência Artificial calculados ao longo deste estudo a partir da metodologia AIOE (Felten et al.) e das classificações propostas pela Organização Internacional do Trabalho (Gmyrek et al., 2025).
+    
+    O objetivo não é prever substituição de empregos individuais, mas estimar o grau de exposição potencial das tarefas associadas a cada ocupação diante do avanço das tecnologias de IA generativa.
+    """)
+
     st.divider()
 
     # ==========================================
@@ -107,6 +113,12 @@ def mostrar_simulador(df):
     kpi2.metric("⚡ Nível de Exposição", nivel_impacto)
     kpi3.metric("💼 Ocupação Alvo", ocupacao_selecionada)
 
+    st.info(f"""
+    A ocupação selecionada apresentou um score AIOE de {score_real_ia:.2f}.
+    
+    Esse indicador representa o potencial de exposição das atividades desempenhadas nessa profissão às capacidades atuais da Inteligência Artificial, especialmente em tarefas relacionadas ao processamento de informação, geração de conteúdo, análise documental e tomada de decisão baseada em conhecimento.
+    """)
+
     # Gráfico de Velocímetro Customizado
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
@@ -130,6 +142,16 @@ def mostrar_simulador(df):
     fig.update_layout(height=280, margin=dict(l=20, r=20, t=40, b=20))
     st.plotly_chart(fig, use_container_width=True)
 
+    st.success("""
+    Interpretação do indicador:
+    
+    🟢 Baixa exposição: predominância de atividades manuais, operacionais ou dependentes de interação física.
+    
+    🟡 Exposição intermediária: coexistência de tarefas suscetíveis à automação e atividades que exigem julgamento humano.
+    
+    🔴 Alta exposição: forte presença de tarefas cognitivas, administrativas ou informacionais que podem ser complementadas ou parcialmente automatizadas por sistemas de IA.
+    """)
+
     # Card dinâmico da OIT/ILO
     st.markdown(f"### 📑 Diagnóstico OIT (Métrica Gmyrek): **{classificacao_oit}**")
     if cor_card == "blue":
@@ -139,11 +161,34 @@ def mostrar_simulador(df):
     else:
         st.success(detalhe_oit)
 
-    st.divider()
+    st.info("""
+    A classificação da OIT distingue dois fenômenos diferentes:
+    
+    • Augmentation (Aumento): quando a IA tende a complementar o trabalho humano, elevando produtividade e eficiência.
+    
+    • Automation (Automação): quando parte significativa das tarefas pode ser executada diretamente por sistemas automatizados.
+    
+    Assim, alta exposição não significa necessariamente eliminação da ocupação, mas transformação das atividades desempenhadas.
+    """)
 
+    st.divider()
+    
     # ==========================================
     # MERCADO REAL (PNAD CONTÍNUA COORTE)
     # ==========================================
+
+    st.divider()
+
+    st.subheader("📚 Interpretação Acadêmica")
+    
+    st.markdown(f"""
+    Considerando os parâmetros selecionados, a ocupação **{ocupacao_selecionada}** apresenta um indicador de exposição de **{score_real_ia:.2f}**.
+    
+    Segundo os referenciais adotados neste estudo, ocupações com níveis mais elevados de exposição tendem a sofrer transformações mais rápidas decorrentes da adoção de ferramentas de Inteligência Artificial, especialmente em atividades relacionadas ao processamento de informação e apoio à tomada de decisão.
+    
+    O impacto efetivo, entretanto, depende de fatores complementares como escolaridade, qualificação profissional, contexto econômico, setor de atuação e velocidade de adoção tecnológica.
+    """)
+    
     st.subheader("👥 Contexto Real no Mercado de Trabalho Brasileiro")
     st.markdown("Comparativo do perfil simulado com os trabalhadores reais encontrados na coorte histórica da **PNAD Contínua**:")
 
@@ -185,3 +230,32 @@ def mostrar_simulador(df):
     else:
         st.warning("⚠️ Não foram encontrados registros com a combinação exata de UF e Sexo para esta profissão na amostragem da PNAD. Exibindo dados consolidados nacionais:")
         st.dataframe(df_ocup[["TITULO_LIMPO", "AIOE_SCORE"]].head(1), use_container_width=True)
+
+    st.divider()
+
+    st.success("""
+    Conclusão da Simulação
+    
+    Os resultados apresentados devem ser interpretados como indicadores de exposição ocupacional e não como previsões determinísticas de substituição de empregos.
+    
+    A literatura recente aponta que os efeitos da Inteligência Artificial tendem a ocorrer principalmente por transformação das tarefas, reorganização dos processos produtivos e aumento de produtividade, podendo gerar tanto riscos quanto oportunidades para trabalhadores e organizações.
+    """)
+
+    media_nacional = df["AIOE_SCORE"].mean()
+
+    fig_comp = go.Figure()
+    
+    fig_comp.add_trace(
+        go.Bar(
+            x=["Média Nacional", "Ocupação Selecionada"],
+            y=[media_nacional, score_real_ia]
+        )
+    )
+    
+    fig_comp.update_layout(
+        title="Comparação com a Média Nacional de Exposição",
+        yaxis_title="Score AIOE",
+        height=350
+    )
+    
+    st.plotly_chart(fig_comp, use_container_width=True)
