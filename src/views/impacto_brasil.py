@@ -265,6 +265,17 @@ def mostrar_impacto_brasil(df=None):
     Resultados consolidados do impacto da IA no cenário nacional: a relação com a renda média
     e os rankings das ocupações nos extremos do mercado.
     """)
+
+    st.info("""
+    📖 **Como interpretar esta página**
+    
+    Os resultados apresentados nesta seção conectam os indicadores internacionais de exposição à Inteligência Artificial às características socioeconômicas observadas no mercado de trabalho brasileiro.
+    
+    A primeira análise investiga a relação entre exposição à IA e rendimento médio das ocupações. Em seguida, são apresentados os rankings das profissões mais e menos expostas segundo os referenciais de Felten et al. (AIOE) e Gmyrek et al. (OIT).
+    
+    Esses resultados permitem avaliar quais grupos ocupacionais tendem a sofrer maiores transformações diante da difusão das tecnologias de IA.
+    """)
+    
     st.divider()
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
