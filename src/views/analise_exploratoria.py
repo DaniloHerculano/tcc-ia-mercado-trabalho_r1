@@ -65,6 +65,13 @@ def mostrar_analise_exploratoria(df):
                       height=320, margin=dict(l=20, r=70, t=10, b=10))
     st.plotly_chart(fig2, use_container_width=True)
 
+    st.info("""
+    **Interpretação:** A maior parte das ocupações foi compatibilizada utilizando
+    correspondência direta em níveis detalhados da classificação ocupacional,
+    reduzindo a necessidade de métodos mais genéricos. Isso reforça a qualidade
+    do processo de integração dos dados.
+    """)
+
     st.write("")
 
     # --- Gráfico 10 ---
@@ -83,6 +90,12 @@ def mostrar_analise_exploratoria(df):
                       yaxis={'categoryorder': 'array', 'categoryarray': dados_g10['Indicador'].values[::-1]},
                       height=350, margin=dict(l=20, r=70, t=10, b=10))
     st.plotly_chart(fig10, use_container_width=True)
+
+    st.info("""
+    **Interpretação:** Mesmo após a incorporação dos indicadores internacionais de IA,
+    a base manteve elevada cobertura ocupacional. A cobertura combinada superior a
+    90% demonstra a viabilidade metodológica da aplicação dos índices ao contexto brasileiro.
+    """)
 
     st.divider()
 
@@ -106,6 +119,12 @@ def mostrar_analise_exploratoria(df):
         fig3.update_layout(xaxis_title="Score AIOE", yaxis_title="Frequência (Quantidade)", height=380, margin=dict(l=10, r=30, t=40, b=10))
         st.plotly_chart(fig3, use_container_width=True)
 
+        st.info("""
+        **Interpretação:** A distribuição dos scores AIOE permite observar como a exposição
+        à Inteligência Artificial se distribui entre as ocupações. Valores mais elevados
+        indicam maior potencial de transformação das atividades profissionais pela IA.
+        """)
+
     with col2:
         # --- Gráfico 04 ---
         st.subheader("Distribuição das Médias de Exposição")
@@ -115,6 +134,12 @@ def mostrar_analise_exploratoria(df):
         fig4 = px.histogram(dados_g4, x="Média_Exposição", nbins=30, title="Frequência x Gradiente de Exposição", color_discrete_sequence=["#e377c2"])
         fig4.update_layout(xaxis_title="Gradiente de Exposição (Mean)", yaxis_title="Frequência (Quantidade)", height=380, margin=dict(l=10, r=30, t=40, b=10))
         st.plotly_chart(fig4, use_container_width=True)
+
+        st.info("""
+        **Interpretação:** O indicador Mean representa a intensidade média de exposição
+        ocupacional segundo a metodologia da OIT. A distribuição evidencia a existência
+        de diferentes níveis de exposição entre os grupos profissionais.
+        """)
 
     st.divider()
 
@@ -137,6 +162,12 @@ def mostrar_analise_exploratoria(df):
         fig5.update_layout(xaxis_title="Score de Similaridade Textual", yaxis_title="Frequência", height=320, margin=dict(l=10, r=20, t=10, b=10))
         st.plotly_chart(fig5, use_container_width=True)
 
+        st.info("""
+        **Interpretação:** Os scores de similaridade textual demonstram a qualidade das
+        correspondências realizadas por Fuzzy Matching. Valores mais elevados indicam
+        maior proximidade entre os títulos ocupacionais comparados.
+        """)
+
     with col4:
         # --- Gráfico 06 ---
         st.subheader("Faixas de Confiança do Fuzzy Matching")
@@ -148,6 +179,12 @@ def mostrar_analise_exploratoria(df):
                      color_discrete_map={"Alta (Automático)": "#2ca02c", "Média (Revisar)": "#ff7f0e", "Baixa (Descartar)": "#d62728"})
         fig6.update_layout(xaxis_title="Nível de Confiança", yaxis_title="Ocupações Afetadas", height=320, showlegend=False, margin=dict(l=10, r=20, t=10, b=10))
         st.plotly_chart(fig6, use_container_width=True)
+
+        st.info("""
+        **Interpretação:** A classificação por faixas de confiança auxilia na validação
+        dos resultados automáticos. Correspondências de alta confiança podem ser aceitas
+        diretamente, enquanto faixas intermediárias exigem revisão manual.
+        """)
 
     st.write("")
 
@@ -163,6 +200,12 @@ def mostrar_analise_exploratoria(df):
         fig7.update_layout(xaxis_title="Cosine Similarity (Vetor)", yaxis_title="Frequência", height=320, margin=dict(l=10, r=20, t=10, b=10))
         st.plotly_chart(fig7, use_container_width=True)
 
+        st.info("""
+        **Interpretação:** A Similaridade de Cosseno mede a proximidade semântica entre
+        ocupações utilizando embeddings textuais. Quanto maior o valor, maior a
+        similaridade conceitual entre as descrições ocupacionais.
+        """)
+
     with col6:
         # --- Gráfico 08 ---
         st.subheader("Faixas de Confiança dos Embeddings")
@@ -174,6 +217,12 @@ def mostrar_analise_exploratoria(df):
                      color_discrete_map={"alta_revisar": "#1f77b4", "media_revisar": "#aec7e8", "baixa_nao_usar_auto": "#ffbb78"})
         fig8.update_layout(xaxis_title="Classificação Residual", yaxis_title="Quantidade", height=320, showlegend=False, margin=dict(l=10, r=20, t=10, b=10))
         st.plotly_chart(fig8, use_container_width=True)
+
+        st.info("""
+        **Interpretação:** O agrupamento dos resultados por faixas de confiança permite
+        avaliar a robustez das correspondências obtidas por embeddings semânticos e
+        identificar casos que demandam validação complementar.
+        """)
 
     st.divider()
 
@@ -204,4 +253,12 @@ def mostrar_analise_exploratoria(df):
     )
     fig9.update_layout(height=400, margin=dict(l=20, r=20, t=20, b=20))
     st.plotly_chart(fig9, use_container_width=True)
+
+    st.success("""
+    **Conclusão:** A correlação positiva observada entre os indicadores demonstra
+    consistência metodológica entre as diferentes métricas de exposição à IA.
+    O coeficiente de 0,78 entre AIOE e Mean sugere forte convergência entre as
+    abordagens utilizadas, reforçando a confiabilidade dos resultados obtidos.
+    """)
+    
     st.caption("**Nota:** Valores próximos a 1.0 indicam forte correlação positiva. O índice de Pearson entre AIOE e Mean provou-se altamente robusto (0.78).")
