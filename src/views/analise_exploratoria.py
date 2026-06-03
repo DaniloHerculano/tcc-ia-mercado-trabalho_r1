@@ -254,11 +254,11 @@ def mostrar_analise_exploratoria(df):
     fig9.update_layout(height=400, margin=dict(l=20, r=20, t=20, b=20))
     st.plotly_chart(fig9, use_container_width=True)
 
+    st.caption("**Nota:** Valores próximos a 1.0 indicam forte correlação positiva. O índice de Pearson entre AIOE e Mean provou-se altamente robusto (0.78).")
+    
     st.success("""
     **Conclusão:** A correlação positiva observada entre os indicadores demonstra
     consistência metodológica entre as diferentes métricas de exposição à IA.
     O coeficiente de 0,78 entre AIOE e Mean sugere forte convergência entre as
     abordagens utilizadas, reforçando a confiabilidade dos resultados obtidos.
     """)
-    
-    st.caption("**Nota:** Valores próximos a 1.0 indicam forte correlação positiva. O índice de Pearson entre AIOE e Mean provou-se altamente robusto (0.78).")
