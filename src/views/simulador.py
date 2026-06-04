@@ -26,20 +26,6 @@ def mostrar_simulador(df):
         if col not in df.columns:
             st.error(f"Coluna essencial '{col}' não encontrada na base de dados.")
             return
-
-    # ==========================================
-    # FONTE DOS INDICADORES
-    # ==========================================
-    st.caption("""
-    Fonte dos indicadores:
-    
-    AIOE - Felten, Raj e Seamans (2023)
-    
-    Classificação complementar:
-    Gmyrek et al. (2025) - Organização Internacional do Trabalho (OIT)
-    """)
-    
-    st.divider()
     
     # ==========================================
     # PAINEL DE ENTRADAS (FILTROS E SELEÇÕES)
@@ -311,6 +297,20 @@ def mostrar_simulador(df):
         """)
 
     st.divider()
+ 
+    # ==========================================
+    # FONTE DOS INDICADORES
+    # ==========================================
+    st.caption("""
+    Fonte dos indicadores:
+    
+    AIOE - Felten, Raj e Seamans (2023)
+    
+    Classificação complementar:
+    Gmyrek et al. (2025) - Organização Internacional do Trabalho (OIT)
+    """)
+    
+    st.divider()  
 
     st.success("""
     Conclusão da Simulação
