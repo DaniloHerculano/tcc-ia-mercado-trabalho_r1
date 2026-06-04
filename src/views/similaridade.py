@@ -28,7 +28,11 @@ def mostrar_similaridade(df):
     st.info("""
     Esta etapa foi utilizada para associar ocupações brasileiras da CBO às ocupações presentes na base internacional de Felten et al. (2023).
 
-    Como as nomenclaturas entre os sistemas ocupacionais não são idênticas, foi aplicada uma estratégia de similaridade semântica baseada em embeddings de linguagem natural. Dessa forma, cada ocupação brasileira foi vinculada à ocupação internacional mais semanticamente próxima, permitindo a transferência dos indicadores de exposição à Inteligência Artificial.
+    Como as nomenclaturas entre os sistemas ocupacionais não são idênticas, foi aplicada uma estratégia de similaridade semântica baseada em embeddings de linguagem natural.
+
+    Dessa forma, foi possível avaliar o potencial de correspondência entre ocupações brasileiras e internacionais por meio de similaridade semântica.
+
+    Os resultados serviram como apoio exploratório à etapa de harmonização ocupacional, mas não foram utilizados como critério principal para construção da base final devido aos níveis moderados de similaridade observados.
     """)
 
     st.divider()
