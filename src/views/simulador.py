@@ -28,6 +28,18 @@ def mostrar_simulador(df):
             return
 
     # ==========================================
+    # FONTE DOS INDICADORES
+    # ==========================================
+    st.caption("""
+    Fonte dos indicadores:
+    
+    AIOE - Felten, Raj e Seamans (2023)
+    
+    Classificação complementar:
+    Gmyrek et al. (2025) - Organização Internacional do Trabalho (OIT)
+    """)
+    
+    # ==========================================
     # PAINEL DE ENTRADAS (FILTROS E SELEÇÕES)
     # ==========================================
     st.subheader("👤 Configuração do Perfil Profissional")
