@@ -237,22 +237,7 @@ def mostrar_setores(df):
     )
     
     top5 = ranking_estados.head(5)
-    
-    st.info(f"""
-    Estados com maior exposição média à IA:
-    
-    🥇 {top5.iloc[0]['Estado']} ({top5.iloc[0]['Score Médio AIOE']:.3f})
-    
-    🥈 {top5.iloc[1]['Estado']} ({top5.iloc[1]['Score Médio AIOE']:.3f})
-    
-    🥉 {top5.iloc[2]['Estado']} ({top5.iloc[2]['Score Médio AIOE']:.3f})
-    
-    4º {top5.iloc[3]['Estado']} ({top5.iloc[3]['Score Médio AIOE']:.3f})
-    
-    5º {top5.iloc[4]['Estado']} ({top5.iloc[4]['Score Médio AIOE']:.3f})
-    """)
-
-    
+       
     st.success("""
     Interpretação:
     
