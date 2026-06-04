@@ -206,6 +206,53 @@ def mostrar_setores(df):
         use_container_width=True
     )
 
+    # ======================================
+    # RANKING DOS ESTADOS
+    # ======================================
+    
+    st.subheader("🏆 Ranking dos Estados por Exposição Média à IA")
+    
+    ranking_estados = (
+        mapa
+        .sort_values(
+            by="AIOE_SCORE",
+            ascending=False
+        )
+        .reset_index(drop=True)
+    )
+    
+    ranking_estados.index = ranking_estados.index + 1
+    
+    ranking_estados = ranking_estados.rename(
+        columns={
+            "UF": "Estado",
+            "SIGLA": "UF",
+            "AIOE_SCORE": "Score Médio AIOE"
+        }
+    )
+    
+    st.dataframe(
+        ranking_estados,
+        use_container_width=True
+    )
+    
+    top5 = ranking_estados.head(5)
+    
+    st.info(f"""
+    Estados com maior exposição média à IA:
+    
+    🥇 {top5.iloc[0]['Estado']} ({top5.iloc[0]['Score Médio AIOE']:.3f})
+    
+    🥈 {top5.iloc[1]['Estado']} ({top5.iloc[1]['Score Médio AIOE']:.3f})
+    
+    🥉 {top5.iloc[2]['Estado']} ({top5.iloc[2]['Score Médio AIOE']:.3f})
+    
+    4º {top5.iloc[3]['Estado']} ({top5.iloc[3]['Score Médio AIOE']:.3f})
+    
+    5º {top5.iloc[4]['Estado']} ({top5.iloc[4]['Score Médio AIOE']:.3f})
+    """)
+
+    
     st.success("""
     Interpretação:
     
