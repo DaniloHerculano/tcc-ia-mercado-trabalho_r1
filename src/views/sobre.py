@@ -28,7 +28,7 @@ def mostrar_sobre():
         st.markdown("""
         Diferente de aplicações simples que usam apenas scores prontos, este projeto construiu uma **infraestrutura metodológica de pesquisa ocupacional**. 
         
-        Foi desenvolvido um pipeline de harmonização ocupacional capaz de transferir indicadores internacionais de exposição à Inteligência Artificial para as ocupações brasileiras da CBO, utilizando técnicas de correspondência estrutural e similaridade semântica baseada em embeddings.
+        Foram realizados experimentos utilizando embeddings e similaridade semântica para apoiar o processo de compatibilização ocupacional. Entretanto, devido aos níveis de similaridade observados, os resultados finais priorizaram métodos estruturados de correspondência ocupacional.
         """)
         
     with col2:
