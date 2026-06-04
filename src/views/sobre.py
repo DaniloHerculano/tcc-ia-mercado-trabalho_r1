@@ -7,6 +7,12 @@ def mostrar_sobre():
     st.success("""
     🔬 **Trabalho de Conclusão de Curso (TCC) em Ciência de Dados — UNIVESP** Esta plataforma foi desenvolvida para mapear, mensurar e analisar o **impacto socioeconômico da Inteligência Artificial no mercado de trabalho brasileiro**, integrando indicadores globais de exposição aos microdados de emprego nacionais.
     """)
+
+    st.success("""
+    Contribuição do estudo
+    
+    O principal resultado deste trabalho não consiste na criação de um novo modelo de Inteligência Artificial, mas na integração de bases ocupacionais nacionais e internacionais para analisar a exposição potencial das ocupações brasileiras às tecnologias de IA generativa.
+    """)
     
     st.divider()
 
@@ -77,12 +83,6 @@ def mostrar_sobre():
         """)
 
     st.divider()
-
-    st.success("""
-    Contribuição do estudo
-    
-    O principal resultado deste trabalho não consiste na criação de um novo modelo de Inteligência Artificial, mas na integração de bases ocupacionais nacionais e internacionais para analisar a exposição potencial das ocupações brasileiras às tecnologias de IA generativa.
-    """)
     
     st.warning("""
     Limitações do estudo:
