@@ -39,6 +39,8 @@ def mostrar_simulador(df):
     Gmyrek et al. (2025) - Organização Internacional do Trabalho (OIT)
     """)
     
+    st.divider()
+    
     # ==========================================
     # PAINEL DE ENTRADAS (FILTROS E SELEÇÕES)
     # ==========================================
