@@ -1,323 +1,227 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
-import plotly.graph_objects as go
 
-def mostrar_simulador(df):
-    st.title("🤖 Simulador de Exposição Ocupacional à IA")
-    st.markdown("""
-    Selecione uma ocupação e monte o perfil demográfico para simular o nível de exposição e a 
-    classificação de risco de acordo com a metodologia da **Organização Internacional do Trabalho (OIT/Gmyrek et al., 2025)**.
+
+def mostrar_sobre():
+
+    st.title("ℹ️ Sobre o Projeto")
+
+    st.success("""
+    🔬 **Trabalho de Conclusão de Curso (TCC) em Ciência de Dados — UNIVESP**
+
+    Esta plataforma foi desenvolvida para mapear, mensurar e analisar a **exposição potencial das ocupações brasileiras à Inteligência Artificial**, integrando indicadores globais de exposição aos microdados de emprego nacionais.
     """)
 
-    st.info("""
-    Este simulador utiliza os indicadores de exposição à Inteligência Artificial calculados ao longo deste estudo a partir da metodologia AIOE (Felten et al.) e das classificações propostas pela Organização Internacional do Trabalho (Gmyrek et al., 2025).
-    
-    O objetivo não é prever substituição de empregos individuais, mas estimar o grau de exposição potencial das tarefas associadas a cada ocupação diante do avanço das tecnologias de IA generativa.
+    st.success("""
+    **Contribuição do estudo**
+
+    O principal resultado deste trabalho não consiste na criação de um novo modelo de Inteligência Artificial, mas na integração de bases ocupacionais nacionais e internacionais para analisar a exposição potencial das ocupações brasileiras às tecnologias de IA generativa.
     """)
 
     st.divider()
 
-    # ==========================================
-    # VALIDAR COLUNAS CRÍTICAS
-    # ==========================================
-    colunas_necessarias = ["TITULO_LIMPO", "AIOE_SCORE", "UF", "Sexo"]
-    for col in colunas_necessarias:
-        if col not in df.columns:
-            st.error(f"Coluna essencial '{col}' não encontrada na base de dados.")
-            return
-    
-    # ==========================================
-    # PAINEL DE ENTRADAS (FILTROS E SELEÇÕES)
-    # ==========================================
-    st.subheader("👤 Configuração do Perfil Profissional")
-    
-    # 1. Seleção da Ocupação Real
-    lista_ocupacoes = sorted(df["TITULO_LIMPO"].dropna().unique())
-    ocupacao_selecionada = st.selectbox("💼 Selecione a Ocupação (CBO):", lista_ocupacoes)
-    
-    st.write("")
-    
+    # ==================================================
+    # VISÃO GERAL
+    # ==================================================
+
     col1, col2 = st.columns(2)
+
     with col1:
-        sexo = st.selectbox("👤 Sexo:", sorted(df["Sexo"].dropna().unique()))
-        uf = st.selectbox("🌎 Unidade Federativa (UF):", sorted(df["UF"].dropna().unique()))
-        idade = st.slider("🎂 Idade:", 14, 80, 30)
+
+        st.subheader("🎯 O Diferencial Metodológico")
+
+        m1, m2, m3, m4 = st.columns(4)
+
+        m1.metric("Registros Analisados", "≈ 1 milhão")
+        m2.metric("Ocupações Mapeadas", "2.600+")
+        m3.metric("Estados Brasileiros", "27")
+        m4.metric("Período", "2020–2025")
+
+        st.markdown("""
+        Diferente de aplicações simples que utilizam apenas indicadores prontos, este projeto desenvolveu uma infraestrutura metodológica para compatibilizar dados ocupacionais nacionais e internacionais.
+
+        Foram realizados experimentos utilizando embeddings e similaridade semântica como apoio ao processo de compatibilização ocupacional.
+
+        Entretanto, os resultados apresentaram níveis moderados de correspondência e, por esse motivo, os indicadores finais utilizados nas análises foram obtidos prioritariamente por métodos estruturados de compatibilização entre classificações ocupacionais.
+        """)
 
     with col2:
-        # Escolaridade é a chave para a classificação da OIT (Gmyrek)
-        escolaridade = st.selectbox(
-            "🎓 Grau de Escolaridade:",
-            [
-                "Até Ensino Fundamental Incompleto/Completo",
-                "Ensino Médio Completo",
-                "Ensino Superior Incompleto/Completo"
-            ]
-        )
-        
-        # Recupera as médias reais daquela ocupação na PNAD para sugerir ao usuário
-        df_ocup = df[df["TITULO_LIMPO"] == ocupacao_selecionada]
-        renda_media_real = float(df_ocup["Rendimento_Mensal"].mean()) if "Rendimento_Mensal" in df_ocup.columns else 2500.0
-        if np.isnan(renda_media_real): renda_media_real = 2500.0
 
-        renda = st.number_input(
-            "💰 Renda Mensal Simulada (R$):", 
-            min_value=0, 
-            max_value=100000, 
-            value=int(renda_media_real), 
-            step=500
-        )
+        st.subheader("📊 Bases de Dados Harmonizadas")
+
+        st.markdown("""
+        * **CBO (Classificação Brasileira de Ocupações):** Dados e descrições sumárias oficiais do Ministério do Trabalho.
+
+        * **PNAD Contínua (IBGE):** Base abrangendo o período de **2020 a 2025**, totalizando aproximadamente **1 milhão de registros válidos** após o tratamento dos dados.
+
+        * **Datasets Globais de IA:** Índice de Exposição Ocupacional à IA (**AIOE**) de Felten, Raj e Seamans (2023) e classificação de exposição potencial da OIT proposta por Gmyrek et al. (2025).
+        """)
 
     st.divider()
 
-    # ==========================================
-    # PROCESSAMENTO DOS SCORES REAIS
-    # ==========================================
-    # Captura os scores fixados por transfer learning no seu pipeline
-    score_real_ia = float(df_ocup["AIOE_SCORE"].iloc[0]) if not df_ocup.empty else 0.0
-    
-    # Define o nível de impacto bruto baseado nos quartis clássicos (0.45 e 0.75)
-    if score_real_ia >= 0.75:
-        nivel_impacto = "🔴 Alto"
-    elif score_real_ia >= 0.45:
-        nivel_impacto = "🟡 Médio"
-    else:
-        nivel_impacto = "🟢 Baixo"
+    # ==================================================
+    # TECNOLOGIAS
+    # ==================================================
 
-    # ==========================================
-    # REGRA DE CLASSIFICAÇÃO GMYREK ET AL. (2025/ILO)
-    # ==========================================
-    # Alta exposição + alta escolaridade = Augmentation (Potencial de aumento)
-    # Alta exposição + baixa escolaridade = Automation (Risco de automação)
-    if score_real_ia >= 0.50:  # Linha de corte mediana/alta exposição
-        if escolaridade in ["Ensino Médio Completo", "Ensino Superior Incompleto/Completo"]:
-            classificacao_oit = "🚀 Potencial de Aumento (Augmentation)"
-            cor_card = "blue"
-            detalhe_oit = "A IA tende a complementar as tarefas deste profissional, aumentando sua produtividade e eficiência."
-        else:
-            classificacao_oit = "⚠️ Risco de Automação (Automation)"
-            cor_card = "red"
-            detalhe_oit = "A ocupação possui tarefas rotineiras ou administrativas expostas que correm risco de substituição direta."
-    else:
-        classificacao_oit = "🟢 Baixa / Moderada Exposição"
-        cor_card = "green"
-        detalhe_oit = "Ocupação predominantemente manual, operacional ou de forte interação humana direta, pouco afetada no momento."
+    st.subheader("⚙️ Engenharia de Dados e Tecnologias Adotadas")
 
-    # ==========================================
-    # EXIBIÇÃO DE RESULTADOS (KPIs)
-    # ==========================================
-    st.subheader("📊 Resultado da Simulação")
-    
-    kpi1, kpi2, kpi3 = st.columns(3)
-    kpi1.metric("🤖 Score AIOE Real", f"{score_real_ia:.2f}")
-    kpi2.metric("⚡ Nível de Exposição", nivel_impacto)
-    kpi3.metric("💼 Ocupação Alvo", ocupacao_selecionada)
+    st.write(
+        "Clique nas etapas abaixo para visualizar as principais tecnologias utilizadas no desenvolvimento do projeto."
+    )
 
-    st.info(f"""
-    A ocupação selecionada apresentou um score AIOE de {score_real_ia:.2f}.
-    
-    Esse indicador representa o potencial de exposição das atividades desempenhadas nessa profissão às capacidades atuais da Inteligência Artificial, especialmente em tarefas relacionadas ao processamento de informação, geração de conteúdo, análise documental e tomada de decisão baseada em conhecimento.
+    with st.expander("🛠️ 1. Coleta, OCR e Pré-processamento"):
+
+        st.markdown("""
+        * **Extração e OCR:** Utilização das bibliotecas `pdfplumber`, `pytesseract` e `pdf2image` para extração de dados dos documentos oficiais da CBO.
+
+        * **Limpeza e Padronização:** Uso de expressões regulares (`re`) para tratamento e padronização dos dados.
+
+        * **Manipulação de Arquivos:** Processamento de planilhas e arquivos intermediários utilizando `openpyxl` e `xlrd`.
+        """)
+
+    with st.expander("🧠 2. NLP, Embeddings e Similaridade Semântica"):
+
+        st.markdown("""
+        * **Embeddings:** Testes realizados com o modelo `text-embedding-3-large` da OpenAI.
+
+        * **Similaridade de Cosseno:** Aplicação de métricas de similaridade utilizando `scikit-learn`.
+
+        * **Fuzzy Matching:** Utilização da biblioteca `rapidfuzz` para apoio na correspondência textual entre ocupações.
+
+        * **Frameworks Utilizados:** `PyTorch` e `Sentence-Transformers`.
+        """)
+
+    with st.expander("💾 3. Processamento de Dados e Estatística"):
+
+        st.markdown("""
+        * **DuckDB:** Banco analítico utilizado para consultas e agregações sobre os dados da PNAD.
+
+        * **Pandas e Apache Parquet:** Estrutura principal para armazenamento e manipulação dos dados.
+
+        * **Tratamento de Outliers:** Aplicação de técnicas de winsorização para redução da influência de valores extremos.
+
+        * **NumPy:** Utilizado para cálculos estatísticos e operações vetorizadas.
+        """)
+
+    with st.expander("🖥️ 4. Plataforma e Visualização"):
+
+        st.markdown("""
+        * **Streamlit:** Desenvolvimento da plataforma analítica interativa.
+
+        * **Plotly:** Construção de gráficos e visualizações interativas.
+
+        * **Python:** Linguagem utilizada para integração entre processamento, análise e visualização dos dados.
+        """)
+
+    st.divider()
+
+    # ==================================================
+    # LIMITAÇÕES
+    # ==================================================
+
+    st.warning("""
+    **Limitações do estudo**
+
+    • Os indicadores AIOE foram originalmente desenvolvidos para ocupações internacionais.
+
+    • A aplicação ao contexto brasileiro foi realizada por meio de compatibilização ocupacional.
+
+    • Os resultados devem ser interpretados como indicadores de exposição potencial à Inteligência Artificial e não como previsões de substituição de empregos.
     """)
-
-    # Gráfico de Velocímetro Customizado
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=score_real_ia,
-        title={'text': "Índice de Exposição à Inteligência Artificial (AIOE)"},
-        gauge={
-            'axis': {'range': [0, 1], 'tickwidth': 1},
-            'bar': {'color': "#2b5c8f", 'thickness': 0.25},
-            'steps': [
-                {'range': [0, 0.45], 'color': "#dcfce7"}, # Verde claro
-                {'range': [0.45, 0.75], 'color': "#fef9c3"}, # Amarelo claro
-                {'range': [0.75, 1], 'color': "#fee2e2"} # Vermelho claro
-            ],
-            'threshold': {
-                'line': {'color': "black", 'width': 4},
-                'thickness': 0.75,
-                'value': score_real_ia
-            }
-        }
-    ))
-    fig.update_layout(height=280, margin=dict(l=20, r=20, t=40, b=20))
-    st.plotly_chart(fig, use_container_width=True)
-
-    st.success("""
-    Interpretação do indicador:
-    
-    🟢 Baixa exposição: predominância de atividades manuais, operacionais ou dependentes de interação física.
-    
-    🟡 Exposição intermediária: coexistência de tarefas suscetíveis à automação e atividades que exigem julgamento humano.
-    
-    🔴 Alta exposição: forte presença de tarefas cognitivas, administrativas ou informacionais que podem ser complementadas ou parcialmente automatizadas por sistemas de IA.
-    """)
-
-    # Card dinâmico da OIT/ILO
-    st.markdown(f"### 📑 Diagnóstico OIT (Métrica Gmyrek): **{classificacao_oit}**")
-    if cor_card == "blue":
-        st.info(detalhe_oit)
-    elif cor_card == "red":
-        st.error(detalhe_oit)
-    else:
-        st.success(detalhe_oit)
 
     st.info("""
-    A classificação da OIT distingue dois fenômenos diferentes:
-    
-    • Augmentation (Aumento): quando a IA tende a complementar o trabalho humano, elevando produtividade e eficiência.
-    
-    • Automation (Automação): quando parte significativa das tarefas pode ser executada diretamente por sistemas automatizados.
-    
-    Assim, alta exposição não significa necessariamente eliminação da ocupação, mas transformação das atividades desempenhadas.
+    **Observação metodológica**
+
+    Os indicadores apresentados nesta plataforma representam medidas de exposição potencial à Inteligência Artificial obtidas a partir da compatibilização entre classificações ocupacionais nacionais e internacionais.
+
+    Dessa forma, os resultados não devem ser interpretados como estimativas diretas de substituição de empregos, mas como uma aproximação do grau de exposição das atividades profissionais às tecnologias de IA.
     """)
 
     st.divider()
-    
-    # ==========================================
-    # MERCADO REAL (PNAD CONTÍNUA COORTE)
-    # ==========================================
+
+    # ==================================================
+    # EQUIPE
+    # ==================================================
+
+    st.subheader("🎓 Integrantes do Projeto")
+
+    st.caption(
+        "Universidade Virtual do Estado de São Paulo (UNIVESP) | Bacharelado em Ciência de Dados"
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.markdown("""
+        * CAMILA DO NASCIMENTO MOREIRA LIMA
+        * CLAUDIA MARTINS GUIDARA
+        * DANILO VALENTIM HERCULANO
+        * FELIPE FERNANDES DELVECCHIO
+        """)
+
+    with col2:
+
+        st.markdown("""
+        * FERNANDA OLIVEIRA PIOTTO
+        * LUIS FERNANDO DE JESUS SANTOS
+        * MARCELO VILELA MADURO
+        * RENATO REGIO DE ARAUJO
+        """)
+
+    st.info("👨‍🏫 **Orientador:** Prof. DAVID LUZ")
+
+    st.info("""
+    📚 **Grupo 6**
+
+    Disciplina: **TCC530 – Trabalho de Conclusão de Curso em Ciência de Dados**
+
+    Turma: **010**
+
+    Ano: **2026**
+    """)
 
     st.divider()
 
-    st.subheader("📚 Interpretação Acadêmica")
-    
+    # ==================================================
+    # VÍDEO
+    # ==================================================
+
+    st.subheader("🎥 Vídeo de Apresentação")
+
+    st.markdown("""
+    Assista à apresentação oficial do projeto para conhecer os objetivos, a metodologia adotada, as bases de dados utilizadas e os principais resultados obtidos.
+    """)
+
+    youtube_url = "https://www.youtube.com/watch?v=VIDEO_PENDENTE_AGUARDAR"
+
+    st.video(youtube_url)
+
+    st.divider()
+
+    # ==================================================
+    # LINKS
+    # ==================================================
+
+    st.subheader("🔗 Links do Projeto")
+
     st.markdown(f"""
-    Considerando os parâmetros selecionados, a ocupação **{ocupacao_selecionada}** apresenta um indicador de exposição de **{score_real_ia:.2f}**.
-    
-    Segundo os referenciais adotados neste estudo, ocupações com níveis mais elevados de exposição tendem a sofrer transformações mais rápidas decorrentes da adoção de ferramentas de Inteligência Artificial, especialmente em atividades relacionadas ao processamento de informação e apoio à tomada de decisão.
-    
-    O impacto efetivo, entretanto, depende de fatores complementares como escolaridade, qualificação profissional, contexto econômico, setor de atuação e velocidade de adoção tecnológica.
+    **🌐 Plataforma Analítica**
+
+    https://tcc-ia-mercado-trabalhor1-r1-grupo-6.streamlit.app/
+
+    **💻 Repositório GitHub**
+
+    https://github.com/DaniloHerculano/tcc-ia-mercado-trabalho_r1
+
+    **🎥 Vídeo de Apresentação**
+
+    {youtube_url}
     """)
-    
-    st.subheader("👥 Contexto Real no Mercado de Trabalho Brasileiro")
-    st.markdown("Comparativo do perfil simulado com os trabalhadores reais encontrados na coorte histórica da **PNAD Contínua**:")
-
-    # Filtragem inteligente por proximidade demográfica (UF, Sexo, Idade)
-    df_contexto = df[
-        (df["TITULO_LIMPO"] == ocupacao_selecionada) & 
-        (df["UF"] == uf) & 
-        (df["Sexo"] == sexo)
-    ]
-
-    if not df_contexto.empty:
-        renda_coorte = df_contexto["Rendimento_Mensal"].mean()
-        total_trabalhadores = len(df_contexto)
-        
-        c1, c2 = st.columns(2)
-        with c1:
-            st.metric(
-                label=f"💰 Renda Média Real desta Ocupação em {uf} ({sexo})", 
-                value=f"R$ {renda_coorte:,.2f}",
-                delta=f"Sua simulação: R$ {renda:,.2f}" if renda != int(renda_coorte) else None
-            )
-        with c2:
-            st.metric(
-                label="👥 Amostra de Trabalhadores Identificados no Perfil", 
-                value=f"{total_trabalhadores:,} registros"
-            )
-            
-        # Tabela com as principais variações da mesma família ocupacional na base para enriquecer o TCC
-        st.write("")
-        st.markdown("**Outras variações e subgrupos mapeados para essa mesma área:**")
-        
-        colunas_exibicao = ["CBO_JOIN", "TITULO_LIMPO", "UF", "Sexo", "Rendimento_Mensal", "AIOE_SCORE"]
-        colunas_validas = [c for c in colunas_exibicao if c in df.columns]
-        
-        tabela = df[
-            df["TITULO_LIMPO"] == ocupacao_selecionada
-        ][colunas_validas]
-
-        if "CBO_JOIN" in tabela.columns:
-            tabela = tabela.drop_duplicates(subset=["CBO_JOIN"])
-        else:
-            tabela = tabela.drop_duplicates()
-
-        st.dataframe(
-            tabela.head(5),
-            use_container_width=True
-        )
-    
-    else:
-        st.warning("⚠️ Não foram encontrados registros com a combinação exata de UF e Sexo para esta profissão na amostragem da PNAD. Exibindo dados consolidados nacionais:")
-        st.dataframe(df_ocup[["TITULO_LIMPO", "AIOE_SCORE"]].head(1), use_container_width=True)
 
     st.divider()
 
-    # ==========================================
-    # COMPARAÇÃO COM A MÉDIA NACIONAL
-    # ==========================================
-
-    st.subheader("📈 Comparação com a Média Nacional")
-
-    media_nacional = float(df["AIOE_SCORE"].mean())
-
-    fig_comp = go.Figure()
-
-    fig_comp.add_trace(
-        go.Bar(
-            x=["Média Nacional", ocupacao_selecionada],
-            y=[media_nacional, score_real_ia],
-            text=[
-                f"{media_nacional:.2f}",
-                f"{score_real_ia:.2f}"
-            ],
-            textposition="outside"
-        )
-    )
-
-    fig_comp.update_layout(
-        title="Comparação do Score AIOE",
-        yaxis_title="Score AIOE",
-        height=400,
-        showlegend=False
-    )
-
-    st.plotly_chart(
-        fig_comp,
-        use_container_width=True
-    )
-
-    diferenca = score_real_ia - media_nacional
-
-    if diferenca > 0:
-        st.info(f"""
-        A ocupação selecionada apresenta exposição à IA superior à média nacional.
-
-        Diferença observada: **+{diferenca:.2f} pontos** em relação ao conjunto das ocupações analisadas.
-
-        Isso sugere que as atividades associadas a essa profissão possuem maior proximidade com tarefas potencialmente impactadas por ferramentas de Inteligência Artificial.
-        """)
-    else:
-        st.info(f"""
-        A ocupação selecionada apresenta exposição à IA inferior à média nacional.
-
-        Diferença observada: **{diferenca:.2f} pontos** em relação à média das ocupações analisadas.
-
-        Isso indica que as atividades exercidas nessa profissão tendem a depender mais de habilidades manuais, operacionais ou de interação humana direta.
-        """)
-
-    st.divider()
- 
-    # ==========================================
-    # FONTE DOS INDICADORES
-    # ==========================================
     st.caption("""
-    Fonte dos indicadores:
-    
-    AIOE - Felten, Raj e Seamans (2023)
-    
-    Classificação complementar:
-    Gmyrek et al. (2025) - Organização Internacional do Trabalho (OIT)
-    """)
-    
-    st.divider()  
+    Trabalho de Conclusão de Curso desenvolvido no âmbito do Bacharelado em Ciência de Dados da Universidade Virtual do Estado de São Paulo (UNIVESP).
 
-    st.success("""
-    Conclusão da Simulação
-
-    Os resultados apresentados devem ser interpretados como indicadores de exposição ocupacional e não como previsões determinísticas de substituição de empregos.
-
-    A literatura recente aponta que os efeitos da Inteligência Artificial tendem a ocorrer principalmente por transformação das tarefas, reorganização dos processos produtivos e aumento de produtividade, podendo gerar tanto riscos quanto oportunidades para trabalhadores e organizações.
-
-    Dessa forma, ocupações com maior exposição não necessariamente desaparecerão, mas tendem a sofrer mudanças mais intensas em seus processos de trabalho ao longo dos próximos anos.
+    As análises apresentadas possuem finalidade acadêmica e científica.
     """)
