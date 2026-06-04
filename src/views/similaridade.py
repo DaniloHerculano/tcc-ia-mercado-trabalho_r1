@@ -45,7 +45,7 @@ def mostrar_similaridade(df):
         df,
         x="AIOE_SCORE",
         nbins=30,
-        title="Distribuição dos Scores AIOE"
+        title="Distribuição dos Scores de Exposição (AIOE)"
     )
 
     st.plotly_chart(
@@ -134,7 +134,7 @@ def mostrar_similaridade(df):
     # ======================================
 
     st.subheader(
-        "🔥 Ocupações Mais Expostas"
+        "🔥 Exemplos de Ocupações Associadas aos Maiores Scores AIOE"
     )
 
     top = (
