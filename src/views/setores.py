@@ -236,7 +236,49 @@ def mostrar_setores(df):
         use_container_width=True
     )
     
-    top5 = ranking_estados.head(5)
+    # ======================================
+    # TOP 10 ESTADOS
+    # ======================================
+    
+    top10 = (
+        mapa
+        .sort_values(
+            by="AIOE_SCORE",
+            ascending=False
+        )
+        .head(10)
+    )
+    
+    fig_top10 = px.bar(
+        top10.sort_values(
+            "AIOE_SCORE",
+            ascending=True
+        ),
+        x="AIOE_SCORE",
+        y="UF",
+        orientation="h",
+        text="AIOE_SCORE",
+        color="AIOE_SCORE",
+        color_continuous_scale="Reds",
+        title="Top 10 Estados com Maior Exposição Média à IA"
+    )
+    
+    fig_top10.update_traces(
+        texttemplate="%{text:.3f}",
+        textposition="outside"
+    )
+    
+    fig_top10.update_layout(
+        height=500,
+        coloraxis_showscale=False,
+        xaxis_title="Score Médio AIOE",
+        yaxis_title="Estado"
+    )
+    
+    st.plotly_chart(
+        fig_top10,
+        use_container_width=True
+    )
        
     st.success("""
     Interpretação:
