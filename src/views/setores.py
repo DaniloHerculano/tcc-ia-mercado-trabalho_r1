@@ -235,6 +235,8 @@ def mostrar_setores(df):
         ranking_estados,
         use_container_width=True
     )
+
+    st.divider()
     
     # ======================================
     # TOP 10 ESTADOS
