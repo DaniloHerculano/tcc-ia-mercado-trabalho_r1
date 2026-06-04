@@ -6,8 +6,7 @@ import plotly.graph_objects as go
 def mostrar_simulador(df):
     st.title("🤖 Simulador de Exposição Ocupacional à IA")
     st.markdown("""
-    Selecione uma ocupação e monte o perfil demográfico para simular o nível de exposição e a 
-    classificação de risco de acordo com a metodologia da **Organização Internacional do Trabalho (OIT/Gmyrek et al., 2025)**.
+    Selecione uma ocupação e monte o perfil demográfico para visualizar o nível de exposição potencial à Inteligência Artificial e sua classificação segundo a metodologia da Organização Internacional do Trabalho (OIT/Gmyrek et al., 2025).
     """)
 
     st.info("""
