@@ -120,7 +120,9 @@ def mostrar_similaridade(df):
     st.info("""
     O gráfico apresenta exemplos de ocupações brasileiras associadas às ocupações da base internacional de Felten por meio de similaridade semântica.
 
-    Quanto maior o score observado, maior a proximidade entre a descrição da ocupação brasileira e sua correspondente internacional. Isso aumenta a confiança na transferência dos indicadores de exposição à Inteligência Artificial utilizados ao longo deste estudo.
+    Quanto maior o score observado, maior a proximidade textual entre as descrições ocupacionais.
+
+    Embora alguns casos tenham apresentado boa correspondência semântica, os resultados gerais mostraram níveis moderados de similaridade, motivo pelo qual os métodos estruturados de compatibilização ocupacional foram priorizados na construção da base final.
 
     Passe o mouse sobre cada barra para visualizar a ocupação correspondente encontrada na base internacional.
     """)
