@@ -5,7 +5,10 @@ def mostrar_sobre():
     
     # Card de Introdução Direta
     st.success("""
-    🔬 **Trabalho de Conclusão de Curso (TCC) em Ciência de Dados — UNIVESP** Esta plataforma foi desenvolvida para mapear, mensurar e analisar o **impacto socioeconômico da Inteligência Artificial no mercado de trabalho brasileiro**, integrando indicadores globais de exposição aos microdados de emprego nacionais.
+    st.success("""
+    🔬 **Trabalho de Conclusão de Curso (TCC) em Ciência de Dados — UNIVESP**
+    
+    Esta plataforma foi desenvolvida para mapear, mensurar e analisar a **exposição potencial das ocupações brasileiras à Inteligência Artificial**, integrando indicadores globais de exposição aos microdados de emprego nacionais.
     """)
 
     st.success("""
@@ -34,8 +37,9 @@ def mostrar_sobre():
         st.markdown("""
         Diferente de aplicações simples que usam apenas scores prontos, este projeto construiu uma **infraestrutura metodológica de pesquisa ocupacional**. 
         
-        Foram realizados experimentos utilizando embeddings e similaridade semântica para apoiar o processo de compatibilização ocupacional. Entretanto, devido aos níveis de similaridade observados, os resultados finais priorizaram métodos estruturados de correspondência ocupacional.
-        """)
+        Foram realizados experimentos utilizando embeddings e similaridade semântica como apoio ao processo de compatibilização ocupacional.
+
+        Entretanto, os resultados apresentaram níveis moderados de correspondência e, por esse motivo, os indicadores finais utilizados nas análises foram obtidos prioritariamente por métodos estruturados de compatibilização entre classificações ocupacionais.
         
     with col2:
         st.subheader("📊 Bases de Dados Harmonizadas")
