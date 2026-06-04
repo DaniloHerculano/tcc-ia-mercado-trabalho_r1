@@ -281,7 +281,15 @@ def mostrar_setores(df):
         fig_top10,
         use_container_width=True
     )
-       
+
+    st.info("""
+    O mapa apresenta a média do score AIOE por estado brasileiro.
+    
+    É importante destacar que esses resultados não medem o uso real de Inteligência Artificial em cada estado. O indicador representa o potencial de exposição ocupacional à IA, calculado a partir da composição das ocupações presentes em cada unidade federativa.
+    
+    Dessa forma, estados com maior concentração de ocupações administrativas, técnicas, científicas e intensivas em informação tendem a apresentar scores médios mais elevados.
+    """)
+ 
     st.success("""
     Interpretação:
     
