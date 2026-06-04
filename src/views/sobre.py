@@ -78,6 +78,16 @@ def mostrar_sobre():
 
     st.divider()
 
+    st.warning("""
+    Limitações do estudo:
+    
+    • Os indicadores AIOE foram originalmente desenvolvidos para ocupações internacionais.
+    
+    • A aplicação ao contexto brasileiro foi realizada por meio de compatibilização ocupacional.
+    
+    • Os resultados devem ser interpretados como indicadores de exposição potencial à IA e não como previsões de substituição de empregos.
+    """)
+
     # ==========================================
     # INTEGRANTES E ORIENTAÇÃO (UNIVESP)
     # ==========================================
