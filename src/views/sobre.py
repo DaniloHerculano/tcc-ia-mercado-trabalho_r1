@@ -78,6 +78,12 @@ def mostrar_sobre():
 
     st.divider()
 
+    st.success("""
+    Contribuição do estudo
+    
+    O principal resultado deste trabalho não consiste na criação de um novo modelo de Inteligência Artificial, mas na integração de bases ocupacionais nacionais e internacionais para analisar a exposição potencial das ocupações brasileiras às tecnologias de IA generativa.
+    """)
+    
     st.warning("""
     Limitações do estudo:
     
