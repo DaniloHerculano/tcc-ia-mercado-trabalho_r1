@@ -94,9 +94,11 @@ def mostrar_simulador(df):
             cor_card = "blue"
             detalhe_oit = "A IA tende a complementar as tarefas deste profissional, aumentando sua produtividade e eficiência."
         else:
-            classificacao_oit = "⚠️ Risco de Automação (Automation)"
+            classificacao_oit = "⚠️ Maior Potencial de Automação (Automation)"
             cor_card = "red"
-            detalhe_oit = "A ocupação possui tarefas rotineiras ou administrativas expostas que correm risco de substituição direta."
+            detalhe_oit = """
+            A ocupação apresenta características associadas a tarefas potencialmente automatizáveis segundo a metodologia da OIT. Isso não significa substituição direta do trabalhador, mas maior exposição à transformação das atividades.
+            """
     else:
         classificacao_oit = "🟢 Baixa / Moderada Exposição"
         cor_card = "green"
@@ -205,7 +207,7 @@ def mostrar_simulador(df):
         c1, c2 = st.columns(2)
         with c1:
             st.metric(
-                label=f"💰 Renda Média Real desta Ocupação em {uf} ({sexo})", 
+                label=f"💰 Renda Média Observada na PNAD em {uf} ({sexo})", 
                 value=f"R$ {renda_coorte:,.2f}",
                 delta=f"Sua simulação: R$ {renda:,.2f}" if renda != int(renda_coorte) else None
             )
