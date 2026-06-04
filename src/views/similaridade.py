@@ -19,6 +19,12 @@ def mostrar_similaridade(df):
     do dataset AIOE/Felten.
     """)
 
+    st.warning("""
+    Os testes de similaridade semântica foram realizados como etapa complementar de apoio ao processo de harmonização ocupacional.
+    
+    Os resultados apresentaram níveis moderados de correspondência, motivo pelo qual os indicadores finais utilizados neste estudo foram priorizados a partir de métodos estruturados de compatibilização ocupacional.
+    """)
+    
     st.info("""
     Esta etapa foi utilizada para associar ocupações brasileiras da CBO às ocupações presentes na base internacional de Felten et al. (2023).
 
