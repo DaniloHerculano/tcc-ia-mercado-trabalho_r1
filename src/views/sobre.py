@@ -192,7 +192,7 @@ def mostrar_sobre():
     Assista à apresentação oficial do projeto para conhecer os objetivos, a metodologia adotada, as bases de dados utilizadas e os principais resultados obtidos.
     """)
 
-    youtube_url = "https://www.youtube.com/watch?v=VIDEO_PENDENTE_AGUARDAR"
+    youtube_url = "https://youtu.be/jZmC5CUrUJw"
 
     st.video(youtube_url)
 
