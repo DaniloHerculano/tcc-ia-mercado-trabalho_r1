@@ -6,7 +6,7 @@ O objetivo do projeto é integrar indicadores internacionais de exposição à I
 
 ## Estrutura do repositório
 
-- `notebooks/`: notebooks utilizados para documentar e reproduzir as análises finais.
+- `notebooks/`: notebooks e arquivos utilizados para documentar e reproduzir as análises finais.
 - `apendices/planilhas/`: planilhas finais e intermediárias do processo de harmonização ocupacional.
 - `apendices/parquet/`: bases finais em formato Parquet utilizadas nas análises.
 - `src/`: código da aplicação existente no projeto. Esta pasta não foi alterada para a documentação metodológica do TCC.
